@@ -1,0 +1,142 @@
+.wishNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.42rem auto .5rem;
+  max-width: 1280px;
+}
+
+.appSection {
+  width: 100%;
+  top: 0;
+  z-index: 999;
+}
+
+.wishlistLogo {
+  width: 6.8rem;
+  cursor: pointer;
+}
+
+.iconsDiv {
+  display: flex;
+  gap: 1.3rem;
+  position: relative;
+}
+
+.wishIcon {
+  font-size: 1.2rem;
+  color: rgb(97, 97, 97);
+  cursor: pointer;
+}
+
+._creator_header_icons {
+  font-size: 1.5rem;
+}
+
+.userDiv {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.wishItems {
+  position: absolute;
+  top: -.5rem;
+  background-color: #d4145a;
+  color: #f0f9f9;
+  padding: .05rem .2rem;
+  border-radius: .3rem;
+  right: -.3rem;
+  font-size: .8rem;
+  cursor: pointer;
+}
+
+.iconsDiv .iconText {
+  visibility: hidden;
+  width: 60px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 0;
+  font-size: .8rem;
+  position: absolute;
+  bottom: -2.5rem;
+  z-index: 1;
+}
+
+.itemsIcon:hover .iconText {
+  visibility: visible;
+}
+
+.itemsIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accountDropDown {
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  background-color: #c1efef;
+  border-radius: .6rem;
+  padding: 1rem;
+  width: 10rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  z-index: 999;
+  display: none;
+}
+
+.accountDropDown li {
+  color: #1547d2;
+  font-size: 1rem;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.openSettings {
+  display: flex;
+}
+
+@media screen and (max-width: 1024px) {
+  @media screen and (max-width: 800px) {
+    @media screen and (max-width: 600px) {
+      .fqa {
+        font-size: 1rem;
+      }
+
+      .wishItems {
+        font-size: .7rem;
+      }
+
+      .wishIcon {
+        font-size: 1.3rem;
+      }
+
+      .wishlistLogo {
+        width: 4.8rem;
+      }
+
+      .wishNav {
+        margin: 1.2rem auto 0.5rem;
+      }
+
+      ._contact_help {
+        margin: 3rem auto 0;
+        width: 90%;
+      }
+
+      ._contact_title {
+        font-size: 1.3rem;
+      }
+
+      ._contact_p {
+        font-size: 1rem;
+      }
+    }
+  }
+}

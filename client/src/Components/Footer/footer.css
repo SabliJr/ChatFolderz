@@ -1,0 +1,116 @@
+.Footer {
+  margin: 1.8rem auto 2rem;
+  border-top: 1px solid #182C61;
+  max-width: 1280px;
+}
+
+.footerLogo {
+  width: 7.42rem;
+  padding-top: .5rem;
+}
+
+.logoAndSM {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.SocialIcons {
+  display: flex;
+  gap: .8rem;
+  font-size: 1.3rem;
+  margin-left: .6rem;
+  color: #5c5c5cdb;
+  cursor: pointer;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 3rem;
+  /* margin: 1rem 0; */
+  padding: .5rem;
+}
+
+.footerLinks {
+  margin-bottom: .5rem;
+}
+
+.footerLinks p {
+  /* margin-top: .8rem; */
+  font-size: 1.05rem;
+  font-weight: 400;
+  cursor: pointer;
+  color: #21212f;
+  /* font-family: 'Archivo', sans-serif; */
+  font-family: "Inter Tight", sans-serif;
+}
+
+._links a {
+  font-size: 1.6rem;
+}
+
+._links {
+  gap: .8rem;
+}
+
+.footerMain {
+  margin: .5rem auto 0;
+}
+
+.footerMain,
+._links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  /* flex-direction: column; */
+  gap: .5rem;
+  align-items: center;
+  justify-content: center;
+  /* padding-top: .5rem; */
+  color: #ff724f;
+}
+
+.DevName {
+  display: flex;
+  gap: .3rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1042px) {
+  @media screen and (max-width: 800px) {
+
+    @media screen and (max-width: 600px) {
+      .Footer {
+        margin: 3.8rem 0 2rem;
+        border-top: 1px solid #182C61;
+      }
+
+      .footerMain {
+        flex-direction: column-reverse;
+        margin: 1rem auto;
+      }
+
+      .footerLogo {
+        width: 5.3rem;
+      }
+
+      .SocialIcons {
+        font-size: 1rem;
+      }
+
+      .footerLinks {
+        margin: 0rem auto 2rem;
+      }
+
+      .footerLinks div p {
+        font-size: .9rem;
+      }
+    }
+  }
+}

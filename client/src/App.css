@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;0,8..60,900;1,8..60,200;1,8..60,300;1,8..60,400;1,8..60,500;1,8..60,600;1,8..60,700;1,8..60,800;1,8..60,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 .6rem;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', */
+    /* 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', */
+    /* sans-serif; */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* background-color: #fbfffe; */
+  background-color: #efeef0;
+  /* font-family: 'Archivo', sans-serif; */
+  font-family: "Inter Tight", sans-serif;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.creator_public_page,
+.Home {
+  max-width: 1280px;
+  margin: auto;
+  overflow: hidden;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.signUpPage,
+.loginPage,
+.verificationPage,
+.checkYourEmailPage {
+  max-width: 1180px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.loginPage {
+  margin: 2rem auto;
+}
+
+.TheLoader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fbfffe91;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.spinnerImg {
+  width: 8rem;
+}
+
+.msgContainer {
+  height: 75vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.msgContainer div {
+  width: 55%;
+  background-color: #fbfffe;
+  padding: 2rem;
+  border-radius: 0.8rem;
+  box-shadow: rgba(9, 207, 35, 0.398) 0px 1px 3px 0px, rgba(9, 207, 35, 0.398) 0px 0px 0px 1px;
+}
+
+.msgContainer div h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: rgb(74, 74, 74);
+}
+
+.msgContainer div p {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 1rem 0;
+  color: #2f5bd4;
+  line-height: 1.5;
+}
+
+button:disabled,
+button[disabled] {
+  /* border: 1px solid #999999; */
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 1024px) {
+  .App {
+    margin: auto 1rem;
+  }
+
+  @media screen and (max-width: 800px) {
+    .msgContainer div h1 {
+      font-size: 1.8rem;
+    }
+
+    .msgContainer div {
+      width: 85%;
+      padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .loginPage {
+      margin: 1.2rem auto;
+    }
+
+    @media screen and (max-width: 600px) {
+      .App {
+        margin: auto;
+        width: 98%;
+        overflow: hidden;
+      }
+
+      .msgContainer div {
+        width: 95%;
+      }
+
+      .loginPage {
+        margin: .2rem auto;
+      }
+    }
+  }
+}

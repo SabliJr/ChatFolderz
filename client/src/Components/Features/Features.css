@@ -1,0 +1,66 @@
+._features_container {
+  margin: 10rem 2rem;
+  display: flex;
+  align-items: flex-start;
+  /* justify-content: flex-start; */
+  gap: 3rem;
+}
+
+._features_imag_container {
+  width: 35%;
+}
+
+._use_chat_folderz_img {
+  width: 100%;
+  border-radius: 1rem;
+}
+
+._features_copy {
+  width: 60%;
+}
+
+._features_title h2 {
+  font-size: 2.3rem;
+  margin: .6rem 0;
+  color: #ff724f;
+}
+
+._features_title p {
+  color: #606060;
+  font-size: 1.2rem;
+}
+
+._features_points {
+  display: flex;
+  flex-direction: column;
+  margin: 3rem 0;
+  gap: 1rem;
+  width: 100%;
+}
+
+._features_points h6 {
+  font-size: 1.2rem;
+  color: #21212f;
+  line-height: 1.3;
+  letter-spacing: .6px;
+}
+
+._features_btn {
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: .6px;
+  border: transparent;
+  background-color: #ff724f;
+  padding: .5rem 1rem;
+  border-radius: .6rem;
+  font-family: "Inter Tight", sans-serif;
+  cursor: pointer;
+}
+
+
+@media screen and (max-width: 1042px) {
+  @media screen and (max-width: 800px) {
+    @media screen and (max-width: 600px) {
+    }
+  }
+}
