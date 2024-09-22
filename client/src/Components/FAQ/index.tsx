@@ -152,7 +152,7 @@ const Index = () => {
           {/* </span> */}
         </h3>
         <p className='_q_chat_text'>
-          send us an email on <span>info.sponsorwave@gmail.com</span> and we
+          send us an email on <span>info.chatfolderz@gmail.com</span> and we
           will get back to you on no time! Otherwise...
         </p>
         <button className='_get_started_btn'>Add To Browser</button>

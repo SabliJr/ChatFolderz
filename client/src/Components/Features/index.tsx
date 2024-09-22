@@ -5,7 +5,7 @@ import UseChatFolderz from "../../Assets/pexels-bertellifotografia-16094053.jpg"
 
 const Index = () => {
   return (
-    <main className='_features_container'>
+    <main className='_features_container' id='Features'>
       <div className='_features_imag_container'>
         <img src={UseChatFolderz} alt='' className='_use_chat_folderz_img' />
       </div>
