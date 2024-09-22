@@ -28,7 +28,7 @@ const Index = () => {
           Organized
         </span>{" "}
         &{" "}
-        <span>
+        <span className='_second_span'>
           <img src={Line1} alt='' className='_hero_line' />
           Optimized
         </span>
@@ -44,8 +44,10 @@ const Index = () => {
       </div>
       <div className='_i_img_container'>
         <span className='_best_i'>Best Integrated With:</span>
+        {/* <div className='_logos_div'> */}
         <img src={GPT} alt='' className='_i_img' />
         <img src={Claude} alt='' className='_i_img' />
+        {/* </div> */}
       </div>
       <img src={PromoImg} alt='promImg' className='promImg' />
     </section>

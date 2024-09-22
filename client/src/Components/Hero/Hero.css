@@ -10,44 +10,33 @@
   font-weight: 700;
   color: #21212f;
   font-family: "Inter Tight", sans-serif;
-  /* font-family: 'Archivo', sans-serif; */
 }
 
-._first_span {
+._first_span, ._second_span {
+  display: inline-block;
   position: relative;
 }
 
-.hero h2 span:nth-child(2) {
-  /* background-color: #cdf449; */
-  position: relative;
+._hero_line2, ._hero_line {
+  position: absolute;
+  left: 0;
+  z-index: -1;
+}
 
-  /* font-family: 'Source Serif 4', serif; */
+._first_span,
+._second_span {
+  position: relative;
 }
 
 ._hero_line {
   bottom: -.8rem;
-  left: .7rem;
-  width: 100%;
-  position: absolute;
-  z-index: -50;
+  right: -.5rem;
 }
 
 ._hero_line2 {
-    position: absolute;
-    right: 30rem;
-    bottom: -.7rem;
-    width: 22rem;
-    z-index: -05;
-}
-
-/* ._hero_line2  {
-  l: 0;
-  top: 0;
-} */
-
-/* ._hero_line2 {
-
-} */
+  left: .5rem;
+  bottom: -.7rem;
+} 
 
 .hero p {
   width: 65%;
@@ -77,10 +66,8 @@
 .emailDiv button {
   border-radius: .8rem;
   border: transparent;
-  /* background-color: #21212f; */
   background-color: #ff724f;
   font-size: 1.3rem;
-  /* font-family: 'Archivo', sans-serif; */
   padding: .8rem 1.2rem;
   font-family: "Inter Tight", sans-serif;
   font-weight: 700;
@@ -94,7 +81,6 @@
   margin: 1.6rem auto 0;
   border-radius: 1.2rem;
   border: .5px solid rgb(226, 226, 224);
-  /* mask-image: linear-gradient(#000000, transparent); */
 }
 
 ._i_img_container {
@@ -117,10 +103,24 @@
 
 @media screen and (max-width: 1042px) {
   .hero h2 {
-    width: 80%;
+    width: 90%;
+  }
+
+  .hero h2 {
+    font-size: 3.3rem;
+  }
+
+  .hero p {
+    width: 85%;
+    font-size: 1.5rem;
+    margin: 1.8rem auto;
   }
 
   @media screen and (max-width: 800px) {
+    .hero {
+      margin: 2rem auto;
+    }
+
     .hero h2 {
       width: 85%;
     }
@@ -129,26 +129,57 @@
       max-width: 80%;
     }
 
+    .hero h2 {
+      font-size: 2.3rem;
+    }
+    
+    ._hero_line {
+      bottom: -.5rem;
+    }
+
+    ._hero_line2 {
+      bottom: -.36rem;
+    } 
+
+    .hero p {
+      font-size: 1.2rem;
+      margin: 1.3rem auto;
+    }
+
+    .emailDiv button {
+      font-size: 1.2rem;
+      padding: .8rem 1rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    ._best_i {
+      font-size: 1.2rem;
+    }
+
+    ._i_img {
+      width: 6.8rem;
+    }
+
     @media screen and (max-width: 600px) {
       .hero {
-        margin: 3.5rem 0 3rem;
+        margin: 1.6rem 0 1.5rem;
       }
 
       .hero h2 {
         font-size: 1.8rem;
         width: 98%;
-        line-height: 1.2;
       }
 
-      .hero h2 span {
-        font-size: 2rem;
-      }
+      ._hero_line2 {
+        bottom: -.26rem;
+      } 
 
-      .hero p {
+      /* .hero p {
         width: 95%;
         margin: 1.6rem auto;
         font-size: 1rem;
-      }
+      } */
 
       .emailDiv {
         max-width: 85%;
@@ -168,6 +199,33 @@
         margin: 1rem auto 0;
         border-radius: .42rem;
       }
+
+      .hero p {
+        margin: 1rem auto 1.8rem;
+        width: 95%;
+        font-size: 1rem;
+      }
+
+      ._i_img_container {
+        /* flex-direction: column; */
+        gap: 1rem;
+      }
+
+      ._i_img {
+        width: 5rem;
+      }
+
+      ._best_i {
+        font-size: .8rem;
+      }
+
+      .emailDiv {
+        /* max-width: 65%; */
+        margin: 0rem auto 3.6rem;
+         /* display: flex;
+        justify-content: center;
+        gap: 1.2rem; */
+      } 
     }
   }
 }

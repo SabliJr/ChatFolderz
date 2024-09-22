@@ -21,13 +21,13 @@
 
 ._features_title h2 {
   font-size: 2.3rem;
-  margin: .6rem 0;
   color: #ff724f;
 }
 
 ._features_title p {
   color: #606060;
   font-size: 1.2rem;
+  margin: .6rem 0;
 }
 
 ._features_points {
@@ -59,8 +59,75 @@
 
 
 @media screen and (max-width: 1042px) {
+  ._features_title h2 {
+    font-size: 1.8rem;
+  }
+
+  ._features_points {
+    margin: 1.3rem 0 2rem;
+  }
+
+  ._features_points h6 {
+    font-size: 1rem;
+    line-height: 1.2;
+    letter-spacing: .3px;
+  }
+
+  ._features_title p {
+    margin: .3rem 0;
+  }
+
+  ._features_btn {
+    font-size: 1.3rem;
+  }
+
   @media screen and (max-width: 800px) {
+    ._features_container {
+      margin: 8rem 2rem;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column-reverse;
+      text-align: center;
+    }
+
+    ._features_imag_container {
+      width: 85%;
+    }
+
+    ._use_chat_folderz_img {
+      width: 100%;
+      height: 65vh;
+      object-fit: cover;
+    }
+
+    ._features_copy {
+      width: 90%;
+    }
     @media screen and (max-width: 600px) {
+
+      ._features_container {
+        margin: 4rem 0rem;
+      }
+
+      ._features_copy {
+        width: 98%;
+      }
+
+      ._features_imag_container {
+        width: 99%;
+      }
+
+      ._use_chat_folderz_img {
+        height: 45vh;
+      }
+      
+      ._features_title h2 {
+        font-size: 1.6rem;
+      }
+
+      ._features_title {
+        margin-bottom: 1.5rem;
+      }
     }
   }
 }
