@@ -178,18 +178,18 @@ const onGetCreatorData = async () => {
   });
 };
 
-const onPaymentSetup = async () => {
-  return await axios.post(
-    `${SERVER_URL}/stripe/authorize`,
-    {},
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    }
-  );
-};
+// const onPaymentSetup = async () => {
+//   return await axios.post(
+//     `${SERVER_URL}/stripe/authorize`,
+//     {},
+//     {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       withCredentials: true,
+//     }
+//   );
+// };
 
 const onGetCreatorForCart = async (creator_id: string) => {
   return await axios.get(`${SERVER_URL}/get-creator-info-cart`, {
@@ -231,7 +231,7 @@ export {
   onGetCreatorInfo,
   onGetUserInfos,
   onGetCreatorData,
-  onPaymentSetup,
+  // onPaymentSetup,
   onGetCreatorForCart,
   onCheckOut,
   onSignUpWithGoogle,

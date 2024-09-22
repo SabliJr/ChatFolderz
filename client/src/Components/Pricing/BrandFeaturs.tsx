@@ -10,32 +10,32 @@ const BrandFeaturs = () => {
           <span>
             <PiSealCheckLight />
           </span>
-          <p>curated list of potential sponsors.</p>
+          <p>Create folders</p>
         </li>
         <li>
           <span>
             <PiSealCheckLight />
           </span>
-          <p>List of sponsored Creators</p>
+          <p>Bookmark important chats</p>
         </li>
         <li>
           <span>
             <PiSealCheckLight />
           </span>
-          <p>Find Similar Sponsors</p>
+          <p>Search via all your conversations</p>
         </li>
         <li>
           <span>
             <PiSealCheckLight />
           </span>
-          <p>Niche-Based Searches</p>
+          <p>Tag and categorize conversations</p>
         </li>
         <li>
           <span>
             <PiSealCheckLight />
           </span>
           <p>
-            Smart Media Kit. <span>coming soon</span>
+            General prompt library <span>coming soon</span>
           </p>
         </li>
       </ul>

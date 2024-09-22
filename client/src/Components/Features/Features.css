@@ -1,8 +1,8 @@
 ._features_container {
   margin: 10rem 2rem;
   display: flex;
-  align-items: flex-start;
-  /* justify-content: flex-start; */
+  align-items: center;
+  /* justify-content: center; */
   gap: 3rem;
 }
 
@@ -32,17 +32,20 @@
 
 ._features_points {
   display: flex;
+  /* justify-content: center; */
   flex-direction: column;
-  margin: 3rem 0;
+  margin: 3rem 1.8rem;
   gap: 1rem;
   width: 100%;
 }
 
-._features_points h6 {
+._features_points li {
   font-size: 1.2rem;
   color: #21212f;
   line-height: 1.3;
-  letter-spacing: .6px;
+  letter-spacing: .4px;
+  font-weight: 500;
+  color: #606060;
 }
 
 ._features_btn {
@@ -57,6 +60,11 @@
   cursor: pointer;
 }
 
+._features_title {
+  width: 85%;
+  margin: 0rem 0;
+}
+
 
 @media screen and (max-width: 1042px) {
   ._features_title h2 {
@@ -67,7 +75,7 @@
     margin: 1.3rem 0 2rem;
   }
 
-  ._features_points h6 {
+  ._features_points li {
     font-size: 1rem;
     line-height: 1.2;
     letter-spacing: .3px;
@@ -103,6 +111,20 @@
     ._features_copy {
       width: 90%;
     }
+
+    ._features_points  {
+      width: 80%;
+      margin: 2rem auto 1.3rem;
+    }
+
+    ._features_points li {
+      text-align: left;
+    }
+
+    ._features_title {
+      margin: 1rem auto;
+    }
+
     @media screen and (max-width: 600px) {
 
       ._features_container {
