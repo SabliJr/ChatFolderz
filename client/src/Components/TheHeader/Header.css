@@ -5,6 +5,7 @@
 .Header {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   margin: 3.8rem auto .5rem auto;
   max-width: 1280px;
@@ -27,29 +28,36 @@
   align-items: center;
 }
 
-.navButtons {
+._nav {
   display: flex;
   align-items: center;
+  margin: .3rem auto;
   gap: 1.3rem;
 }
 
-._nav li {
-  font-size: 1rem;
-  font-family: sans-serif;
-  font-weight: 500;
+._nav li a {
+  color: #606060;
 }
 
-._login_text {
+._nav li {
   font-size: 1.3rem;
   font-weight: 500;
   font-family: 'Archivo', sans-serif;
   cursor: pointer;
+  list-style: none;
 }
 
-._faq {
+/* ._login_text {
+  font-size: 1.3rem;
+  font-weight: 500;
+  font-family: 'Archivo', sans-serif;
+  cursor: pointer;
+} */
+
+/* ._faq {
   font-size: 1rem;
   cursor: pointer;
-}
+} */
 
 .navButtons p {
   font-family: 'Archivo', sans-serif;
