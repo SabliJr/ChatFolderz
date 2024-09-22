@@ -9,30 +9,27 @@
   align-items: center;
   margin: 3.8rem auto .5rem auto;
   max-width: 1280px;
-}
-
-.navStuff {
-  display: flex;
-  gap: 3.42rem;
-  align-items: center;
-}
-
-.navStuff nav {
-  display: flex;
-  list-style: none;
-  font-size: 1.4rem;
-  font-family: 'Archivo', sans-serif;
-  gap: 1.3rem;
-  font-weight: 500;
-  cursor: pointer;
-  align-items: center;
+  position: relative;
+  z-index: 1000;
 }
 
 ._nav {
   display: flex;
   align-items: center;
-  margin: .3rem auto;
   gap: 1.3rem;
+  position: -webkit-sticky;
+  margin: .3rem auto;
+  background-color: #ffffff;
+  padding: 0.8rem 1rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 0.8rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+._nav_scrolled {
+  position: fixed;
+  top: 1rem;
+  z-index: 1000;
 }
 
 ._nav li a {
@@ -46,51 +43,17 @@
   cursor: pointer;
   list-style: none;
 }
-
-/* ._login_text {
-  font-size: 1.3rem;
-  font-weight: 500;
-  font-family: 'Archivo', sans-serif;
-  cursor: pointer;
-} */
-
-/* ._faq {
-  font-size: 1rem;
-  cursor: pointer;
-} */
-
-.navButtons p {
-  font-family: 'Archivo', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.navButtons button {
+._header_btn {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   padding: 0.3rem 0.7rem;
   border-radius: 0.6rem;
-  background: #1547d2;
+  background: #ff724f;
   border: transparent;
-  color: aliceblue;
+  color: #21212f;
   font-style: normal;
   cursor: pointer;
-}
-
-.menuIcon {
-  font-size: 2.15rem;
-  display: none;
-}
-
-._cart_menu_div {
-  display: flex;
-  align-items: center;
-  gap: 1.3rem;
-}
-
-._cart {
-  font-size: 1.42rem;
 }
 
 @media screen and (max-width: 1042px) {
