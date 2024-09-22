@@ -11,34 +11,28 @@ const Index = () => {
       </div>
       <div className='_features_copy'>
         <div className='_features_title'>
-          <h2>Lorem, ipsum dolor.</h2>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Inventore,
-            dolorum.
-          </p>
+          <h2>Your Ultimate AI Chat Management Toolkit.</h2>
+          {/* <p>
+            Stay organized with folders, quick search, and bookmarking for all
+            your AI conversations.
+          </p> */}
         </div>
-        <div className='_features_points'>
-          <h6>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            porro maiores voluptatibus. Iste, maiores illum.
-          </h6>
-          <h6>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            porro maiores voluptatibus. Iste, maiores illum.
-          </h6>
-          <h6>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            porro maiores voluptatibus. Iste, maiores illum.
-          </h6>
-          <h6>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            porro maiores voluptatibus. Iste, maiores illum.
-          </h6>
-          <h6>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique
-            porro maiores voluptatibus. Iste, maiores illum.
-          </h6>
-        </div>
+        <ul className='_features_points'>
+          <li>Organize chats into custom folders for easy access.</li>
+          <li>
+            Search through all conversations instantly with advanced search
+            tools.
+          </li>
+          <li>Bookmark important chats to find them quickly later.</li>
+          <li>
+            Create and manage a personalized prompt library for quick use.
+          </li>
+          <li>Tag and categorize conversations for better organization.</li>
+          <li>
+            Effortlessly navigate through your chat history with intuitive
+            tools.
+          </li>
+        </ul>
         <button className='_features_btn'>Try It For Free</button>
       </div>
     </main>

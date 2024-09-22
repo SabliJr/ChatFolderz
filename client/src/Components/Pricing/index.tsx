@@ -49,8 +49,8 @@ const Index = () => {
       <div className='_pricing_title'>
         <h1>Pricing</h1>
         <p>
-          Find the right sponsors for your content, boost your revenue, and
-          focus on making amazing content for your audience.
+          Try it free for 24 hours—if it’s not for you, cancel anytime. No
+          commitment, just smarter AI chat management.
         </p>
         <label htmlFor='' className='_switcher'>
           <input
