@@ -1,35 +1,36 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import "./Header.css";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
-
 import Logo from "../../Assets/ChatFolderz.svg";
-import { RiMenu4Line } from "react-icons/ri";
-import { FiShoppingCart } from "react-icons/fi";
-
-import { GlobalValuesContext } from "../../Context/globalValuesContextProvider";
-import { iGlobalValues } from "../../Types/globalVariablesTypes";
 
 const Index = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const handleTrigger = () => setIsOpen(!isOpen);
-  const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
 
-  const contextValues = useContext<Partial<iGlobalValues>>(GlobalValuesContext);
-  const { cartItems } = contextValues as iGlobalValues;
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 120) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <header className='Header'>
       <Link to='/' className='_logo'>
-        {/* ChatFolderz */}
         <img src={Logo} alt='' />
       </Link>
 
-      {/* <div className='_cart_menu_div'> */}
-      {/* <div className={`navStuff ${isOpen ? "navStaff expand" : ""}`}> */}
-      {/* <div className='navButtons'> */}
-      <nav className='_nav'>
+      <nav className={scrolled ? "_nav_scrolled  _nav" : "_nav"}>
         <li>
           <ScrollLink
             className='_login_text'
@@ -64,12 +65,8 @@ const Index = () => {
           </ScrollLink>
         </li>
 
-        {/* <button onClick={() => navigate("/signUp")}>Try For Free</button> */}
+        {scrolled && <button className='_header_btn'>Download</button>}
       </nav>
-      {/* </div> */}
-      {/* </div> */}
-      <RiMenu4Line className='menuIcon' onClick={handleTrigger} />
-      {/* </div> */}
     </header>
   );
 };
