@@ -26,8 +26,8 @@ const Index = () => {
 
   return (
     <header className='Header'>
-      <Link to='/' className='_logo'>
-        <img src={Logo} alt='' />
+      <Link to='/'>
+        <img src={Logo} alt='' className='_logo' />
       </Link>
 
       <nav className={scrolled ? "_nav_scrolled  _nav" : "_nav"}>
