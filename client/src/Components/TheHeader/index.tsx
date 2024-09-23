@@ -3,7 +3,7 @@ import "./Header.css";
 
 import { Link } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
-import Logo from "../../Assets/ChatFolderz.svg";
+import Logo from "../../Assets/La_logo.png";
 
 const Index = () => {
   const [scrolled, setScrolled] = useState(false);

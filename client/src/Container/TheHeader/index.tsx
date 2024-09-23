@@ -1,8 +1,6 @@
 import React, { useState, useRef, useContext } from "react";
 import "./wishHeader.css";
 
-import Logo from "../../Assets/xLogo.png";
-
 //Icons
 import { TbClipboardList } from "react-icons/tb";
 import { FaUserGear } from "react-icons/fa6";
@@ -42,12 +40,6 @@ const Index = () => {
   return (
     <section className='appSection'>
       <div className='wishNav'>
-        <img
-          src={Logo}
-          alt='wishlistLogo'
-          className='wishlistLogo'
-          onClick={() => navigate("/")}
-        />
         <div className='iconsDiv'>
           <div className='userDiv' onClick={() => navigate("/cart")}>
             {cartItems.cart.length > 0 ||
