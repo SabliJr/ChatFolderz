@@ -4,7 +4,6 @@ import "./footer.css";
 import FooterLogo from "../../Assets/ChatFolderz.svg";
 import { useNavigate } from "react-router-dom";
 
-import { BsInstagram } from "react-icons/bs";
 import { RiTwitterXLine } from "react-icons/ri";
 import { GrLinkedinOption } from "react-icons/gr";
 

@@ -3,7 +3,6 @@ import "./faqs.css";
 
 import { useNavigate } from "react-router-dom";
 import { PiPlusBold } from "react-icons/pi";
-// import ChatLogo from "../../Assets/chat.png";
 import { useAuth } from "../../Context/AuthProvider";
 import Line3 from "../../Assets/_line3.svg";
 

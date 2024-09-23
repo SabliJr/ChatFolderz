@@ -2,8 +2,9 @@ import React from "react";
 import "./Pages.css";
 import Skeleton from "../utils/Skeleton";
 
-import { BsInstagram } from "react-icons/bs";
+import { GrLinkedinOption } from "react-icons/gr";
 import { RiTwitterXLine } from "react-icons/ri";
+import { MdEmail } from "react-icons/md";
 
 const Contact = () => {
   return (
@@ -19,22 +20,27 @@ const Contact = () => {
 
         <ul className='_contact_list'>
           <li>
-            <a href='mailto:info.wishties@gmail.com'>info.wishties@gmail.com</a>
+            <a href='mailto:info.chatfolderz@gmail.com'>
+              <span>
+                <MdEmail />
+              </span>
+              info.chatfolderz@gmail.com
+            </a>
           </li>{" "}
           <li>
             <a
-              href='https://www.instagram.com/wishties_/'
+              href='https://www.linkedin.com/in/sablijr/'
               target='_blank'
               rel='noopener noreferrer'>
               <span>
-                <BsInstagram />
+                <GrLinkedinOption />
               </span>
-              Instagram
+              LinkedIn
             </a>
           </li>
           <li>
             <a
-              href='https://twitter.com/wishties_'
+              href='https://twitter.com/sablijr'
               target='_blank'
               rel='noopener noreferrer'>
               <span>
