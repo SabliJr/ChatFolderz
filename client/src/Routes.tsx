@@ -9,7 +9,6 @@ import Verify from "./Pages/VerificationPage";
 import CheckEmail from "./Pages/CheckEmail";
 import VerifyEmail from "./Components/Verification/verifyEmail";
 import Contact from "./Pages/Contact";
-import Help from "./Pages/Help";
 import About from "./Pages/About";
 import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsOfService from "./Pages/TermsOfService";
@@ -27,7 +26,6 @@ const RoutesFile = () => {
         <Route path='/contact' element={<Contact />} />
         <Route path='/terms-of-service' element={<TermsOfService />} />
         <Route path='/privacy-policy' element={<PrivacyPolicy />} />
-        <Route path='/help' element={<Help />} />
         <Route path='/about' element={<About />} />
         <Route path='/verify' element={<Verify />} />
         <Route path='/check-email' element={<CheckEmail />} />

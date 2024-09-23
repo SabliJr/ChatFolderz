@@ -10,7 +10,6 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 
 import { GlobalValuesContext } from "../../Context/globalValuesContextProvider";
 import { iGlobalValues } from "../../Types/globalVariablesTypes";
-import CloseModules from "../../utils/CloseModules";
 import { useAuth } from "../../Context/AuthProvider";
 import useLogout from "../../Hooks/useLogOut";
 
@@ -26,7 +25,6 @@ const Index = () => {
   const handleCloseNav = () => {
     setIsOpen(false);
   };
-  CloseModules({ module_ref: moduleRef, ft_close_module: handleCloseNav });
 
   const goToAccountSettings = () => {
     navigate("/account-settings");
