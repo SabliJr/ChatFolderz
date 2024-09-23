@@ -81,8 +81,8 @@ const Index = () => {
             <div className='_p_sub_title'>
               <h4>Power Plan</h4>
               <p>
-                Unlock a network of sponsors waiting to collaborate with
-                creators like you.
+                Upgrade your AI chat experience. Organize, and optimize your
+                workflow seamlessly.
               </p>
             </div>
             <h2 className='_price'>
@@ -98,8 +98,8 @@ const Index = () => {
             <div className='_p_sub_title'>
               <h4>Power Plan</h4>
               <p>
-                Unlock a network of sponsors waiting to collaborate with
-                creators like you.
+                Upgrade your AI chat experience. Organize, and optimize your
+                workflow seamlessly.
               </p>
             </div>
             <div className='_price_div'>
