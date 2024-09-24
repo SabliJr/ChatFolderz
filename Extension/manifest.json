@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ChatFolderz",
+  "version": "1.3",
+  "description": "Preview, copy, and download code from ChatGPT",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
