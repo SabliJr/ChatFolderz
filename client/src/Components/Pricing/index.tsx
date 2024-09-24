@@ -86,7 +86,7 @@ const Index = () => {
               </p>
             </div>
             <h2 className='_price'>
-              $9.99 <span>/month</span>
+              $7.99 <span>/month</span>
             </h2>
             <BrandFeaturs />
             <button>Try It for free</button>
@@ -104,14 +104,14 @@ const Index = () => {
             </div>
             <div className='_price_div'>
               <p>
-                <span id='original_price'>$119.99</span>{" "}
-                <span className='dis_price'> save 20%</span>
+                <span id='original_price'>$95.99</span>{" "}
+                <span className='dis_price'> save 30%</span>
                 <br />
               </p>
               <h2 className='_price'>
-                $7.99 <span>/year</span>
+                $5.59 <span>/year</span>
               </h2>
-              <span>Billed annually: $95.99</span>
+              <span>Billed annually: $67.10</span>
             </div>
             <BrandFeaturs />
             <button>Try It for free</button>
