@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import "./faqs.css";
 
-import { useNavigate } from "react-router-dom";
 import { PiPlusBold } from "react-icons/pi";
-import { useAuth } from "../../Context/AuthProvider";
 import Line3 from "../../Assets/_line3.svg";
 
 const Index = () => {
@@ -15,12 +13,10 @@ const Index = () => {
     false,
   ]);
 
-  const { state } = useAuth();
   const toggleQuestion = (idx: number) => {
     setReveal(revealQuestion.map((item, i) => (i === idx ? !item : false)));
   };
 
-  const navigate = useNavigate();
   // const handleAccess = () => {
   //   state.isAuthenticated && state.accessToken
   //     ? navigate(`/dashboard/${state.customer_id}`)
@@ -79,11 +75,6 @@ const Index = () => {
             Yes! You can cancel your subscription anytime from your account
             settings. Once canceled, you'll continue to have access until the
             end of your billing period.
-            {/* <span
-              className='_q_click_here'
-              onClick={() => navigate("/how-it-works")}>
-              Click here!
-            </span> */}
           </p>
         </div>
         <div className='_questions_div'>
@@ -118,11 +109,9 @@ const Index = () => {
         </div>
       </div>
       <div className='_q_chat_div'>
-        {/* <img src={ChatLogo} alt='chat logo' className='q_chat_logo' /> */}
         <h3 className='_q_chat_title'>
-          Do you still have a question? {/* <span> */}
+          Do you still have a question?
           <img src={Line3} alt='' className='_footer_line' />
-          {/* </span> */}
         </h3>
         <p className='_q_chat_text'>
           send us an email on <span>info.chatfolderz@gmail.com</span> and we

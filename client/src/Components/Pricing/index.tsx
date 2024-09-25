@@ -89,14 +89,14 @@ const Index = () => {
             </div>
             <div className='_price_div'>
               <p>
-                <span id='original_price'>$95.99</span>{" "}
-                <span className='dis_price'> save 30%</span>
+                <span id='original_price'>$95.88</span>{" "}
+                <span className='dis_price'> save 20%</span>
                 <br />
               </p>
               <h2 className='_price'>
-                $5.59 <span>/year</span>
+                $6.39 <span>/year</span>
               </h2>
-              <span>Billed annually: $67.10</span>
+              <span>Billed annually: $76.70</span>
             </div>
             <BrandFeaturs />
             <button>Try It for free</button>
