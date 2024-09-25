@@ -1,9 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./pricing.css";
 
-// import Fatures from "./features";
 import BrandFeaturs from "./BrandFeaturs";
-// import { onCheckingOut } from "../../API/leApi";
 
 const Index = () => {
   // const [active, setActive] = useState(false);
@@ -61,21 +59,8 @@ const Index = () => {
           />
           <span className='_slider' onClick={handleSpanClick}></span>
         </label>
-        {/* <div className='pricing_btns_div'>
-          <button
-            onClick={handleActive}
-            className={active ? "pice_btns" : "pice_btns pice_btns_active"}>
-            Monthly
-          </button>
-          <button
-            onClick={handleActive}
-            className={active ? "pice_btns pice_btns_active" : "pice_btns"}>
-            Yearly
-          </button>
-        </div> */}
       </div>
       {whoIsThis === "Monthly" ? (
-        // <div className='_pricing_container'>
         <div className='_princing_divs'>
           <div className='pricing_item2'>
             <div className='_p_sub_title'>
