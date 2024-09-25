@@ -58,6 +58,94 @@ createFolderContainer.appendChild(createFolderText);
 // Append the create folder container to the main element
 mainElement.appendChild(createFolderContainer);
 
+// To remove the pop up
+let onRemovePop = () => {
+  let la_popup = document.querySelectorAll("._popup");
+  let x = 0;
+  while (x < la_popup.length) {
+    la_popup[x].remove();
+    x++;
+  }
+};
+
+let startCreatingFolderz = () => {
+  let createFolderzDiv = document.querySelector("._create_folder_container");
+
+  createFolderzDiv.addEventListener("click", () => {
+    // Create popup
+    let popup = document.createElement("div");
+    popup.classList.add("_popup");
+
+    // The close Icon
+    let closeIcon = document.createElement("img");
+    closeIcon.src = chrome.runtime.getURL("./images/cross.png");
+    closeIcon.alt = "Folder Icon";
+    closeIcon.classList.add("_close_icon");
+
+    // Create input for folder name
+    let folderInput = document.createElement("input");
+    folderInput.type = "text";
+    folderInput.placeholder = "Enter folder name";
+    folderInput.classList.add("_folder_name_input");
+
+    // Create add folder button
+    let addFolderBtn = document.createElement("button");
+    addFolderBtn.innerText = "Add Folder";
+    addFolderBtn.classList.add("_make_folder_btn");
+
+    // Append input and button to popup
+    popup.appendChild(closeIcon);
+    popup.appendChild(folderInput);
+    popup.appendChild(addFolderBtn);
+
+    // Append popup to body
+    document.body.appendChild(popup);
+
+    // Event listener to remove the pop up
+    closeIcon.addEventListener("click", () => {
+      if (popup) {
+        onRemovePop();
+      }
+    });
+
+    // Add event listener to "Add Folder" button
+    addFolderBtn.addEventListener("click", () => {
+      let folderName = folderInput.value.trim();
+      if (folderName) {
+        // Create new folder element
+        let folderDiv = document.createElement("div");
+        folderDiv.classList.add("_la_folder");
+
+        // Create folder icon
+        let folderIcon = document.createElement("img");
+        folderIcon.src = chrome.runtime.getURL("./images/folder.png");
+        folderIcon.alt = "Folder Icon";
+        folderIcon.classList.add("_folders_icon");
+
+        // Create folder name element
+        let folderTitle = document.createElement("p");
+        folderTitle.innerText = folderName;
+        folderTitle.classList.add("_folder-name");
+
+        // Append icon and name to folder div
+        folderDiv.appendChild(folderIcon);
+        folderDiv.appendChild(folderTitle);
+
+        // Insert the new folder into _the_container main element
+        let container = document.querySelector("._the_container");
+        container.appendChild(folderDiv);
+        // Close the popup after adding the folder
+        if (popup) {
+          onRemovePop();
+        }
+      } else {
+        alert("Please enter a folder name.");
+        return;
+      }
+    });
+  });
+};
+
 function addButtonsToExistingCodeBlocks() {
   // For adding the chat icon
   const targetElements = document.querySelectorAll(
@@ -94,6 +182,9 @@ function addButtonsToExistingCodeBlocks() {
 
         console.log(inputValue);
       });
+
+      // The function that starts creating folderz
+      startCreatingFolderz();
     }
   }
 }
