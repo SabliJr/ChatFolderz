@@ -78,12 +78,36 @@ body {
 
 ._la_folder {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
   margin-top: .8rem;
   width: 100%;
   gap: .3rem;
   cursor: pointer;
+}
+
+._folder_title_container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+._folder-content {
+  width: 100%;
+  height: auto;
+  border-radius: .42rem;
+  padding-left: .2rem;
+  border-left: 1.3px solid #e2937f;
+}
+
+._folder-content li {
+  list-style: none;
+}
+
+._content_div_chats {
+  list-style: none;
 }
 
 ._folders_icon {

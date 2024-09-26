@@ -103,6 +103,21 @@
   width: 10rem;
 }
 
+._claude_container {
+  position: relative;
+}
+
+#_claude_coming_soon {
+  position: absolute;
+  right: -1rem;
+  font-size: 1rem;
+  color: #8e48f5;
+  top: 0;
+  width: 100%;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-style: italic;
+}
+
  .videoWrapper {
     position: relative;
     width: 90%; /* Maximum width of the video wrapper */
@@ -182,6 +197,11 @@
       width: 6.8rem;
     }
 
+    #_claude_coming_soon {
+      font-size: .75rem;
+    }
+
+
     @media screen and (max-width: 600px) {
       .hero {
         margin: 1.6rem 0 1.5rem;
@@ -247,6 +267,11 @@
         justify-content: center;
         gap: 1.2rem; */
       } 
+
+       #_claude_coming_soon {
+        font-size: .5rem;
+      }
+
     }
   }
 }
