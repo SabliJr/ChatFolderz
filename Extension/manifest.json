@@ -11,6 +11,12 @@
       "css": ["styles.css"]
     }
   ],
+  "icons": {
+    "16": "Favicon/icon16.png",
+    "32": "Favicon/icon32.png",
+    "48": "Favicon/icon192.png",
+    "128": "Favicon/icon512.png"
+  },
   "web_accessible_resources": [
     {
       "resources": ["images/*"],
