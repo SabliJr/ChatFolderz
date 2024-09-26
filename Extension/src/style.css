@@ -1,0 +1,137 @@
+/* style.css */
+body {
+  font-family: Arial, sans-serif;
+}
+
+.search-container {
+  position: relative;
+  padding: .5rem .8rem;
+  justify-content: space-between;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  border-radius: .6rem;
+  border: 1px solid #ccc;
+}
+
+.search-bar {
+  border: transparent;
+  border-radius: .6rem;
+  width: 80%;
+  height: 1.6rem;
+  color: #000;
+}
+
+.search-bar_focus {
+  border: none;
+  outline: none;
+}
+
+.search-bar:focus {
+  border: none;
+  outline: none;
+}
+
+._search_icon {
+  width: 1.3rem;
+}
+
+._add_folder_icon {
+  width: 2rem;
+  color: #ffffff;
+}
+
+._create_folder_container {
+  display: flex;
+  align-items: center;
+  border-radius: .6rem;
+  border: 1px solid #ccc;
+  justify-content: center;
+  gap: .6rem;
+  vertical-align: middle;
+  margin: 1rem 0 2rem;
+  padding: .3rem 0;
+  cursor: pointer;
+}
+
+._create_folder {
+  font-size: 1rem;
+}
+
+
+._folderz_title {
+  margin: 3rem 0 1rem;
+  font-size: 1.3rem;
+}
+
+._popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 1.2rem;
+  border-radius: .8rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+._la_folder {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: .8rem;
+  width: 100%;
+  gap: .3rem;
+  cursor: pointer;
+}
+
+._folders_icon {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
+._folder-name {
+  font-size: 1rem;
+  padding: .3rem .5rem;
+  color: #ffffff;
+  border-radius: .42rem;
+  background-color: #ff724f;
+  width: 100%;
+}
+
+._make_folder_btn {
+  display: block;
+  width: 100%;
+  color: #272b31;
+  background-color: #ff724f;
+  border: none;
+  border-radius: .6rem;
+  padding: .3rem .5rem;
+  font-size: 1.2rem;
+}
+
+._folder_name_input {
+  margin: 1rem 0 10px;
+  display: block;
+  width: 100%;
+  border-radius: .6rem;
+  color: #272b31;
+  border: 2px solid #272b31;
+  background-color: #ffffff;
+  padding: .3rem .5rem;
+  font-size: 1.2rem;
+}
+
+._folder_name_input:focus {
+  border: 1px solid #272b31;
+  outline: none;
+}
+
+._close_icon {
+  width: 1.5rem;
+  position: absolute;
+  top: .2rem;
+  right: .42rem;
+  cursor: pointer;
+}
