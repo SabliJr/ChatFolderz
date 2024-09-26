@@ -106,13 +106,15 @@ body {
   list-style: none;
 }
 
-._content_div_chats {
-  list-style: none;
-}
-
-._folders_icon {
+._closed_folder_icon {
   width: 2.2rem;
   height: 2.2rem;
+}
+
+._opened_folders_icon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: .2rem;
 }
 
 ._folder-name {
@@ -158,4 +160,45 @@ body {
   top: .2rem;
   right: .42rem;
   cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------------- */
+._bookmarked_folder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-top: .8rem;
+  width: 100%;
+  gap: .3rem;
+  cursor: pointer;
+}
+
+._bookmarked_title_container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .6rem;
+  border-radius: .6rem;
+  border: 1.5px solid #ccc;
+  width: 100%;
+  padding: .2rem .8rem;
+  cursor: pointer;
+}
+
+._bookmarked_name {
+  font-size: 1.1rem;
+}
+
+._bookmarked_icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+._bookmarked_chats_container {
+  width: 100%;
+  height: auto;
+  border-radius: .42rem;
+  padding-left: .2rem;
+  border-left: 1.3px solid #ccc;
 }
