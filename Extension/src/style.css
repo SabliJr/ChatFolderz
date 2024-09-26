@@ -107,8 +107,9 @@ body {
 }
 
 ._closed_folder_icon {
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2rem;
+  height: 2rem;
+  margin-right: .2rem;
 }
 
 ._opened_folders_icon {
@@ -190,7 +191,7 @@ body {
   font-size: 1.1rem;
 }
 
-._bookmarked_icon {
+._bookmarked_folder_icon {
   width: 2rem;
   height: 2rem;
 }
@@ -201,4 +202,17 @@ body {
   border-radius: .42rem;
   padding-left: .2rem;
   border-left: 1.3px solid #ccc;
+}
+
+._bookmarked_icon {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+._unbookmarked_icon {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+._bookmarked_chats_container li {
+  list-style: none;
 }
