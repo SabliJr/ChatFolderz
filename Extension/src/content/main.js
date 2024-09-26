@@ -70,6 +70,58 @@ let onRemovePop = () => {
   }
 };
 
+// Bookmarks Function
+let createBookmarks = () => {
+  // Bookmarked div
+  let bookmarkedFolder = document.createElement("div");
+  bookmarkedFolder.classList.add("_bookmarked_folder");
+
+  // The bookmarked title
+  let bookmarkedTitle = document.createElement("p");
+  bookmarkedTitle.innerText = "Bookmarked!";
+  bookmarkedTitle.classList.add("_bookmarked_name");
+
+  // Bookmarked Icon
+  let bookmarkedIcon = document.createElement("img");
+  bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark.png");
+  bookmarkedIcon.alt = "Folder Icon";
+  bookmarkedIcon.classList.add("_bookmarked_icon");
+
+  // Bookmarked chats container
+  let bookmarkTitleContainer = document.createElement("div");
+  bookmarkTitleContainer.classList.add("_bookmarked_title_container");
+
+  // Bookmarked chats container
+  let bookmarkChatsContainer = document.createElement("div");
+  bookmarkChatsContainer.classList.add("_bookmarked_chats_container");
+  bookmarkChatsContainer.style.display = "none";
+
+  // Appending everything
+  bookmarkTitleContainer.appendChild(bookmarkedIcon);
+  bookmarkTitleContainer.appendChild(bookmarkedTitle);
+  bookmarkedFolder.appendChild(bookmarkTitleContainer);
+  bookmarkedFolder.appendChild(bookmarkChatsContainer);
+
+  bookmarkTitleContainer.addEventListener("click", () => {
+    if (bookmarkChatsContainer.style.display === "none") {
+      bookmarkChatsContainer.style.display = "block"; // Show contents
+    } else {
+      bookmarkChatsContainer.style.display = "none"; // Hide contents
+    }
+  });
+
+  //  let container = document.querySelector("._the_container");
+  //  let bookmarksAdded = container.querySelector("._bookmarked_folder");
+  //  if (
+  //    !bookmarksAdded ||
+  //    !bookmarksAdded.classList.contains("_bookmarked_folder")
+  //  )
+  //    container.appendChild(bookmarkedFolder);
+
+  return bookmarkedFolder;
+};
+
+// To remove the empty ol that contain no li elements
 const removeEmptyOls = () => {
   const allTheOls = document.querySelectorAll("ol");
 };
@@ -158,11 +210,17 @@ let startCreatingFolderz = () => {
         let folderDiv = document.createElement("div");
         folderDiv.classList.add("_la_folder");
 
-        // Create folder icon
+        // Create closed folder icon
         let folderIcon = document.createElement("img");
-        folderIcon.src = chrome.runtime.getURL("./images/folder.png");
+        folderIcon.src = chrome.runtime.getURL("./images/closed_folder.png");
         folderIcon.alt = "Folder Icon";
-        folderIcon.classList.add("_folders_icon");
+        folderIcon.classList.add("_closed_folder_icon");
+
+        // Creating the open folder icon
+        let openFolder = document.createElement("img");
+        openFolder.src = chrome.runtime.getURL("./images/open_folder.png");
+        openFolder.alt = "Folder Icon";
+        openFolder.classList.add("_opened_folders_icon");
 
         // Create folder name element
         let folderTitle = document.createElement("p");
@@ -188,8 +246,14 @@ let startCreatingFolderz = () => {
         folderTitleContainer.addEventListener("click", () => {
           if (folderContent.style.display === "none") {
             folderContent.style.display = "block"; // Show contents
+
+            // Replace closed icon with the open folder icon
+            folderTitleContainer.replaceChild(openFolder, folderIcon); // Replaces the closed icon
           } else {
             folderContent.style.display = "none"; // Hide contents
+
+            // Replace open icon with the closed folder icon
+            folderTitleContainer.replaceChild(folderIcon, openFolder); // Replaces the open icon
           }
         });
 
@@ -206,6 +270,14 @@ let startCreatingFolderz = () => {
       }
     });
   });
+
+  let container = document.querySelector("._the_container");
+  let bookmarksAdded = container.querySelector("._bookmarked_folder");
+  if (
+    !bookmarksAdded ||
+    !bookmarksAdded.classList.contains("_bookmarked_folder")
+  )
+    container.appendChild(createBookmarks());
 };
 
 function addButtonsToExistingCodeBlocks() {
@@ -251,6 +323,7 @@ function addButtonsToExistingCodeBlocks() {
   // The function that starts creating folderz
   startCreatingFolderz();
   addDragAndDropFunctionality();
+  createBookmarks();
   // findChat();
 }
 
