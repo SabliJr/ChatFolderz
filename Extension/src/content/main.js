@@ -4,10 +4,7 @@ let chats = [];
 const icon = document.createElement("img");
 icon.src = chrome.runtime.getURL("./images/chat.png"); // Use chrome.runtime.getURL to get the correct path
 icon.alt = "Custom Icon";
-icon.id = "custom-icon"; // Set the id
-icon.style.width = "16px"; // Adjust the size as needed
-icon.style.height = "16px"; // Adjust the size as needed
-icon.style.verticalAlign = "middle"; // Example: aligning vertically
+icon.id = "custom-icon";
 
 // Create the main element with class "_the_container"
 const mainElement = document.createElement("main");
@@ -109,9 +106,9 @@ let createBookmarks = () => {
 
   bookmarkTitleContainer.addEventListener("click", () => {
     if (bookmarkChatsContainer.style.display === "none") {
-      bookmarkChatsContainer.style.display = "block"; // Show contents
+      bookmarkChatsContainer.style.display = "block";
     } else {
-      bookmarkChatsContainer.style.display = "none"; // Hide contents
+      bookmarkChatsContainer.style.display = "none";
     }
   });
 
@@ -124,16 +121,50 @@ let createBookmarks = () => {
   return bookmarkedFolder;
 };
 
+// Function to update the icon in the original chat list
+function updateOriginalChatIcon(bookmarkedChat) {
+  const chatText = bookmarkedChat.innerText;
+  const originalChats = document.querySelectorAll("ol li.relative");
+
+  for (let chat of originalChats) {
+    if (chat.innerText === chatText) {
+      let bookmarkAdd = chat.querySelector(
+        "div.no-draggable span[data-state='closed']"
+      );
+
+      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+
+      let unbookmarkedIcon = document.createElement("img");
+      unbookmarkedIcon.src = chrome.runtime.getURL(
+        "./images/bookmark_outline.png"
+      );
+      unbookmarkedIcon.alt = "Unbookmarked Icon";
+      unbookmarkedIcon.classList.add("_unbookmarked_icon");
+
+      // Remove the bookmarked icon and append the unbookmarked icon
+      if (bookmarkedIcon) {
+        bookmarkAdd.removeChild(bookmarkedIcon);
+        bookmarkAdd.appendChild(unbookmarkedIcon);
+      }
+      break;
+    }
+  }
+}
+
 let addToggleListener = (
   bookmarkedIcon,
   unbookmarkedIcon,
   bookmarkAdd,
-  chat
+  chat,
+  isInBookmarkFolder
 ) => {
   const toggleBookmark = () => {
     if (bookmarkAdd.contains(bookmarkedIcon)) {
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
       removeUnbookmarkedChat(chat);
+      if (isInBookmarkFolder) {
+        updateOriginalChatIcon(chat);
+      }
     } else {
       bookmarkAdd.replaceChild(bookmarkedIcon, unbookmarkedIcon);
       addToBookmarkedFolder(chat);
@@ -152,16 +183,55 @@ function addToBookmarkedFolder(chat) {
     "._bookmarked_chats_container"
   );
   if (bookmarkedChatContainer) {
-    // Clone the chat element to avoid moving it from the original list
     let clonedChat = chat.cloneNode(true);
+
+    // Remove the options button
+    let optionBtn = clonedChat.querySelector(
+      "span[data-state='closed'] button"
+    );
+    if (optionBtn) optionBtn.remove();
+
+    // Get the bookmark add span
+    let bookmarkAdd = clonedChat.querySelector(
+      "div.no-draggable span[data-state='closed']"
+    );
+
+    // Remove existing bookmark icons
+    let existingBookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+    let existingUnbookmarkedIcon = bookmarkAdd.querySelector(
+      "._unbookmarked_icon"
+    );
+    if (existingBookmarkedIcon) existingBookmarkedIcon.remove();
+    if (existingUnbookmarkedIcon) existingUnbookmarkedIcon.remove();
+
+    // Create new bookmark icons
+    let bookmarkedIcon = document.createElement("img");
+    bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
+    bookmarkedIcon.alt = "Bookmarked Icon";
+    bookmarkedIcon.classList.add("_bookmarked_icon");
+
+    let unbookmarkedIcon = document.createElement("img");
+    unbookmarkedIcon.src = chrome.runtime.getURL(
+      "./images/bookmark_outline.png"
+    );
+    unbookmarkedIcon.alt = "Unbookmarked Icon";
+    unbookmarkedIcon.classList.add("_unbookmarked_icon");
+
+    // Add the bookmarked icon to the cloned chat
+    bookmarkAdd.appendChild(bookmarkedIcon);
+
+    // Add the toggle listener to the cloned chat
+    addToggleListener(
+      bookmarkedIcon,
+      unbookmarkedIcon,
+      bookmarkAdd,
+      clonedChat,
+      true
+    );
+
+    // Append the cloned chat to the bookmarked container
     bookmarkedChatContainer.appendChild(clonedChat);
   }
-
-  // Removing the options button from chats in the bookmarks folder
-  let optionBtn = bookmarkedChatContainer.querySelector(
-    "span[data-state='closed'] button"
-  );
-  optionBtn.remove();
 }
 
 // Function to remove the unbookmarked chat
@@ -218,7 +288,8 @@ let addBookmarkIcons = () => {
           bookmarkedIcon,
           unbookmarkedIcon,
           bookmarkAdd,
-          chat
+          chat,
+          false
         );
 
         // Store the listener function on the element for potential future removal
