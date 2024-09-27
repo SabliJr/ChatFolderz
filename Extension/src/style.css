@@ -205,8 +205,8 @@ body {
 }
 
 ._bookmarked_icon {
-  width: 1.3rem;
-  height: 1.3rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 ._unbookmarked_icon {
   width: 1.3rem;
@@ -215,4 +215,11 @@ body {
 
 ._bookmarked_chats_container li {
   list-style: none;
+}
+
+#_icons_span {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: .2rem;
 }

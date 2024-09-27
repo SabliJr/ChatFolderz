@@ -70,8 +70,13 @@ let onRemovePop = () => {
   }
 };
 
-// Bookmarks Function
 let createBookmarks = () => {
+  // Check if the container already exists
+  let existingContainer = document.querySelector("._bookmarked_folder");
+  if (existingContainer) {
+    return existingContainer;
+  }
+
   // Bookmarked div
   let bookmarkedFolder = document.createElement("div");
   bookmarkedFolder.classList.add("_bookmarked_folder");
@@ -110,103 +115,122 @@ let createBookmarks = () => {
     }
   });
 
-  //  let container = document.querySelector("._the_container");
-  //  let bookmarksAdded = container.querySelector("._bookmarked_folder");
-  //  if (
-  //    !bookmarksAdded ||
-  //    !bookmarksAdded.classList.contains("_bookmarked_folder")
-  //  )
-  //    container.appendChild(bookmarkedFolder);
+  // Append the container to the main container if it doesn't already exist
+  let container = document.querySelector("._the_container");
+  if (container && !container.querySelector("._bookmarked_folder")) {
+    container.appendChild(bookmarkedFolder);
+  }
 
   return bookmarkedFolder;
 };
 
-let addToggleListener = (bookmarkedIcon, unbookmarkedIcon, bookmarkAdd) => {
-  bookmarkedIcon.addEventListener("click", () => {
-    bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
-    addToggleListener(unbookmarkedIcon, bookmarkedIcon, bookmarkAdd);
-  });
+let addToggleListener = (
+  bookmarkedIcon,
+  unbookmarkedIcon,
+  bookmarkAdd,
+  chat
+) => {
+  const toggleBookmark = () => {
+    if (bookmarkAdd.contains(bookmarkedIcon)) {
+      bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+    } else {
+      bookmarkAdd.replaceChild(bookmarkedIcon, unbookmarkedIcon);
+      addToBookmarkedFolder(chat);
+    }
+  };
+
+  bookmarkedIcon.addEventListener("click", toggleBookmark);
+  unbookmarkedIcon.addEventListener("click", toggleBookmark);
+
+  return toggleBookmark;
 };
 
 function addToBookmarkedFolder(chat) {
-  let bookmarkedChatContainer = createBookmarks().querySelector(
+  let bookmarkedFolder = createBookmarks();
+  let bookmarkedChatContainer = bookmarkedFolder.querySelector(
     "._bookmarked_chats_container"
   );
   if (bookmarkedChatContainer) {
     // Clone the chat element to avoid moving it from the original list
     let clonedChat = chat.cloneNode(true);
     bookmarkedChatContainer.appendChild(clonedChat);
-    console.log(bookmarkedChatContainer);
   }
+  let optionBtn = bookmarkedChatContainer.querySelector(
+    "span[data-state='closed'] button"
+  );
+  optionBtn.remove();
 }
 
 let addBookmarkIcons = () => {
-  const chats = document.querySelectorAll("ol li.relative div.no-draggable");
+  const chats = document.querySelectorAll("ol li.relative");
 
-  let c = -1;
-  while (++c < chats.length) {
-    // Selecting the span to add the bookmark icon
-    let bookmarkAdd = chats[c].querySelector("span[data-state='closed']");
-
-    // The bookmarked Icon
-    let bookmarkedIcon = document.createElement("img");
-    bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
-    bookmarkedIcon.alt = "Bookmarked Icon";
-    bookmarkedIcon.classList.add("_bookmarked_icon");
-
-    // The unbookmarked Icon
-    let unbookmarkedIcon = document.createElement("img");
-    unbookmarkedIcon.src = chrome.runtime.getURL(
-      "./images/bookmark_outline.png"
+  chats.forEach((chat) => {
+    let bookmarkAdd = chat.querySelector(
+      "div.no-draggable span[data-state='closed']"
     );
-    unbookmarkedIcon.alt = "Unbookmarked Icon";
-    unbookmarkedIcon.classList.add("_unbookmarked_icon");
 
-    // Adding the unbookmarked bookmark icon
-    let isIcon1Added = bookmarkAdd.querySelector("._unbookmarked_icon");
-    let isIcon2Added = bookmarkAdd.querySelector("._bookmarked_icon");
-    if (
-      !isIcon1Added ||
-      !isIcon1Added.classList.contains("_unbookmarked_icon") ||
-      isIcon2Added ||
-      !isIcon2Added.classList.contains("_bookmarked_icon")
-    ) {
-      bookmarkAdd.style.display = "flex";
-      bookmarkAdd.style.alignItems = "center";
-      bookmarkAdd.style.flexDirection = "row-reverse";
-      bookmarkAdd.style.gap = ".2rem";
-      bookmarkAdd.appendChild(unbookmarkedIcon);
+    if (bookmarkAdd) {
+      // The bookmarked Icon
+      let bookmarkedIcon = document.createElement("img");
+      bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
+      bookmarkedIcon.alt = "Bookmarked Icon";
+      bookmarkedIcon.classList.add("_bookmarked_icon");
 
-      // The unbookmarked icon
-      let la_non_bookmarked = bookmarkAdd.querySelector("._unbookmarked_icon");
-      la_non_bookmarked.addEventListener("click", () => {
-        bookmarkAdd.replaceChild(bookmarkedIcon, unbookmarkedIcon);
-        const toAddChat = document.querySelectorAll("ol li.relative");
+      // The unbookmarked Icon
+      let unbookmarkedIcon = document.createElement("img");
+      unbookmarkedIcon.src = chrome.runtime.getURL(
+        "./images/bookmark_outline.png"
+      );
+      unbookmarkedIcon.alt = "Unbookmarked Icon";
+      unbookmarkedIcon.classList.add("_unbookmarked_icon");
 
-        for (let chat of toAddChat) {
-          // Select the span with the data-state attribute
-          let bookmarkedChat = chat.querySelector(
-            "div.no-draggable span[data-state='closed']"
-          );
+      // Check if an icon is already added (either bookmarked or unbookmarked)
+      let existingBookmarkIcon = bookmarkAdd.querySelector(
+        "._bookmarked_icon, ._unbookmarked_icon"
+      );
+      if (!existingBookmarkIcon) {
+        bookmarkAdd.id = "_icons_span";
+        bookmarkAdd.appendChild(unbookmarkedIcon);
 
-          if (bookmarkedChat) {
-            // Check if the span contains the bookmarked icon
-            let isBookmarked =
-              bookmarkedChat.querySelector("._bookmarked_icon");
-            if (isBookmarked) {
-              addToBookmarkedFolder(chat); // Add the chat to the bookmarked chat's folder
-            }
-          }
-        }
-        addToggleListener(bookmarkedIcon, unbookmarkedIcon, bookmarkAdd);
-      });
+        const toggleListener = addToggleListener(
+          bookmarkedIcon,
+          unbookmarkedIcon,
+          bookmarkAdd,
+          chat
+        );
+
+        // Store the listener function on the element for potential future removal
+        bookmarkAdd.toggleListener = toggleListener;
+      }
     }
-  }
+  });
 };
 
-// To remove the empty ol that contain no li elements
-const removeEmptyOls = () => {
-  const allTheOls = document.querySelectorAll("ol");
+// Function to remove event listeners (call this when needed)
+let removeBookmarkListeners = () => {
+  const chats = document.querySelectorAll("ol li.relative");
+
+  chats.forEach((chat) => {
+    let bookmarkAdd = chat.querySelector(
+      "div.no-draggable span[data-state='closed']"
+    );
+    if (bookmarkAdd && bookmarkAdd.toggleListener) {
+      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+      let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
+
+      if (bookmarkedIcon) {
+        bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
+      }
+      if (unbookmarkedIcon) {
+        unbookmarkedIcon.removeEventListener(
+          "click",
+          bookmarkAdd.toggleListener
+        );
+      }
+
+      delete bookmarkAdd.toggleListener;
+    }
+  });
 };
 
 // Add drag and drop functionality for chats (messages) and folders
@@ -364,65 +388,62 @@ let startCreatingFolderz = () => {
     container.appendChild(createBookmarks());
 };
 
-function addButtonsToExistingCodeBlocks() {
-  // For adding the chat icon
+// Function to add elements like icons and folders
+function addElements() {
+  // Handle chat icons
   const targetElements = document.querySelectorAll(
     "ol li.relative div.no-draggable"
   );
-  for (let x = 0; x < targetElements.length; x++) {
-    targetElements[x].style.display = "flex";
-    targetElements[x].style.alignItems = "center";
+  targetElements.forEach((element, index) => {
+    element.style.display = "flex";
+    element.style.alignItems = "center";
 
-    const firstChild = targetElements[x].firstChild;
+    const firstChild = element.firstChild;
     if (!firstChild || !firstChild.id?.includes("custom-icon")) {
-      targetElements[x].insertBefore(icon.cloneNode(true), firstChild);
-      chats.push(targetElements[x].innerText);
+      element.insertBefore(icon.cloneNode(true), firstChild); // Add the custom icon
+      chats.push(element.innerText); // Add to chats array if not already present
     }
-  }
+  });
 
-  // For adding the search bar
-  const searchInsert = document.querySelectorAll("nav div.flex-col.flex-1");
-  for (let y = 0; y < searchInsert.length; y++) {
-    let thirdChild = searchInsert[y].children[2];
-
-    if (!thirdChild || !thirdChild.classList?.contains("_the_container")) {
-      searchInsert[y].insertBefore(mainElement, thirdChild);
-
-      let inputEle = document.querySelector(".search-bar");
-      inputEle.addEventListener("focus", () => {
-        inputEle.classList.add("search-bar_focus");
-      });
-
-      inputEle.addEventListener("blur", () => {
-        inputEle.classList.remove("search-bar_focus");
-      });
-      inputEle.addEventListener("input", () => {
-        let inputValue = inputEle.value;
-
-        console.log(inputValue);
-      });
-    }
-  }
-
-  // The function that starts creating folderz
+  // Add folders, bookmarks, and search bar if not already added
+  handleSearchBar();
   startCreatingFolderz();
   addDragAndDropFunctionality();
   createBookmarks();
   addBookmarkIcons();
-  // findChat();
 }
 
-let findChat = () => {
-  let c = 0;
-  while (++c < chats.length) {
-    console.log(chats[c]);
-  }
-};
+// Search bar handling
+function handleSearchBar() {
+  const searchInsert = document.querySelectorAll("nav div.flex-col.flex-1");
+  searchInsert.forEach((navElement) => {
+    const thirdChild = navElement.children[2];
+    if (!thirdChild || !thirdChild.classList?.contains("_the_container")) {
+      navElement.insertBefore(mainElement, thirdChild);
+      const inputEle = document.querySelector(".search-bar");
+      setupSearchInput(inputEle);
+    }
+  });
+}
 
-// console.log(targetElements[x].innerText);
+// Setup search bar events
+function setupSearchInput(inputEle) {
+  inputEle.addEventListener("focus", () => {
+    inputEle.classList.add("search-bar_focus");
+  });
+
+  inputEle.addEventListener("blur", () => {
+    inputEle.classList.remove("search-bar_focus");
+  });
+
+  inputEle.addEventListener("input", () => {
+    const inputValue = inputEle.value;
+    console.log(inputValue); // Debugging
+  });
+}
 
 // Initial run
-addButtonsToExistingCodeBlocks();
+addElements();
 
 // Set up a MutationObserver to watch for new code blocks
 const observer = new MutationObserver((mutations) => {
@@ -432,7 +453,9 @@ const observer = new MutationObserver((mutations) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           node.querySelectorAll("ol").forEach((preElement) => {
             const codeElement = preElement.querySelector("li.relative");
-            // console.log(codeElement);
+
+            console.log("New code element detected:", codeElement);
+            addElements();
             // checkAndAddButton(preElement, codeElement);
           });
         }
@@ -442,7 +465,13 @@ const observer = new MutationObserver((mutations) => {
 });
 
 // Start observing the document with the configured parameters
-observer.observe(document.body, { childList: true, subtree: true });
+const chatList = document.querySelector("ol"); // Assuming 'ol' is the container for chat elements
+if (chatList) {
+  console.log("chatList found:", chatList);
+  observer.observe(chatList, { childList: true, subtree: true });
+} else {
+  console.error("chatList not found");
+}
 
 // Periodically check for new code blocks (as a fallback)
-setInterval(addButtonsToExistingCodeBlocks, 2000);
+setInterval(addElements, 2000);
