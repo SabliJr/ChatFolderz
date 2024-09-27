@@ -133,6 +133,7 @@ let addToggleListener = (
   const toggleBookmark = () => {
     if (bookmarkAdd.contains(bookmarkedIcon)) {
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+      removeUnbookmarkedChat(chat);
     } else {
       bookmarkAdd.replaceChild(bookmarkedIcon, unbookmarkedIcon);
       addToBookmarkedFolder(chat);
@@ -155,11 +156,32 @@ function addToBookmarkedFolder(chat) {
     let clonedChat = chat.cloneNode(true);
     bookmarkedChatContainer.appendChild(clonedChat);
   }
+
+  // Removing the options button from chats in the bookmarks folder
   let optionBtn = bookmarkedChatContainer.querySelector(
     "span[data-state='closed'] button"
   );
   optionBtn.remove();
 }
+
+// Function to remove the unbookmarked chat
+const removeUnbookmarkedChat = (unbookmarkedChat) => {
+  let bookmarkedFolder = createBookmarks();
+  let bookmarkedChatContainer = bookmarkedFolder.querySelector(
+    "._bookmarked_chats_container"
+  );
+
+  // Get the inner data of the unbookmarked chat for comparison
+  const unbookmarkedChatData = unbookmarkedChat.innerText;
+  const bookmarkedChats =
+    bookmarkedChatContainer.querySelectorAll("li.relative");
+  for (let chat of bookmarkedChats) {
+    if (chat.innerText === unbookmarkedChatData) {
+      bookmarkedChatContainer.removeChild(chat);
+      break;
+    }
+  }
+};
 
 let addBookmarkIcons = () => {
   const chats = document.querySelectorAll("ol li.relative");
