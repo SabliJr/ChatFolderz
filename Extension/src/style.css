@@ -109,7 +109,6 @@ body {
   height: auto;
   border-radius: .42rem;
   padding-left: .3rem;
-  border-left: 1.3px solid #e2937f;
 }
 
 ._folder-content li {
@@ -128,13 +127,46 @@ body {
   margin-right: .2rem;
 }
 
+._folder_title_span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .3rem .5rem;
+  border-radius: .42rem;
+  width: 100%;
+}
+
 ._folder-name {
   font-size: 1rem;
-  padding: .3rem .5rem;
-  color: #ffffff;
-  border-radius: .42rem;
-  background-color: #ff724f;
-  width: 100%;
+  color: #000;
+  cursor: pointer;
+  width: 70%;
+}
+
+._folder_color_holder  {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin: .5rem 0;
+}
+
+._folder_color_input {
+  border-radius: .6rem;
+  border: 2px solid #000;
+}
+
+._folder_edit_icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+._folder_color_input::-webkit-color-swatch-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+._folder_color_holder label {
+  color: #272b31;
 }
 
 ._make_folder_btn {
