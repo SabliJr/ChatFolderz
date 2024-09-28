@@ -14,7 +14,6 @@ mainElement.classList.add("_the_container");
 const h3Element = document.createElement("h3");
 h3Element.textContent = "Folders";
 h3Element.classList.add("_folderz_title");
-mainElement.appendChild(h3Element);
 
 // Create the search container div
 const searchContainer = document.createElement("div");
@@ -34,9 +33,6 @@ searchIcon.alt = "Search Icon";
 searchIcon.classList.add("_search_icon");
 searchContainer.appendChild(searchIcon);
 
-// Append the search container to the main element
-mainElement.appendChild(searchContainer);
-
 // Create the create folder container div
 const createFolderContainer = document.createElement("div");
 createFolderContainer.classList.add("_create_folder_container");
@@ -53,9 +49,6 @@ const createFolderText = document.createElement("p");
 createFolderText.textContent = "Create Folder";
 createFolderText.classList.add("_create_folder");
 createFolderContainer.appendChild(createFolderText);
-
-// Append the create folder container to the main element
-mainElement.appendChild(createFolderContainer);
 
 // To remove the pop up
 let onRemovePop = () => {
@@ -328,7 +321,6 @@ let removeBookmarkListeners = () => {
 };
 
 let addDragAndDropFunctionality = () => {
-  // Select folders and allow dropping
   let folderDivs = document.querySelectorAll("._la_folder");
   const targetElements = document.querySelectorAll("ol li.relative");
 
@@ -363,13 +355,11 @@ function handleDragStart(e) {
   console.log("id: ");
   e.dataTransfer.setData("text/plain", realId); // Use a real unique ID :)
   e.dataTransfer.effectAllowed = "copy";
-  console.log(`Drag started: ${id}`);
 }
 
 function handleDragOver(e) {
   e.preventDefault(); // Necessary to allow dropping
   e.dataTransfer.dropEffect = "copy";
-  console.log("Drag over");
 }
 
 function handleDrop(e) {
@@ -380,7 +370,6 @@ function handleDrop(e) {
   let folderContent = e.target
     .closest("._la_folder")
     ?.querySelector("._folder-content");
-  console.log("folderContent", folderContent);
 
   if (!folderContent) {
     return;
@@ -397,6 +386,16 @@ function handleDrop(e) {
 
   // Append the cloned message into the folder's content area
   folderContent.appendChild(clonedElement);
+  let optionBtn = folderContent.querySelectorAll("li.relative");
+
+  // Remove the option btns on the copy chats because they don't work
+  let r = -1;
+  while (++r < optionBtn.length) {
+    let rBtn = optionBtn[r].querySelector(
+      "div.no-draggable span[data-state='closed']"
+    );
+    if (rBtn) rBtn.remove();
+  }
 }
 
 let startCreatingFolderz = () => {
@@ -509,13 +508,13 @@ let startCreatingFolderz = () => {
   });
 
   // Trying to add the bookmark before the folderzs
-  let container = document.querySelector("._the_container");
-  let bookmarksAdded = container.querySelector("._bookmarked_folder");
-  if (
-    !bookmarksAdded ||
-    !bookmarksAdded.classList.contains("_bookmarked_folder")
-  )
-    container.appendChild(createBookmarks());
+  // let container = document.querySelector("._the_container");
+  // let bookmarksAdded = container.querySelector("._bookmarked_folder");
+  // if (
+  //   !bookmarksAdded ||
+  //   !bookmarksAdded.classList.contains("_bookmarked_folder")
+  // )
+  //   container.appendChild(createBookmarks());
 };
 
 // Function to add elements like icons and folders
@@ -571,6 +570,12 @@ function setupSearchInput(inputEle) {
     console.log(inputValue); // Debugging
   });
 }
+
+// Appending element to the main container
+mainElement.appendChild(searchContainer); // The search
+mainElement.appendChild(createBookmarks()); // The Bookmarks
+mainElement.appendChild(h3Element); // The folderz title
+mainElement.appendChild(createFolderContainer); // Create folder btn
 
 // Initial run
 addElements();
