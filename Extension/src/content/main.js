@@ -301,6 +301,7 @@ let addBookmarkIcons = () => {
 
 // Function to remove event listeners (call this when needed)
 let removeBookmarkListeners = () => {
+  console.log("This function get called!!");
   const chats = document.querySelectorAll("ol li.relative");
 
   chats.forEach((chat) => {
@@ -326,41 +327,77 @@ let removeBookmarkListeners = () => {
   });
 };
 
-// Add drag and drop functionality for chats (messages) and folders
 let addDragAndDropFunctionality = () => {
   // Select folders and allow dropping
   let folderDivs = document.querySelectorAll("._la_folder");
   const targetElements = document.querySelectorAll("ol li.relative");
 
   // Making the element draggable
-  targetElements.forEach((dragEle, x) => {
+  targetElements.forEach((dragEle) => {
+    // Assign a unique ID if not already present
+    if (!dragEle.id) {
+      dragEle.id = `draggable-${Math.random().toString(36).substring(2, 11)}`;
+    }
+
     dragEle.setAttribute("draggable", "true");
-    dragEle.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", x); // Use index or unique ID
-      e.dataTransfer.effectAllowed = "move";
-    });
+
+    // Remove existing event listeners to prevent duplicates
+    dragEle.removeEventListener("dragstart", handleDragStart);
+    dragEle.addEventListener("dragstart", handleDragStart);
   });
 
   // Dragging and dropping
   folderDivs.forEach((folder) => {
-    folder.addEventListener("dragover", (e) => {
-      e.preventDefault(); // Necessary to allow dropping
-      e.dataTransfer.dropEffect = "move";
-    });
+    // Remove existing event listeners to prevent duplicates
+    folder.removeEventListener("dragover", handleDragOver);
+    folder.removeEventListener("drop", handleDrop);
 
-    folder.addEventListener("drop", (e) => {
-      e.preventDefault();
-      let data = e.dataTransfer.getData("text/plain");
-      let draggedElement = targetElements[data]; // Correctly retrieve the dragged li element
-      let folderContent = folder.querySelector("._folder-content");
-
-      // Append the dragged message into the folder's content area
-      if (folderContent) {
-        folderContent.appendChild(draggedElement);
-      }
-    });
+    folder.addEventListener("dragover", handleDragOver);
+    folder.addEventListener("drop", handleDrop);
   });
 };
+
+function handleDragStart(e) {
+  let id = e.target;
+  let realId = id.parentElement.parentElement.id;
+  console.log("id: ");
+  e.dataTransfer.setData("text/plain", realId); // Use a real unique ID :)
+  e.dataTransfer.effectAllowed = "copy";
+  console.log(`Drag started: ${id}`);
+}
+
+function handleDragOver(e) {
+  e.preventDefault(); // Necessary to allow dropping
+  e.dataTransfer.dropEffect = "copy";
+  console.log("Drag over");
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  let chatId = e.dataTransfer.getData("text/plain");
+  let draggedElement = document.getElementById(chatId); // Retrieve the dragged element by ID
+
+  let folderContent = e.target
+    .closest("._la_folder")
+    ?.querySelector("._folder-content");
+  console.log("folderContent", folderContent);
+
+  if (!folderContent) {
+    return;
+  }
+
+  if (!draggedElement) {
+    return;
+  }
+
+  let clonedElement = draggedElement.cloneNode(true);
+
+  // Assign a new unique ID to the cloned element
+  clonedElement.id = `draggable-${Math.random().toString(36).substring(2, 11)}`;
+
+  // Append the cloned message into the folder's content area
+  folderContent.appendChild(clonedElement);
+}
 
 let startCreatingFolderz = () => {
   let createFolderzDiv = document.querySelector("._create_folder_container");
@@ -445,7 +482,7 @@ let startCreatingFolderz = () => {
         // Add click event to toggle the visibility of the folder contents
         folderTitleContainer.addEventListener("click", () => {
           if (folderContent.style.display === "none") {
-            folderContent.style.display = "block"; // Show contents
+            folderContent.style.display = "block";
 
             // Replace closed icon with the open folder icon
             folderTitleContainer.replaceChild(openFolder, folderIcon); // Replaces the closed icon
@@ -453,7 +490,7 @@ let startCreatingFolderz = () => {
             folderContent.style.display = "none"; // Hide contents
 
             // Replace open icon with the closed folder icon
-            folderTitleContainer.replaceChild(folderIcon, openFolder); // Replaces the open icon
+            folderTitleContainer.replaceChild(folderIcon, openFolder);
           }
         });
 
