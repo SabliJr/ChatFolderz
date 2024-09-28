@@ -3,6 +3,10 @@ body {
   font-family: Arial, sans-serif;
 }
 
+._the_container {
+  margin: 2rem 0 .6rem;
+}
+
 #custom-icon {
   width: 16px;
   height: 16px;
@@ -104,7 +108,7 @@ body {
   width: 100%;
   height: auto;
   border-radius: .42rem;
-  padding-left: .2rem;
+  padding-left: .3rem;
   border-left: 1.3px solid #e2937f;
 }
 
@@ -113,14 +117,14 @@ body {
 }
 
 ._closed_folder_icon {
-  width: 2rem;
-  height: 2rem;
+  width: 1.8rem;
+  height: 1.8rem;
   margin-right: .2rem;
 }
 
 ._opened_folders_icon {
-  width: 2rem;
-  height: 2rem;
+  width: 1.8rem;
+  height: 1.8rem;
   margin-right: .2rem;
 }
 
@@ -206,7 +210,7 @@ body {
   width: 100%;
   height: auto;
   border-radius: .42rem;
-  padding-left: .2rem;
+  padding-left: .3rem;
   border-left: 1.3px solid #ccc;
 }
 
