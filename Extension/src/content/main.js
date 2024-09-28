@@ -352,7 +352,6 @@ let addDragAndDropFunctionality = () => {
 function handleDragStart(e) {
   let id = e.target;
   let realId = id.parentElement.parentElement.id;
-  console.log("id: ");
   e.dataTransfer.setData("text/plain", realId); // Use a real unique ID :)
   e.dataTransfer.effectAllowed = "copy";
 }
@@ -398,123 +397,225 @@ function handleDrop(e) {
   }
 }
 
+let createNewFolder = (folderName, colorVal, container) => {
+  // Create new folder element
+  let folderDiv = document.createElement("div");
+  folderDiv.classList.add("_la_folder");
+
+  // Create closed folder icon
+  let folderIcon = document.createElement("img");
+  folderIcon.src = chrome.runtime.getURL("./images/closed_folder.png");
+  folderIcon.alt = "Folder Icon";
+  folderIcon.classList.add("_closed_folder_icon");
+
+  // Creating the open folder icon
+  let openFolder = document.createElement("img");
+  openFolder.src = chrome.runtime.getURL("./images/open_folder.png");
+  openFolder.alt = "Folder Icon";
+  openFolder.classList.add("_opened_folders_icon");
+
+  // Creating the folder edit icon
+  let editIcon = document.createElement("img");
+  editIcon.src = chrome.runtime.getURL("./images/edit.png");
+  editIcon.alt = "Folder edit icon";
+  editIcon.classList.add("_folder_edit_icon");
+
+  // Create a span to put the folder name and the edit icon
+  let folderTitleSpan = document.createElement("span");
+  folderTitleSpan.style.backgroundColor = `${colorVal}`;
+  folderTitleSpan.classList.add("_folder_title_span");
+
+  // Create folder name element
+  let folderTitle = document.createElement("p");
+  folderTitle.innerText = folderName;
+  folderTitle.classList.add("_folder-name");
+
+  // Create a content area to hold folder items (initially hidden)
+  let folderContent = document.createElement("div");
+  folderContent.classList.add("_folder-content");
+  folderContent.style.borderLeft = `1.3px solid ${colorVal}`;
+  folderContent.style.display = "none";
+
+  // Create a content area to hold folder items (initially hidden)
+  let folderTitleContainer = document.createElement("div");
+  folderTitleContainer.classList.add("_folder_title_container");
+
+  folderTitleSpan.appendChild(folderTitle);
+  folderTitleSpan.appendChild(editIcon);
+
+  // Append icon and name to folder div
+  folderTitleContainer.appendChild(folderIcon);
+  folderTitleContainer.appendChild(folderTitleSpan);
+  folderDiv.appendChild(folderTitleContainer);
+  folderDiv.appendChild(folderContent);
+
+  // Add click event to toggle the visibility of the folder contents
+  folderTitle.addEventListener("click", () => {
+    toggleFolderContents(
+      folderContent,
+      folderIcon,
+      openFolder,
+      folderTitleContainer
+    );
+  });
+
+  // Add click event to edit the folder
+  editIcon.addEventListener("click", () => {
+    openEditPopup(folderTitle, folderTitleSpan, folderContent);
+  });
+
+  // Insert the new folder into the container
+  container.appendChild(folderDiv);
+};
+
+// Function to convert RGB to Hex
+function rgbToHex(rgb) {
+  // Extract the RGB values
+  const result = rgb.match(/\d+/g);
+  if (!result) return "#f6b73c"; // Default color if parsing fails
+
+  // Convert each value to hex and pad with zeros if necessary
+  const r = parseInt(result[0]).toString(16).padStart(2, "0");
+  const g = parseInt(result[1]).toString(16).padStart(2, "0");
+  const b = parseInt(result[2]).toString(16).padStart(2, "0");
+
+  // Combine into a single hex string
+  return `#${r}${g}${b}`;
+}
+
+// This function is to edit the folder
+let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
+  // Create and append popup to body again to edit it
+  let popup = createPopup();
+
+  // Get the original folder name and color
+  let folderName = folderTitle.innerText;
+  let colorVal = folderTitleSpan.style.backgroundColor || "#f6b73c";
+
+  // Convert colorVal to hex if it's in rgb format
+  if (colorVal.startsWith("rgb")) {
+    colorVal = rgbToHex(colorVal);
+  }
+
+  // Pre-fill popup with the current folder details
+  let folderInput = popup.querySelector("._folder_name_input");
+  let folderColor = popup.querySelector("._folder_color_input");
+  folderInput.value = folderName;
+  folderColor.value = `${colorVal}`;
+
+  console.log("folderColor: ", folderColor);
+  console.log("colorVal: ", colorVal);
+
+  // Add event listener to update the folder upon popup confirmation
+  popup.querySelector("._make_folder_btn").addEventListener("click", () => {
+    folderName = folderInput.value.trim();
+    colorVal = folderColor.value;
+
+    if (folderName) {
+      folderTitle.innerText = folderName;
+      folderTitleSpan.style.backgroundColor = `${colorVal}`;
+      folderContent.style.borderLeft = `1.3px solid ${colorVal}`;
+      onRemovePop(popup);
+    } else {
+      alert("Please enter a valid folder name.");
+    }
+  });
+};
+
+let createPopup = () => {
+  let popup = document.createElement("div");
+  popup.classList.add("_popup");
+
+  // The close Icon
+  let closeIcon = document.createElement("img");
+  closeIcon.src = chrome.runtime.getURL("./images/cross.png");
+  closeIcon.alt = "Close Icon";
+  closeIcon.classList.add("_close_icon");
+
+  // Create input for folder name
+  let folderInput = document.createElement("input");
+  folderInput.type = "text";
+  folderInput.placeholder = "Enter folder name";
+  folderInput.classList.add("_folder_name_input");
+
+  let folderColorHolder = document.createElement("span");
+  folderColorHolder.classList.add("_folder_color_holder");
+
+  // Create input for folder color
+  let folderColor = document.createElement("input");
+  folderColor.type = "color";
+  folderColor.id = "folder_color";
+  folderColor.name = "folder_color";
+  folderColor.value = "#f6b73c";
+  folderColor.classList.add("_folder_color_input");
+
+  // Create input for folder color input label
+  let colorInputLabel = document.createElement("label");
+  colorInputLabel.for = "folder_color";
+  colorInputLabel.innerText = "Choose folder color: ";
+
+  folderColorHolder.appendChild(colorInputLabel);
+  folderColorHolder.appendChild(folderColor);
+
+  // Create add/edit folder button
+  let addFolderBtn = document.createElement("button");
+  addFolderBtn.innerText = "Confirm";
+  addFolderBtn.classList.add("_make_folder_btn");
+
+  // Append input and button to popup
+  popup.appendChild(closeIcon);
+  popup.appendChild(folderInput);
+  popup.appendChild(folderColorHolder);
+  popup.appendChild(addFolderBtn);
+
+  // Append popup to body
+  document.body.appendChild(popup);
+
+  // Close the popup
+  closeIcon.addEventListener("click", () => {
+    if (popup) {
+      onRemovePop();
+    }
+  });
+
+  return popup;
+};
+
+let toggleFolderContents = (
+  folderContent,
+  folderIcon,
+  openFolder,
+  folderTitleContainer
+) => {
+  if (folderContent.style.display === "none") {
+    folderContent.style.display = "block";
+    folderTitleContainer.replaceChild(openFolder, folderIcon);
+  } else {
+    folderContent.style.display = "none";
+    folderTitleContainer.replaceChild(folderIcon, openFolder);
+  }
+};
+
 let startCreatingFolderz = () => {
   let createFolderzDiv = document.querySelector("._create_folder_container");
 
   createFolderzDiv.addEventListener("click", () => {
-    // Create popup
-    let popup = document.createElement("div");
-    popup.classList.add("_popup");
+    let popup = createPopup();
+    let container = document.querySelector("._the_container");
 
-    // The close Icon
-    let closeIcon = document.createElement("img");
-    closeIcon.src = chrome.runtime.getURL("./images/cross.png");
-    closeIcon.alt = "Folder Icon";
-    closeIcon.classList.add("_close_icon");
+    // Add folder button inside the popup
+    popup.querySelector("._make_folder_btn").addEventListener("click", () => {
+      let folderName = popup.querySelector("._folder_name_input").value.trim();
+      let colorVal = popup.querySelector("._folder_color_input").value;
 
-    // Create input for folder name
-    let folderInput = document.createElement("input");
-    folderInput.type = "text";
-    folderInput.placeholder = "Enter folder name";
-    folderInput.classList.add("_folder_name_input");
-
-    // Create add folder button
-    let addFolderBtn = document.createElement("button");
-    addFolderBtn.innerText = "Add Folder";
-    addFolderBtn.classList.add("_make_folder_btn");
-
-    // Append input and button to popup
-    popup.appendChild(closeIcon);
-    popup.appendChild(folderInput);
-    popup.appendChild(addFolderBtn);
-
-    // Append popup to body
-    document.body.appendChild(popup);
-
-    // Event listener to remove the pop up
-    closeIcon.addEventListener("click", () => {
-      if (popup) {
-        onRemovePop();
-      }
-    });
-
-    // Add event listener to "Add Folder" button
-    addFolderBtn.addEventListener("click", () => {
-      let folderName = folderInput.value.trim();
       if (folderName) {
-        // Create new folder element
-        let folderDiv = document.createElement("div");
-        folderDiv.classList.add("_la_folder");
-
-        // Create closed folder icon
-        let folderIcon = document.createElement("img");
-        folderIcon.src = chrome.runtime.getURL("./images/closed_folder.png");
-        folderIcon.alt = "Folder Icon";
-        folderIcon.classList.add("_closed_folder_icon");
-
-        // Creating the open folder icon
-        let openFolder = document.createElement("img");
-        openFolder.src = chrome.runtime.getURL("./images/open_folder.png");
-        openFolder.alt = "Folder Icon";
-        openFolder.classList.add("_opened_folders_icon");
-
-        // Create folder name element
-        let folderTitle = document.createElement("p");
-        folderTitle.innerText = folderName;
-        folderTitle.classList.add("_folder-name");
-
-        // Create a content area to hold folder items (initially hidden)
-        let folderContent = document.createElement("div");
-        folderContent.classList.add("_folder-content");
-        folderContent.style.display = "none"; // Hidden by default
-
-        // Create a content area to hold folder items (initially hidden)
-        let folderTitleContainer = document.createElement("div");
-        folderTitleContainer.classList.add("_folder_title_container");
-
-        // Append icon and name to folder div
-        folderTitleContainer.appendChild(folderIcon);
-        folderTitleContainer.appendChild(folderTitle);
-        folderDiv.appendChild(folderTitleContainer);
-        folderDiv.appendChild(folderContent);
-
-        // Add click event to toggle the visibility of the folder contents
-        folderTitleContainer.addEventListener("click", () => {
-          if (folderContent.style.display === "none") {
-            folderContent.style.display = "block";
-
-            // Replace closed icon with the open folder icon
-            folderTitleContainer.replaceChild(openFolder, folderIcon); // Replaces the closed icon
-          } else {
-            folderContent.style.display = "none"; // Hide contents
-
-            // Replace open icon with the closed folder icon
-            folderTitleContainer.replaceChild(folderIcon, openFolder);
-          }
-        });
-
-        // Insert the new folder into _the_container main element
-        let container = document.querySelector("._the_container");
-        container.appendChild(folderDiv);
-        // Close the popup after adding the folder
-        if (popup) {
-          onRemovePop();
-        }
+        createNewFolder(folderName, colorVal, container);
+        onRemovePop(popup); // Close popup after creation
       } else {
         alert("Please enter a folder name.");
-        return;
       }
     });
   });
-
-  // Trying to add the bookmark before the folderzs
-  // let container = document.querySelector("._the_container");
-  // let bookmarksAdded = container.querySelector("._bookmarked_folder");
-  // if (
-  //   !bookmarksAdded ||
-  //   !bookmarksAdded.classList.contains("_bookmarked_folder")
-  // )
-  //   container.appendChild(createBookmarks());
 };
 
 // Function to add elements like icons and folders
