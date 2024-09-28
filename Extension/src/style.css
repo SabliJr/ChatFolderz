@@ -205,6 +205,12 @@ body {
   cursor: pointer;
 }
 
+._folder_minus_icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  cursor: pointer;
+}
+
 /* --------------------------------------------------------------------------------- */
 ._bookmarked_folder {
   display: flex;

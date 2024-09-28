@@ -293,32 +293,32 @@ let addBookmarkIcons = () => {
 };
 
 // Function to remove event listeners (call this when needed)
-let removeBookmarkListeners = () => {
-  console.log("This function get called!!");
-  const chats = document.querySelectorAll("ol li.relative");
+// let removeBookmarkListeners = () => {
+//   console.log("This function get called!!");
+//   const chats = document.querySelectorAll("ol li.relative");
 
-  chats.forEach((chat) => {
-    let bookmarkAdd = chat.querySelector(
-      "div.no-draggable span[data-state='closed']"
-    );
-    if (bookmarkAdd && bookmarkAdd.toggleListener) {
-      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
-      let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
+//   chats.forEach((chat) => {
+//     let bookmarkAdd = chat.querySelector(
+//       "div.no-draggable span[data-state='closed']"
+//     );
+//     if (bookmarkAdd && bookmarkAdd.toggleListener) {
+//       let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+//       let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
 
-      if (bookmarkedIcon) {
-        bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
-      }
-      if (unbookmarkedIcon) {
-        unbookmarkedIcon.removeEventListener(
-          "click",
-          bookmarkAdd.toggleListener
-        );
-      }
+//       if (bookmarkedIcon) {
+//         bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
+//       }
+//       if (unbookmarkedIcon) {
+//         unbookmarkedIcon.removeEventListener(
+//           "click",
+//           bookmarkAdd.toggleListener
+//         );
+//       }
 
-      delete bookmarkAdd.toggleListener;
-    }
-  });
-};
+//       delete bookmarkAdd.toggleListener;
+//     }
+//   });
+// };
 
 let addDragAndDropFunctionality = () => {
   let folderDivs = document.querySelectorAll("._la_folder");
@@ -361,6 +361,16 @@ function handleDragOver(e) {
   e.dataTransfer.dropEffect = "copy";
 }
 
+// Define the event listener function
+const removeClickEvent = (elementToRemove, folderMinusIcon) => {
+  return () => {
+    if (elementToRemove) {
+      elementToRemove.remove(); // Remove the element
+      folderMinusIcon.removeEventListener("click", removeClickEvent); // Remove the click event listener
+    }
+  };
+};
+
 function handleDrop(e) {
   e.preventDefault();
   let chatId = e.dataTransfer.getData("text/plain");
@@ -370,30 +380,54 @@ function handleDrop(e) {
     .closest("._la_folder")
     ?.querySelector("._folder-content");
 
-  if (!folderContent) {
-    return;
-  }
-
-  if (!draggedElement) {
+  if (!folderContent || !draggedElement) {
     return;
   }
 
   let clonedElement = draggedElement.cloneNode(true);
-
-  // Assign a new unique ID to the cloned element
-  clonedElement.id = `draggable-${Math.random().toString(36).substring(2, 11)}`;
+  clonedElement.id = `draggable-${Math.random().toString(36).substring(2, 11)}`; // Assign a new unique ID to the cloned element
 
   // Append the cloned message into the folder's content area
   folderContent.appendChild(clonedElement);
   let optionBtn = folderContent.querySelectorAll("li.relative");
 
-  // Remove the option btns on the copy chats because they don't work
   let r = -1;
   while (++r < optionBtn.length) {
-    let rBtn = optionBtn[r].querySelector(
+    let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
-    if (rBtn) rBtn.remove();
+
+    // Remove the bookmark and the options btn
+    let rBtn = optionBtn[r].querySelector(
+      "div.no-draggable span[data-state='closed'] button"
+    );
+    let rImg = optionBtn[r].querySelector(
+      "div.no-draggable span[data-state='closed'] img"
+    );
+    if (rBtn && rImg) {
+      rBtn.remove();
+      rImg.remove();
+    }
+
+    // Check if the icon already exists to prevent duplicates
+    if (!toAppendDiv.querySelector("img._folder_minus_icon")) {
+      // Creating the minus folder icon
+      let folderMinusIcon = document.createElement("img");
+      folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
+      folderMinusIcon.alt = "Folder minus icon";
+      folderMinusIcon.classList.add("_folder_minus_icon");
+
+      toAppendDiv.appendChild(folderMinusIcon);
+
+      const elementToRemove = optionBtn[r]; // Capture the element to remove before attaching the listener
+
+      // Attach the event listener for removing the specific element
+      let handleRemoveClick = removeClickEvent(
+        elementToRemove,
+        folderMinusIcon
+      );
+      folderMinusIcon.addEventListener("click", handleRemoveClick);
+    }
   }
 }
 
@@ -468,7 +502,7 @@ let createNewFolder = (folderName, colorVal, container) => {
   container.appendChild(folderDiv);
 };
 
-// Function to convert RGB to Hex
+// This function converts RGB to Hex
 function rgbToHex(rgb) {
   // Extract the RGB values
   const result = rgb.match(/\d+/g);
