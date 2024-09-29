@@ -226,6 +226,14 @@ function addToBookmarkedFolder(chat) {
       true
     );
 
+    // Adding chat to the folder from the bookmarks folder
+    let addToFolder = clonedChat.querySelector(
+      "div.no-draggable span[data-state='closed'] img._add_to_folder_icon"
+    );
+    addToFolder.addEventListener("click", () => {
+      addToFolderGlobally(clonedChat);
+    });
+
     // Append the cloned chat to the bookmarked container
     bookmarkedChatContainer.appendChild(clonedChat);
   }
@@ -276,6 +284,18 @@ function cleanChatAndAppend(folder_div, chat, do_I_have_to) {
     ? (folderContent = getFromDom(folder_div))
     : (folderContent = folder_div.querySelector("._folder-content"));
   let cloneChat = chat.cloneNode(true);
+
+  if (do_I_have_to) {
+    let laChats = folderContent.querySelectorAll("li.relative");
+    let k = -1;
+    while (++k < laChats?.length) {
+      let laText = laChats[k].innerText;
+      if (chat.innerText === laText) {
+        alert("This chat already exist, so it won't be added!");
+        return;
+      }
+    }
+  }
 
   let toAppendDiv = cloneChat.querySelector(
     "div.no-draggable span[data-state='closed']"
@@ -364,51 +384,7 @@ let addBookmarkIcons = () => {
         addToFolderIcon.addEventListener("click", () => {
           let folderDivs = document.querySelectorAll("._la_folder");
           if (folderDivs.length > 0) {
-            //Creating a btn to save the changes
-            let saveBtn = document.createElement("button");
-            saveBtn.innerText = "Save";
-            saveBtn.classList.add("_save_btn");
-
-            let la_folderz = document.querySelector("._folderz");
-            let folderzClone = la_folderz.cloneNode(true);
-            folderzClone.id = "_la_folderz";
-
-            let la_title = folderzClone.querySelector("._folderz_title");
-            la_title.style.margin = "0";
-
-            let clonedFolderDivs = folderzClone.querySelectorAll("._la_folder");
-            clonedFolderDivs.forEach((folder) => {
-              let folderInput = document.createElement("input");
-              folderInput.type = "checkbox";
-              folderInput.id = "_folder_chat_input";
-
-              let whereToAppend = folder.querySelector(
-                "._folder_title_container"
-              );
-
-              if (whereToAppend.firstChild) {
-                whereToAppend.insertBefore(
-                  folderInput.cloneNode(true),
-                  whereToAppend.firstChild
-                );
-              } else {
-                whereToAppend.appendChild(folderInput);
-              }
-            });
-
-            saveBtn.addEventListener("click", () => {
-              clonedFolderDivs.forEach((folder) => {
-                let folder_input = folder.querySelector("#_folder_chat_input");
-                if (folder_input && folder_input.checked) {
-                  cleanChatAndAppend(folder, chat, true);
-                  if (folderzClone) folderzClone.remove();
-                }
-              });
-            });
-
-            // Append the clone to the body (or any other container)
-            folderzClone.appendChild(saveBtn);
-            document.body.appendChild(folderzClone);
+            addToFolderGlobally(chat);
           } else {
             let popup = createPopup();
 
@@ -443,9 +419,53 @@ let addBookmarkIcons = () => {
   });
 };
 
+let addToFolderGlobally = (chat) => {
+  //Creating a btn to save the changes
+  let saveBtn = document.createElement("button");
+  saveBtn.innerText = "Save";
+  saveBtn.classList.add("_save_btn");
+
+  let la_folderz = document.querySelector("._folderz");
+  let folderzClone = la_folderz.cloneNode(true);
+  folderzClone.id = "_la_folderz";
+
+  let la_title = folderzClone.querySelector("._folderz_title");
+  la_title.style.margin = "0";
+
+  let clonedFolderDivs = folderzClone.querySelectorAll("._la_folder");
+  clonedFolderDivs.forEach((folder) => {
+    let folderInput = document.createElement("input");
+    folderInput.type = "checkbox";
+    folderInput.id = "_folder_chat_input";
+
+    let whereToAppend = folder.querySelector("._folder_title_container");
+
+    if (whereToAppend.firstChild) {
+      whereToAppend.insertBefore(
+        folderInput.cloneNode(true),
+        whereToAppend.firstChild
+      );
+    } else {
+      whereToAppend.appendChild(folderInput);
+    }
+  });
+
+  saveBtn.addEventListener("click", () => {
+    clonedFolderDivs.forEach((folder) => {
+      let folder_input = folder.querySelector("#_folder_chat_input");
+      if (folder_input && folder_input.checked) {
+        cleanChatAndAppend(folder, chat, true);
+        if (folderzClone) folderzClone.remove();
+      }
+    });
+  });
+
+  folderzClone.appendChild(saveBtn);
+  document.body.appendChild(folderzClone);
+};
+
 // Function to remove event listeners (call this when needed)
 let removeBookmarkListeners = () => {
-  console.log("This function get called!!");
   const chats = document.querySelectorAll("ol li.relative");
 
   chats.forEach((chat) => {
@@ -542,6 +562,16 @@ function handleDrop(e) {
   let clonedElement = draggedElement.cloneNode(true);
   clonedElement.id = `draggable-${Math.random().toString(36).substring(2, 11)}`; // Assign a new unique ID to the cloned element
 
+  // Check if the element already exist, if it does return
+  let laInnerT = clonedElement.innerText;
+  let compareInnerT = folderContent.querySelectorAll("li.relative");
+  for (let textCompare of compareInnerT) {
+    if (textCompare.innerText === laInnerT) {
+      alert("This chat already exist!");
+      return;
+    }
+  }
+
   // Append the cloned message into the folder's content area
   folderContent.appendChild(clonedElement);
   let optionBtn = folderContent.querySelectorAll("li.relative");
@@ -558,16 +588,16 @@ function handleDrop(e) {
     let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
-
+    console.log("This one: ", optionBtn[r].innerText);
     // Remove the bookmark and the options btn
-    let rBtn = optionBtn[r].querySelector(
-      "div.no-draggable span[data-state='closed'] button"
-    );
-    let rImg = optionBtn[r].querySelector(
-      "div.no-draggable span[data-state='closed'] img"
+    let rBtn = toAppendDiv.querySelector("button");
+    let rImgFolderPlus = toAppendDiv.querySelector("img._add_to_folder_icon");
+    let rImgBookmark = toAppendDiv.querySelector(
+      " img._bookmarked_icon,  img._unbookmarked_icon"
     );
 
-    if (rImg) toAppendDiv.removeChild(rImg);
+    if (rImgBookmark) toAppendDiv.removeChild(rImgBookmark);
+    if (rImgFolderPlus) toAppendDiv.removeChild(rImgFolderPlus);
     if (rBtn) toAppendDiv.removeChild(rBtn);
 
     // Check if the icon already exists to prevent duplicates
@@ -750,8 +780,7 @@ const createSpan = (la_title, la_icon) => {
 
 // This function converts RGB to Hex
 function rgbToHex(rgb) {
-  // Extract the RGB values
-  const result = rgb.match(/\d+/g);
+  const result = rgb.match(/\d+/g); // Extract the RGB values
   if (!result) return "#f6b73c"; // Default color if parsing fails
 
   // Convert each value to hex and pad with zeros if necessary
@@ -759,14 +788,12 @@ function rgbToHex(rgb) {
   const g = parseInt(result[1]).toString(16).padStart(2, "0");
   const b = parseInt(result[2]).toString(16).padStart(2, "0");
 
-  // Combine into a single hex string
-  return `#${r}${g}${b}`;
+  return `#${r}${g}${b}`; // Combine into a single hex string
 }
 
 // This function is to edit the folder
 let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
-  // Create and append popup to body again to edit it
-  let popup = createPopup();
+  let popup = createPopup(); // Create and append popup to body again to edit it
 
   // Get the original folder name and color
   let folderName = folderTitle.innerText;
@@ -945,7 +972,7 @@ function setupSearchInput(inputEle) {
 
   inputEle.addEventListener("input", () => {
     const inputValue = inputEle.value;
-    console.log(inputValue); // Debugging
+    // console.log(inputValue); // Debugging
   });
 }
 
@@ -968,7 +995,7 @@ const observer = new MutationObserver((mutations) => {
           node.querySelectorAll("ol").forEach((preElement) => {
             const codeElement = preElement.querySelector("li.relative");
 
-            console.log("New code element detected:", codeElement);
+            // console.log("New code element detected:", codeElement);
             addElements();
             // checkAndAddButton(preElement, codeElement);
           });
