@@ -591,6 +591,7 @@ function handleDrop(e) {
   }
 }
 
+let openMenu = null; // Track the currently open menu
 let createNewFolder = (folderName, colorVal, container) => {
   // Create new folder element
   let folderDiv = document.createElement("div");
@@ -635,7 +636,6 @@ let createNewFolder = (folderName, colorVal, container) => {
   folderTitleContainer.classList.add("_folder_title_container");
 
   folderTitleSpan.appendChild(folderTitle);
-  // folderTitleSpan.appendChild(editIcon);
   folderTitleSpan.appendChild(folderMenu);
 
   // Append icon and name to folder div
@@ -643,6 +643,45 @@ let createNewFolder = (folderName, colorVal, container) => {
   folderTitleContainer.appendChild(folderTitleSpan);
   folderDiv.appendChild(folderTitleContainer);
   folderDiv.appendChild(folderContent);
+
+  // Create the folder menu container (but don't display it yet)
+  let folderMenuHolder = document.createElement("div");
+  folderMenuHolder.classList.add("_folder_menu_div");
+  folderMenuHolder.style.display = "none";
+
+  // Creating delete folder icon
+  let deleteFolder = document.createElement("img");
+  deleteFolder.src = chrome.runtime.getURL("./images/trash-bin.png");
+  deleteFolder.alt = "Folder delete icon";
+  deleteFolder.classList.add("_folder_edit_icon");
+
+  // Creating the folder edit icon
+  let editIcon = document.createElement("img");
+  editIcon.src = chrome.runtime.getURL("./images/edit-file.png");
+  editIcon.alt = "Folder edit icon";
+  editIcon.classList.add("_folder_edit_icon");
+
+  // Creating the folder edit icon
+  let addChatIcon = document.createElement("img");
+  addChatIcon.src = chrome.runtime.getURL("./images/chat1.png");
+  addChatIcon.alt = "Chat icon";
+  addChatIcon.classList.add("_folder_menu_chat_icon");
+
+  // Titles
+  let deleteTitle = createTitles("Delete Folder");
+  let editTitle = createTitles("Edit Folder");
+  let addChatToAFolder = createTitles("Add Chat");
+
+  let folderDelete = createSpan(deleteTitle, deleteFolder);
+  let folderEdit = createSpan(editTitle, editIcon);
+  let AddChatTitle = createSpan(addChatToAFolder, addChatIcon);
+
+  folderMenuHolder.appendChild(folderDelete);
+  folderMenuHolder.appendChild(folderEdit);
+  folderMenuHolder.appendChild(AddChatTitle);
+
+  // Append the menu to the folder title container
+  folderTitleContainer.appendChild(folderMenuHolder);
 
   // Add click event to toggle the visibility of the folder contents
   folderTitle.addEventListener("click", () => {
@@ -655,61 +694,32 @@ let createNewFolder = (folderName, colorVal, container) => {
   });
 
   folderMenu.addEventListener("click", () => {
-    // Create a div container to hold folder menu
-    let folderMenuHolder = document.createElement("div");
-    folderMenuHolder.classList.add("_folder_menu_div");
-    folderMenuHolder.style.display = "none";
-
-    // Creating delete folder icon
-    let deleteFolder = document.createElement("img");
-    deleteFolder.src = chrome.runtime.getURL("./images/trash-bin.png");
-    deleteFolder.alt = "Folder delete icon";
-    deleteFolder.classList.add("_folder_edit_icon");
-
-    // Creating the folder edit icon
-    let editIcon = document.createElement("img");
-    editIcon.src = chrome.runtime.getURL("./images/edit-file.png");
-    editIcon.alt = "Folder edit icon";
-    editIcon.classList.add("_folder_edit_icon");
-
-    // Creating the folder edit icon
-    let addChatIcon = document.createElement("img");
-    addChatIcon.src = chrome.runtime.getURL("./images/chat1.png");
-    addChatIcon.alt = "Chat icon";
-    addChatIcon.classList.add("_folder_menu_chat_icon");
-
-    // Titles
-    let deleteTitle = createTitles("Delete Folder");
-    let editTitle = createTitles("Edit Folder");
-    let addChatToAFolder = createTitles("Add Chat");
-
-    let folderDelete = createSpan(deleteTitle, deleteFolder);
-    let folderEdit = createSpan(editTitle, editIcon);
-    let AddChatTitle = createSpan(addChatToAFolder, addChatIcon);
-
-    folderMenuHolder.appendChild(folderDelete);
-    folderMenuHolder.appendChild(folderEdit);
-    folderMenuHolder.appendChild(AddChatTitle);
-
-    // Appending to the folder container
-    folderTitleContainer.appendChild(folderMenuHolder);
-
-    // Toggle the folder menu
-    if (folderMenuHolder.style.display === "none") {
-      folderMenuHolder.style.display = "flex";
-    } else {
-      folderMenuHolder.style.display = "none";
+    // Close the currently open menu (if there is one)
+    if (openMenu && openMenu !== folderMenuHolder) {
+      openMenu.style.display = "none";
     }
 
-    // Deleting the folder
-    folderDelete.addEventListener("click", () => {
-      folderDiv.remove();
-    });
+    // Toggle the current folder menu
+    if (folderMenuHolder.style.display === "none") {
+      folderMenuHolder.style.display = "flex";
+      openMenu = folderMenuHolder; // Set the current menu as open
+    } else {
+      folderMenuHolder.style.display = "none";
+      openMenu = null; // No menu is open
+    }
+  });
 
-    // Add click event to edit the folder
-    folderEdit.addEventListener("click", () => {
-      openEditPopup(folderTitle, folderTitleSpan, folderContent);
-    });
+  // Deleting the folder
+  folderDelete.addEventListener("click", () => {
+    folderDiv.remove();
+    openMenu = null; // Reset openMenu when folder is deleted
+  });
+
+  // Add click event to edit the folder
+  folderEdit.addEventListener("click", () => {
+    folderMenuHolder.remove();
+    openEditPopup(folderTitle, folderTitleSpan, folderContent);
+    openMenu = null; // Reset openMenu when editing
   });
 
   // Insert the new folder into the container
