@@ -108,6 +108,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+  position: relative;
 }
 
 ._folder-content {
@@ -165,6 +166,7 @@ body {
   width: 1.5rem;
   height: 1.5rem;
   cursor: pointer;
+  /* background-color: #ffffff; */
 }
 
 ._folder_color_input::-webkit-color-swatch-wrapper {
@@ -255,6 +257,39 @@ body {
   border-radius: .6rem;
   margin-right: .3rem;
 }
+
+._folder_menu_div {
+   display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: #ffffff;
+  border-radius: .6rem;
+  width: 75%;
+  position: absolute;
+  left: 3.6rem;
+  z-index: 1000;
+  top: 3rem;
+  padding: .5rem;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+._folder_menu_chat_icon {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+._folder_menu_title {
+  color: #000;
+}
+
+._folder_menu_span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
 
 /* --------------------------------------------------------------------------------- */
 ._bookmarked_folder {

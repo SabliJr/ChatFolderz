@@ -608,17 +608,11 @@ let createNewFolder = (folderName, colorVal, container) => {
   openFolder.alt = "Folder Icon";
   openFolder.classList.add("_opened_folders_icon");
 
-  // Creating the folder edit icon
-  let editIcon = document.createElement("img");
-  editIcon.src = chrome.runtime.getURL("./images/edit.png");
-  editIcon.alt = "Folder edit icon";
-  editIcon.classList.add("_folder_edit_icon");
-
   // Creating delete folder icon
-  let deleteFolder = document.createElement("img");
-  deleteFolder.src = chrome.runtime.getURL("./images/bin.png");
-  deleteFolder.alt = "Folder edit icon";
-  deleteFolder.classList.add("_folder_edit_icon");
+  let folderMenu = document.createElement("img");
+  folderMenu.src = chrome.runtime.getURL("./images/menu-bar2.png");
+  folderMenu.alt = "Folder edit icon";
+  folderMenu.classList.add("_folder_edit_icon");
 
   // Create a span to put the folder name and the edit icon
   let folderTitleSpan = document.createElement("span");
@@ -641,8 +635,8 @@ let createNewFolder = (folderName, colorVal, container) => {
   folderTitleContainer.classList.add("_folder_title_container");
 
   folderTitleSpan.appendChild(folderTitle);
-  folderTitleSpan.appendChild(editIcon);
-  folderTitleSpan.appendChild(deleteFolder);
+  // folderTitleSpan.appendChild(editIcon);
+  folderTitleSpan.appendChild(folderMenu);
 
   // Append icon and name to folder div
   folderTitleContainer.appendChild(folderIcon);
@@ -660,20 +654,88 @@ let createNewFolder = (folderName, colorVal, container) => {
     );
   });
 
-  // Add click event to edit the folder
-  editIcon.addEventListener("click", () => {
-    openEditPopup(folderTitle, folderTitleSpan, folderContent);
+  folderMenu.addEventListener("click", () => {
+    // Create a div container to hold folder menu
+    let folderMenuHolder = document.createElement("div");
+    folderMenuHolder.classList.add("_folder_menu_div");
+    folderMenuHolder.style.display = "none";
+
+    // Creating delete folder icon
+    let deleteFolder = document.createElement("img");
+    deleteFolder.src = chrome.runtime.getURL("./images/trash-bin.png");
+    deleteFolder.alt = "Folder delete icon";
+    deleteFolder.classList.add("_folder_edit_icon");
+
+    // Creating the folder edit icon
+    let editIcon = document.createElement("img");
+    editIcon.src = chrome.runtime.getURL("./images/edit-file.png");
+    editIcon.alt = "Folder edit icon";
+    editIcon.classList.add("_folder_edit_icon");
+
+    // Creating the folder edit icon
+    let addChatIcon = document.createElement("img");
+    addChatIcon.src = chrome.runtime.getURL("./images/chat1.png");
+    addChatIcon.alt = "Chat icon";
+    addChatIcon.classList.add("_folder_menu_chat_icon");
+
+    // Titles
+    let deleteTitle = createTitles("Delete Folder");
+    let editTitle = createTitles("Edit Folder");
+    let addChatToAFolder = createTitles("Add Chat");
+
+    let folderDelete = createSpan(deleteTitle, deleteFolder);
+    let folderEdit = createSpan(editTitle, editIcon);
+    let AddChatTitle = createSpan(addChatToAFolder, addChatIcon);
+
+    folderMenuHolder.appendChild(folderDelete);
+    folderMenuHolder.appendChild(folderEdit);
+    folderMenuHolder.appendChild(AddChatTitle);
+
+    // Appending to the folder container
+    folderTitleContainer.appendChild(folderMenuHolder);
+
+    // Toggle the folder menu
+    if (folderMenuHolder.style.display === "none") {
+      folderMenuHolder.style.display = "flex";
+    } else {
+      folderMenuHolder.style.display = "none";
+    }
+
+    // Deleting the folder
+    folderDelete.addEventListener("click", () => {
+      folderDiv.remove();
+    });
+
+    // Add click event to edit the folder
+    folderEdit.addEventListener("click", () => {
+      openEditPopup(folderTitle, folderTitleSpan, folderContent);
+    });
   });
 
   // Insert the new folder into the container
   container.appendChild(folderDiv);
 
-  // Deleting the folder
-  deleteFolder.addEventListener("click", () => {
-    folderDiv.remove();
-  });
-
   return folderDiv;
+};
+
+// Create folder name element
+function createTitles(menuTile) {
+  let folderMenuTitle = document.createElement("p");
+  folderMenuTitle.innerText = menuTile;
+  folderMenuTitle.classList.add("_folder_menu_title");
+
+  return folderMenuTitle;
+}
+
+// Create a div container to hold folder menu
+const createSpan = (la_title, la_icon) => {
+  let folderMenuSpan = document.createElement("span");
+  folderMenuSpan.classList.add("_folder_menu_span");
+
+  folderMenuSpan.appendChild(la_icon);
+  folderMenuSpan.appendChild(la_title);
+
+  return folderMenuSpan;
 };
 
 // This function converts RGB to Hex
