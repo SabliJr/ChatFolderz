@@ -19,6 +19,10 @@ h3Element.classList.add("_folderz_title");
 const searchContainer = document.createElement("div");
 searchContainer.classList.add("search-container");
 
+// Create the search container div
+const folderz = document.createElement("div");
+folderz.classList.add("_folderz");
+
 // Create the search input element
 const searchInput = document.createElement("input");
 searchInput.type = "text";
@@ -246,6 +250,67 @@ const removeUnbookmarkedChat = (unbookmarkedChat) => {
   }
 };
 
+const getFromDom = (folder_div) => {
+  let compareText = folder_div.querySelector(
+    "._folder_title_container span._folder_title_span"
+  );
+  let laFolderz = document.querySelectorAll("._la_folder");
+  let h = -1;
+  while (++h < laFolderz.length) {
+    let innerT = laFolderz[h].querySelector(
+      "._folder_title_container span._folder_title_span"
+    );
+
+    if (innerT.innerText === compareText.innerText) {
+      let res = laFolderz[h].querySelector("._folder-content");
+      return res;
+    }
+  }
+
+  return null;
+};
+
+function cleanChatAndAppend(folder_div, chat, do_I_have_to) {
+  let folderContent;
+  do_I_have_to
+    ? (folderContent = getFromDom(folder_div))
+    : (folderContent = folder_div.querySelector("._folder-content"));
+  let cloneChat = chat.cloneNode(true);
+
+  let toAppendDiv = cloneChat.querySelector(
+    "div.no-draggable span[data-state='closed']"
+  );
+
+  // Remove the bookmark and the options btn
+  let rBtn = toAppendDiv.querySelector("button");
+  let rImgFolderPlus = toAppendDiv.querySelector("img._add_to_folder_icon");
+  let rImgBookmark = toAppendDiv.querySelector(
+    " img._bookmarked_icon,  img._unbookmarked_icon"
+  );
+
+  if (rImgBookmark) toAppendDiv.removeChild(rImgBookmark);
+  if (rImgFolderPlus) toAppendDiv.removeChild(rImgFolderPlus);
+  if (rBtn) toAppendDiv.removeChild(rBtn);
+
+  // Check if the icon already exists to prevent duplicates
+  if (!toAppendDiv.querySelector("img._folder_minus_icon")) {
+    // Creating the minus folder icon
+    let folderMinusIcon = document.createElement("img");
+    folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
+    folderMinusIcon.alt = "Folder minus icon";
+    folderMinusIcon.classList.add("_folder_minus_icon");
+
+    toAppendDiv.appendChild(folderMinusIcon);
+    const elementToRemove = cloneChat; // Capture the element to remove before attaching the listener
+
+    // Attach the event listener for removing the specific element
+    let handleRemoveClick = removeClickEvent(elementToRemove, folderMinusIcon);
+    folderMinusIcon.addEventListener("click", handleRemoveClick);
+  }
+
+  if (folderContent) folderContent.appendChild(cloneChat);
+}
+
 let addBookmarkIcons = () => {
   const chats = document.querySelectorAll("ol li.relative");
 
@@ -269,12 +334,19 @@ let addBookmarkIcons = () => {
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       unbookmarkedIcon.classList.add("_unbookmarked_icon");
 
+      // The close Icon
+      let addToFolderIcon = document.createElement("img");
+      addToFolderIcon.src = chrome.runtime.getURL("./images/new-folder.png");
+      addToFolderIcon.alt = "Close Icon";
+      addToFolderIcon.classList.add("_add_to_folder_icon");
+
       // Check if an icon is already added (either bookmarked or unbookmarked)
       let existingBookmarkIcon = bookmarkAdd.querySelector(
-        "._bookmarked_icon, ._unbookmarked_icon"
+        "._bookmarked_icon, ._unbookmarked_icon, _add_to_folder_icon"
       );
       if (!existingBookmarkIcon) {
         bookmarkAdd.id = "_icons_span";
+        bookmarkAdd.appendChild(addToFolderIcon);
         bookmarkAdd.appendChild(unbookmarkedIcon);
 
         const toggleListener = addToggleListener(
@@ -287,38 +359,117 @@ let addBookmarkIcons = () => {
 
         // Store the listener function on the element for potential future removal
         bookmarkAdd.toggleListener = toggleListener;
+
+        // Adding the chat to the folderz
+        addToFolderIcon.addEventListener("click", () => {
+          let folderDivs = document.querySelectorAll("._la_folder");
+          if (folderDivs.length > 0) {
+            //Creating a btn to save the changes
+            let saveBtn = document.createElement("button");
+            saveBtn.innerText = "Save";
+            saveBtn.classList.add("_save_btn");
+
+            let la_folderz = document.querySelector("._folderz");
+            let folderzClone = la_folderz.cloneNode(true);
+            folderzClone.id = "_la_folderz";
+
+            let la_title = folderzClone.querySelector("._folderz_title");
+            la_title.style.margin = "0";
+
+            let clonedFolderDivs = folderzClone.querySelectorAll("._la_folder");
+            clonedFolderDivs.forEach((folder) => {
+              let folderInput = document.createElement("input");
+              folderInput.type = "checkbox";
+              folderInput.id = "_folder_chat_input";
+
+              let whereToAppend = folder.querySelector(
+                "._folder_title_container"
+              );
+
+              if (whereToAppend.firstChild) {
+                whereToAppend.insertBefore(
+                  folderInput.cloneNode(true),
+                  whereToAppend.firstChild
+                );
+              } else {
+                whereToAppend.appendChild(folderInput);
+              }
+            });
+
+            saveBtn.addEventListener("click", () => {
+              clonedFolderDivs.forEach((folder) => {
+                let folder_input = folder.querySelector("#_folder_chat_input");
+                if (folder_input && folder_input.checked) {
+                  cleanChatAndAppend(folder, chat, true);
+                  if (folderzClone) folderzClone.remove();
+                }
+              });
+            });
+
+            // Append the clone to the body (or any other container)
+            folderzClone.appendChild(saveBtn);
+            document.body.appendChild(folderzClone);
+          } else {
+            let popup = createPopup();
+
+            // Add event listener to update the folder upon popup confirmation
+            popup
+              .querySelector("._make_folder_btn")
+              .addEventListener("click", () => {
+                let folderName = popup
+                  .querySelector("._folder_name_input")
+                  .value.trim();
+                let colorVal = popup.querySelector(
+                  "._folder_color_input"
+                ).value;
+                let container = document.querySelector("._folderz");
+
+                // Create New Folder
+                let folder_div = createNewFolder(
+                  folderName,
+                  colorVal,
+                  container
+                );
+
+                cleanChatAndAppend(folder_div, chat, false);
+
+                // At the end remove the popup
+                if (popup) onRemovePop();
+              });
+          }
+        });
       }
     }
   });
 };
 
 // Function to remove event listeners (call this when needed)
-// let removeBookmarkListeners = () => {
-//   console.log("This function get called!!");
-//   const chats = document.querySelectorAll("ol li.relative");
+let removeBookmarkListeners = () => {
+  console.log("This function get called!!");
+  const chats = document.querySelectorAll("ol li.relative");
 
-//   chats.forEach((chat) => {
-//     let bookmarkAdd = chat.querySelector(
-//       "div.no-draggable span[data-state='closed']"
-//     );
-//     if (bookmarkAdd && bookmarkAdd.toggleListener) {
-//       let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
-//       let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
+  chats.forEach((chat) => {
+    let bookmarkAdd = chat.querySelector(
+      "div.no-draggable span[data-state='closed']"
+    );
+    if (bookmarkAdd && bookmarkAdd.toggleListener) {
+      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+      let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
 
-//       if (bookmarkedIcon) {
-//         bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
-//       }
-//       if (unbookmarkedIcon) {
-//         unbookmarkedIcon.removeEventListener(
-//           "click",
-//           bookmarkAdd.toggleListener
-//         );
-//       }
+      if (bookmarkedIcon) {
+        bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
+      }
+      if (unbookmarkedIcon) {
+        unbookmarkedIcon.removeEventListener(
+          "click",
+          bookmarkAdd.toggleListener
+        );
+      }
 
-//       delete bookmarkAdd.toggleListener;
-//     }
-//   });
-// };
+      delete bookmarkAdd.toggleListener;
+    }
+  });
+};
 
 let addDragAndDropFunctionality = () => {
   let folderDivs = document.querySelectorAll("._la_folder");
@@ -380,7 +531,11 @@ function handleDrop(e) {
     .closest("._la_folder")
     ?.querySelector("._folder-content");
 
-  if (!folderContent || !draggedElement) {
+  if (!folderContent) {
+    return;
+  }
+
+  if (!draggedElement) {
     return;
   }
 
@@ -391,8 +546,15 @@ function handleDrop(e) {
   folderContent.appendChild(clonedElement);
   let optionBtn = folderContent.querySelectorAll("li.relative");
 
+  // Creating the minus folder icon
+  let folderMinusIcon = document.createElement("img");
+  folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
+  folderMinusIcon.alt = "Folder minus icon";
+  folderMinusIcon.classList.add("_folder_minus_icon");
+
+  // Remove the option btns on the copy chats because they don't work
   let r = -1;
-  while (++r < optionBtn.length) {
+  while (++r < optionBtn?.length) {
     let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
@@ -404,10 +566,9 @@ function handleDrop(e) {
     let rImg = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed'] img"
     );
-    if (rBtn && rImg) {
-      rBtn.remove();
-      rImg.remove();
-    }
+
+    if (rImg) toAppendDiv.removeChild(rImg);
+    if (rBtn) toAppendDiv.removeChild(rBtn);
 
     // Check if the icon already exists to prevent duplicates
     if (!toAppendDiv.querySelector("img._folder_minus_icon")) {
@@ -418,7 +579,6 @@ function handleDrop(e) {
       folderMinusIcon.classList.add("_folder_minus_icon");
 
       toAppendDiv.appendChild(folderMinusIcon);
-
       const elementToRemove = optionBtn[r]; // Capture the element to remove before attaching the listener
 
       // Attach the event listener for removing the specific element
@@ -454,6 +614,12 @@ let createNewFolder = (folderName, colorVal, container) => {
   editIcon.alt = "Folder edit icon";
   editIcon.classList.add("_folder_edit_icon");
 
+  // Creating delete folder icon
+  let deleteFolder = document.createElement("img");
+  deleteFolder.src = chrome.runtime.getURL("./images/bin.png");
+  deleteFolder.alt = "Folder edit icon";
+  deleteFolder.classList.add("_folder_edit_icon");
+
   // Create a span to put the folder name and the edit icon
   let folderTitleSpan = document.createElement("span");
   folderTitleSpan.style.backgroundColor = `${colorVal}`;
@@ -476,6 +642,7 @@ let createNewFolder = (folderName, colorVal, container) => {
 
   folderTitleSpan.appendChild(folderTitle);
   folderTitleSpan.appendChild(editIcon);
+  folderTitleSpan.appendChild(deleteFolder);
 
   // Append icon and name to folder div
   folderTitleContainer.appendChild(folderIcon);
@@ -500,6 +667,13 @@ let createNewFolder = (folderName, colorVal, container) => {
 
   // Insert the new folder into the container
   container.appendChild(folderDiv);
+
+  // Deleting the folder
+  deleteFolder.addEventListener("click", () => {
+    folderDiv.remove();
+  });
+
+  return folderDiv;
 };
 
 // This function converts RGB to Hex
@@ -536,9 +710,6 @@ let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
   let folderColor = popup.querySelector("._folder_color_input");
   folderInput.value = folderName;
   folderColor.value = `${colorVal}`;
-
-  console.log("folderColor: ", folderColor);
-  console.log("colorVal: ", colorVal);
 
   // Add event listener to update the folder upon popup confirmation
   popup.querySelector("._make_folder_btn").addEventListener("click", () => {
@@ -635,7 +806,7 @@ let startCreatingFolderz = () => {
 
   createFolderzDiv.addEventListener("click", () => {
     let popup = createPopup();
-    let container = document.querySelector("._the_container");
+    let container = document.querySelector("._folderz");
 
     // Add folder button inside the popup
     popup.querySelector("._make_folder_btn").addEventListener("click", () => {
@@ -709,8 +880,9 @@ function setupSearchInput(inputEle) {
 // Appending element to the main container
 mainElement.appendChild(searchContainer); // The search
 mainElement.appendChild(createBookmarks()); // The Bookmarks
-mainElement.appendChild(h3Element); // The folderz title
-mainElement.appendChild(createFolderContainer); // Create folder btn
+folderz.appendChild(h3Element);
+folderz.appendChild(createFolderContainer);
+mainElement.appendChild(folderz); // The folderz title
 
 // Initial run
 addElements();

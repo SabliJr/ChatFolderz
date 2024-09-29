@@ -46,10 +46,10 @@ const Index = () => {
         <span className='_best_i'>Best Integrated With:</span>
         {/* <div className='_logos_div'> */}
         <img src={GPT} alt='' className='_i_img' />
-        <span className='_claude_container'>
+        {/* <span className='_claude_container'>
           <img src={Claude} alt='' className='_i_img' />
           <p id='_claude_coming_soon'>Coming Soon</p>
-        </span>
+        </span> */}
         {/* </div> */}
       </div>
       <img src={PromoImg} alt='promImg' className='promImg' />
