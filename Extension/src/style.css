@@ -13,6 +13,12 @@ body {
   vertical-align: middle;
 }
 
+._add_to_folder_icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
 .search-container {
   position: relative;
   padding: .5rem .8rem;
@@ -158,11 +164,44 @@ body {
 ._folder_edit_icon {
   width: 1.5rem;
   height: 1.5rem;
+  cursor: pointer;
 }
 
 ._folder_color_input::-webkit-color-swatch-wrapper {
   padding: 0;
   margin: 0;
+}
+
+#_la_folderz {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 25rem;
+  border: 2px solid #ff724f;
+  transform: translate(-50%, -50%);
+  background-color: #212121;
+  padding: 1.2rem 2rem;
+  border-radius: .8rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+._save_btn {
+  border-radius: .8rem;
+  width: 100%;
+  max-height: 42rem;
+  border: transparent;
+  background-color: #ffffff;
+  font-size: 1.3rem;
+  padding: .42rem .5rem;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  color: #21212f;
+  font-style: normal;
+  margin-top: 1.3rem;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 
 ._folder_color_holder label {
@@ -211,6 +250,12 @@ body {
   cursor: pointer;
 }
 
+#_folder_chat_input {
+  border: 1px solid #ccc;
+  border-radius: .6rem;
+  margin-right: .3rem;
+}
+
 /* --------------------------------------------------------------------------------- */
 ._bookmarked_folder {
   display: flex;
@@ -255,10 +300,12 @@ body {
 ._bookmarked_icon {
   width: 1rem;
   height: 1rem;
+  cursor: pointer;
 }
 ._unbookmarked_icon {
   width: 1rem;
   height: 1rem;
+  cursor: pointer;
 }
 
 ._bookmarked_chats_container li {
@@ -270,4 +317,27 @@ body {
   align-items: center;
   flex-direction: row-reverse;
   gap: .2rem;
+  transition: color 0.3s;
+  /* background-color: #212121; */
+  background: linear-gradient(to right, #212121 60%, transparent);
+  padding-left: .2rem;
 }
+
+
+    /* --white: #fff;
+    --black: #000;
+    --gray-50: #f9f9f9;
+    --gray-100: #ececec;
+    --gray-200: #e3e3e3;
+    --gray-300: #cdcdcd;
+    --gray-400: #b4b4b4;
+    --gray-500: #9b9b9b;
+    --gray-600: #676767;
+    --gray-700: #424242;
+    --gray-750: #2f2f2f;
+    --gray-800: #212121;
+    --gray-900: #171717;
+    --gray-950: #0d0d0d;
+    --red-500: #ef4444;
+    --red-700: #b91c1c;
+    --brand-purple: #ab68ff; */
