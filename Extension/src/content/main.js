@@ -138,11 +138,14 @@ function updateOriginalChatIcon(bookmarkedChat) {
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       unbookmarkedIcon.classList.add("_unbookmarked_icon");
 
-      // Remove the bookmarked icon and append the unbookmarked icon
-      if (bookmarkedIcon) {
-        bookmarkAdd.removeChild(bookmarkedIcon);
-        bookmarkAdd.appendChild(unbookmarkedIcon);
-      }
+      bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+      addToggleListener(
+        bookmarkedIcon,
+        unbookmarkedIcon,
+        bookmarkAdd,
+        chat,
+        false
+      );
       break;
     }
   }
@@ -157,17 +160,25 @@ let addToggleListener = (
 ) => {
   const toggleBookmark = () => {
     if (bookmarkAdd.contains(bookmarkedIcon)) {
+      // Switch to unbookmarked icon
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+
+      // Remove from bookmarks folder
       removeUnbookmarkedChat(chat);
+
+      // Update the original chat's bookmark icon if inside the bookmarks folder
       if (isInBookmarkFolder) {
         updateOriginalChatIcon(chat);
       }
     } else {
       bookmarkAdd.replaceChild(bookmarkedIcon, unbookmarkedIcon);
+
+      // Add to bookmarks folder
       addToBookmarkedFolder(chat);
     }
   };
 
+  // Add the event listeners for the icons
   bookmarkedIcon.addEventListener("click", toggleBookmark);
   unbookmarkedIcon.addEventListener("click", toggleBookmark);
 
@@ -256,6 +267,33 @@ const removeUnbookmarkedChat = (unbookmarkedChat) => {
       break;
     }
   }
+};
+
+// Function to remove event listeners (call this when needed)
+let removeBookmarkListeners = () => {
+  const chats = document.querySelectorAll("ol li.relative");
+
+  chats.forEach((chat) => {
+    let bookmarkAdd = chat.querySelector(
+      "div.no-draggable span[data-state='closed']"
+    );
+    if (bookmarkAdd && bookmarkAdd.toggleListener) {
+      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
+      let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
+
+      if (bookmarkedIcon) {
+        bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
+      }
+      if (unbookmarkedIcon) {
+        unbookmarkedIcon.removeEventListener(
+          "click",
+          bookmarkAdd.toggleListener
+        );
+      }
+
+      delete bookmarkAdd.toggleListener;
+    }
+  });
 };
 
 const getFromDom = (folder_div) => {
@@ -464,33 +502,6 @@ let addToFolderGlobally = (chat) => {
   document.body.appendChild(folderzClone);
 };
 
-// Function to remove event listeners (call this when needed)
-let removeBookmarkListeners = () => {
-  const chats = document.querySelectorAll("ol li.relative");
-
-  chats.forEach((chat) => {
-    let bookmarkAdd = chat.querySelector(
-      "div.no-draggable span[data-state='closed']"
-    );
-    if (bookmarkAdd && bookmarkAdd.toggleListener) {
-      let bookmarkedIcon = bookmarkAdd.querySelector("._bookmarked_icon");
-      let unbookmarkedIcon = bookmarkAdd.querySelector("._unbookmarked_icon");
-
-      if (bookmarkedIcon) {
-        bookmarkedIcon.removeEventListener("click", bookmarkAdd.toggleListener);
-      }
-      if (unbookmarkedIcon) {
-        unbookmarkedIcon.removeEventListener(
-          "click",
-          bookmarkAdd.toggleListener
-        );
-      }
-
-      delete bookmarkAdd.toggleListener;
-    }
-  });
-};
-
 let addDragAndDropFunctionality = () => {
   let folderDivs = document.querySelectorAll("._la_folder");
   const targetElements = document.querySelectorAll("ol li.relative");
@@ -588,7 +599,6 @@ function handleDrop(e) {
     let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
-    console.log("This one: ", optionBtn[r].innerText);
     // Remove the bookmark and the options btn
     let rBtn = toAppendDiv.querySelector("button");
     let rImgFolderPlus = toAppendDiv.querySelector("img._add_to_folder_icon");
