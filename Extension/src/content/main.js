@@ -396,15 +396,37 @@ function cleanChatAndAppend(folder_div, chat, do_I_have_to, goLookUp) {
     }
 
     let allFolders = container.querySelectorAll("._la_folder");
-    for (let i = 0; i < allFolders.length; i++) {
-      let laChatsDom = allFolders[i].querySelector("span._folder_title_span");
-      let laChatsNew = folder_div.querySelector("span._folder_title_span");
+    let laChatsNew = folder_div.querySelector(
+      "span._folder_title_span"
+    ).innerText;
+    let folderExists = false;
 
-      if (laChatsDom.innerText !== laChatsNew.innerText) {
-        contentFolder.appendChild(cloneChat);
-        folder_div.appendChild(contentFolder);
-        container.appendChild(folder_div);
+    for (let i = 0; i < allFolders.length; i++) {
+      let laChatsDom = allFolders[i].querySelector(
+        "span._folder_title_span"
+      ).innerText;
+
+      if (laChatsDom === laChatsNew) {
+        folderExists = true;
+        let existingContentFolder =
+          allFolders[i].querySelector("._folder-content");
+
+        // Check if cloneChat already exists in the existingContentFolder
+        let chatExists = Array.from(existingContentFolder.children).some(
+          (child) => child.isEqualNode(cloneChat)
+        );
+
+        if (!chatExists) {
+          existingContentFolder.appendChild(cloneChat);
+        }
+        break;
       }
+    }
+
+    if (!folderExists) {
+      contentFolder.appendChild(cloneChat);
+      folder_div.appendChild(contentFolder);
+      container.appendChild(folder_div);
     }
   }
 }
@@ -575,7 +597,7 @@ let addToFolderGlobally = (chat) => {
     goLookUp = false;
     doFolderCreation().then((folder_div) => {
       insertCheckboxIntoFolder(folder_div); // Insert checkbox into the new folder
-      folderzClone.insertBefore(folder_div.cloneNode(true), saveBtn);
+      folderzClone.insertBefore(folder_div, saveBtn);
     });
   });
 
@@ -843,21 +865,31 @@ let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
     }
   });
 
+  folderEdit.addEventListener("click", () => {
+    folderMenuHolder.style.display = "none";
+    openEditPopup(folderTitle, folderTitleSpan, folderContent);
+  });
+
   // Deleting the folder
   folderDelete.addEventListener("click", () => {
     folderDiv.remove();
     openMenu = null; // Reset openMenu when folder is deleted
   });
 
-  // Add click event to edit the folder
-  folderEdit.addEventListener("click", () => {
-    folderMenuHolder.remove();
-    openEditPopup(folderTitle, folderTitleSpan, folderContent);
-    openMenu = null; // Reset openMenu when editing
-  });
-
   // Insert the new folder into the container
   if (!doNotAppend) {
+    let allFolders = container.querySelectorAll("._la_folder");
+
+    let u = -1;
+    while (++u < allFolders.length) {
+      let compText = allFolders[u].querySelector("._folder_title_container");
+
+      if (folderTitle.innerText === compText.innerText) {
+        alert("You already have a folder with this name :)");
+        return;
+      }
+    }
+
     container.appendChild(folderDiv);
   }
 
