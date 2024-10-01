@@ -246,6 +246,14 @@ body {
   cursor: pointer;
 }
 
+._fermer_btn {
+  width: 2rem;
+  position: absolute;
+  top: .2rem;
+  right: .42rem;
+  cursor: pointer;
+}
+
 ._folder_minus_icon {
   width: 1.3rem;
   height: 1.3rem;
@@ -376,3 +384,53 @@ body {
     --red-500: #ef4444;
     --red-700: #b91c1c;
     --brand-purple: #ab68ff; */
+
+
+._add_chat_div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 1.2rem;
+  border-radius: .8rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 40%;
+  overflow: hidden;
+  height: 60vh;;
+  overflow-y: scroll;
+}
+
+._add_chat_span li {
+  list-style: none;
+  color: #000;
+}
+
+#_chat_input_span {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+._chat_title {
+  color: #000;
+  font-size: 1.2rem;
+}
+
+._done_btn {
+  border-radius: .6rem;
+  width: 20%;
+  border: transparent;
+  background-color: #ff724f;
+  font-size: 1rem;
+  padding: .4rem .5rem;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  color: #21212f;
+  position: sticky;
+  left: 90%;
+  bottom: 2rem;
+}

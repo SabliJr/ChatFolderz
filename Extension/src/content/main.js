@@ -1,4 +1,5 @@
 let chats = [];
+let isFinishedLoading = false;
 
 // The chat icon
 const icon = document.createElement("img");
@@ -830,11 +831,11 @@ let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
 
   let folderDelete = createSpan(deleteTitle, deleteFolder);
   let folderEdit = createSpan(editTitle, editIcon);
-  let AddChatTitle = createSpan(addChatToAFolder, addChatIcon);
+  let addChatSpan = createSpan(addChatToAFolder, addChatIcon);
 
   folderMenuHolder.appendChild(folderDelete);
   folderMenuHolder.appendChild(folderEdit);
-  folderMenuHolder.appendChild(AddChatTitle);
+  folderMenuHolder.appendChild(addChatSpan);
 
   // Append the menu to the folder title container
   folderTitleContainer.appendChild(folderMenuHolder);
@@ -892,6 +893,64 @@ let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
 
     container.appendChild(folderDiv);
   }
+
+  addChatSpan.addEventListener("click", () => {
+    openMenu = null;
+    folderMenuHolder.style.display = "none";
+    const chatGroups = document.querySelectorAll("nav ol");
+
+    let chatDiv = document.createElement("div");
+    chatDiv.classList.add("_add_chat_div");
+
+    // Create a save button
+    let doneBtn = document.createElement("button");
+    doneBtn.innerText = "Done / Close";
+    doneBtn.classList.add("_done_btn");
+
+    if (isFinishedLoading) {
+      chatGroups.forEach((group) => {
+        const chats = group.querySelectorAll("li.relative");
+
+        for (let chat of chats) {
+          let textToAdd = chat.textContent;
+
+          let chatInput = document.createElement("input");
+          chatInput.type = "checkbox";
+          chatInput.id = "_folder_chat_input";
+
+          let chatSpan = document.createElement("span");
+          chatSpan.id = "_chat_input_span";
+
+          // Create folder name element
+          let chatTitle = document.createElement("p");
+          chatTitle.innerText = textToAdd;
+          chatTitle.classList.add("_chat_title");
+
+          // Event listener for the checkbox
+          if (chatInput) {
+            chatInput.addEventListener("change", (event) => {
+              if (event.target.checked) {
+                nCleanChatAndAppend(folderDiv, chat);
+              }
+            });
+          }
+
+          chatSpan.appendChild(chatInput);
+          chatSpan.appendChild(chatTitle);
+          chatDiv.appendChild(chatSpan);
+        }
+      });
+
+      doneBtn.addEventListener("click", () => {
+        chatDiv.remove();
+      });
+
+      chatDiv.appendChild(doneBtn);
+      document.body.appendChild(chatDiv);
+    } else {
+      alert(`Your aren't loaded please refresh the page :)`);
+    }
+  });
 
   return folderDiv;
 };
@@ -1100,6 +1159,7 @@ function handleSearchBar() {
 
 // Setup search bar events
 function setupSearchInput(inputEle) {
+  // let inputValue;
   inputEle.addEventListener("focus", () => {
     inputEle.classList.add("search-bar_focus");
   });
@@ -1108,10 +1168,7 @@ function setupSearchInput(inputEle) {
     inputEle.classList.remove("search-bar_focus");
   });
 
-  inputEle.addEventListener("input", () => {
-    const inputValue = inputEle.value;
-    // console.log(inputValue); // Debugging
-  });
+  // return inputValue;
 }
 
 // Appending element to the main container
@@ -1124,33 +1181,289 @@ mainElement.appendChild(folderz); // The folderz title
 // Initial run
 addElements();
 
-// Set up a MutationObserver to watch for new code blocks
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.type === "childList") {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          node.querySelectorAll("ol").forEach((preElement) => {
-            const codeElement = preElement.querySelector("li.relative");
+// -----------------------------------------------------------------------------------------------
+// Ensure chatContainer is correctly selected
+// let chatContainer = document.querySelector("nav div.flex-col"); // Adjust the selector as needed
+// console.log("chatContainer: ", chatContainer);
+// let nestedChatContainer = chatContainer.querySelector(
+//   "div > div.flex.flex-col"
+// ); // Adjust as needed to target the nested chat list
+// let otherEle = document.querySelectorAll("ol li.relative");
+// console.log("Other Elements: ", otherEle);
 
-            // console.log("New code element detected:", codeElement);
-            addElements();
-            // checkAndAddButton(preElement, codeElement);
-          });
-        }
-      });
-    }
-  }
-});
+// let allChats = []; // Array to store all loaded chats
+// let isLoading = false;
+
+// console.log("This is the scrollable div: ", chatContainer);
+// console.log("This is the nested chat container: ", nestedChatContainer);
+
+// MutationObserver to monitor for new chats being added
+// let observer = new MutationObserver((mutations) => {
+//   console.log("we are calling this function");
+//   mutations.forEach((mutation) => {
+//     console.log("Mo: ", mutation);
+//     if (mutation.addedNodes.length > 0) {
+//       // New chat(s) detected
+//       let newChats = Array.from(mutation.addedNodes).filter((node) =>
+//         node.matches("li")
+//       ); // Adjust chat item selector
+//       allChats.push(...newChats);
+//       console.log("New chats loaded", newChats);
+//     }
+//   });
+// });
+
+// Function to observe all <ol> elements for new chat messages
+// function observeChatLists() {
+//   let chatLists = document.querySelectorAll("nav ol");
+//   console.log("chatLists: ", chatLists);
+//   chatLists.forEach((chatList) => {
+//     observer.observe(chatList, {
+//       childList: true,
+//       subtree: true,
+//     });
+//   });
+// }
+
+// function scrollToLoadMore() {
+//   console.log("It is loading: ", isLoading);
+//   const navGap = document.querySelector("nav > :nth-child(2)");
+//   console.log("navGap: ", navGap);
+//   let clonedNav = navGap.cloneNode(true);
+//   console.log("navGap: ", clonedNav);
+
+//   // Ensure chatContainer is not null
+//   if (!clonedNav) {
+//     console.error("chatContainer is not found!");
+//     return;
+//   }
+
+//   // Scroll to the bottom
+//   clonedNav.scrollTop = clonedNav.scrollHeight;
+//   console.log(
+//     "Scrolling to bottom, scrollTop:",
+//     clonedNav.scrollTop,
+//     "scrollHeight:",
+//     clonedNav.scrollHeight
+//   );
+
+//   setTimeout(() => {
+//     let chatItemsArray = Array.from(document.querySelectorAll("nav ol"));
+//     let secondToLastChat = chatItemsArray[chatItemsArray.length - 2]; // Adjust selector for chat items
+//     console.log("Second to last chat: ", secondToLastChat);
+
+//     if (secondToLastChat) {
+//       scrollToLoadMore(); // Continue scrolling until no more chats are loaded
+//     } else {
+//       console.log("All chats loaded", secondToLastChat);
+//       // observer.disconnect(); // Stop observing when done
+//     }
+//   }, 1000); // Delay to allow chats to load
+// }
+
+// Function to observe changes in the DOM
+// function observeDOMChanges() {
+//   const targetNode = document.querySelector("nav");
+//   const config = { childList: true, subtree: true };
+
+//   const callback = (mutationsList, observer) => {
+//     for (let mutation of mutationsList) {
+//       if (mutation.type === "childList") {
+//         console.log("A child node has been added or removed.");
+//         scrollToLoadMore();
+//       }
+//     }
+//   };
+
+//   const observer = new MutationObserver(callback);
+//   observer.observe(targetNode, config);
+// }
+
+// Start observing DOM changes
+// observeDOMChanges();
+
+// Start observing chat lists and scrolling to load all chats
+// observeChatLists();
+// scrollToLoadMore();
+// setInterval(observeChatLists, 2000);
+// setInterval(scrollToLoadMore, 2000);
+
+// ----------------------------------------------------------------------------------------------------------
+
+// Set up a MutationObserver to watch for new code blocks
+// const observer = new MutationObserver((mutations) => {
+//   for (const mutation of mutations) {
+//     if (mutation.type === "childList") {
+//       mutation.addedNodes.forEach((node) => {
+//         if (node.nodeType === Node.ELEMENT_NODE) {
+//           node.querySelectorAll("ol").forEach((preElement) => {
+//             const codeElement = preElement.querySelector("li.relative");
+
+//             // console.log("New code element detected:", codeElement);
+//             addElements();
+//             // checkAndAddButton(preElement, codeElement);
+//           });
+//         }
+//       });
+//     }
+//   }
+// });
 
 // Start observing the document with the configured parameters
-const chatList = document.querySelector("ol"); // Assuming 'ol' is the container for chat elements
-if (chatList) {
-  console.log("chatList found:", chatList);
-  observer.observe(chatList, { childList: true, subtree: true });
-} else {
-  console.error("chatList not found");
-}
+// const chatList = document.querySelector("ol"); // Assuming 'ol' is the container for chat elements
+// if (chatList) {
+//   console.log("chatList found:", chatList);
+//   observer.observe(chatList, { childList: true, subtree: true });
+// } else {
+//   console.error("chatList not found");
+// }
 
 // Periodically check for new code blocks (as a fallback)
 setInterval(addElements, 2000);
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+let isLoading = false;
+let originalScrollTop = 0;
+
+function loadAllChatsInBackground() {
+  if (isLoading) return;
+  isLoading = true;
+  console.log("Starting background chat loading");
+
+  const navGap = document.querySelector("nav > :nth-child(2)");
+  if (!navGap) {
+    console.error("navGap is not found in the cloned nav!");
+    isLoading = false;
+    return;
+  }
+
+  // Store the original scroll position
+  originalScrollTop = navGap.scrollTop;
+
+  function loadMoreChats() {
+    // Scroll to trigger lazy loading
+    navGap.scrollTop = navGap.scrollHeight;
+
+    setTimeout(() => {
+      // Check if new content has been loaded
+      const chatGroups = navGap.querySelectorAll("ol");
+      let totalChats = 0;
+      chatGroups.forEach((group) => {
+        totalChats += group.querySelectorAll("li.relative").length;
+      });
+
+      if (totalChats > window.lastKnownChatCount) {
+        window.lastKnownChatCount = totalChats;
+        console.log(`Loaded ${totalChats} individual chats`);
+        loadMoreChats(); // Continue loading
+      } else {
+        console.log("All chats loaded");
+        // Log all loaded chats
+        // chatGroups.forEach((chatGroup, groupIndex) => {
+        //   const groupTitle = chatGroup.previousElementSibling
+        //     ? chatGroup.previousElementSibling.textContent.trim()
+        //     : `Group ${groupIndex + 1}`;
+        //   console.log(`Chat group: ${groupTitle}`);
+        //   const chats = chatGroup.querySelectorAll("li.relative");
+        //   chats.forEach((chat, chatIndex) => {
+        //     console.log(
+        //       `  Chat ${chatIndex + 1}: ${chat.textContent.substring(0, 50)}...`
+        //     );
+        //   });
+        // });
+        // Restore the original scroll position
+        navGap.scrollTop = originalScrollTop;
+        isLoading = false;
+        isFinishedLoading = true;
+        // processLoadedChats();
+      }
+    }, 1000); // Adjust timeout as needed
+  }
+
+  // Initialize lastKnownChatCount if not set
+  if (typeof window.lastKnownChatCount === "undefined") {
+    window.lastKnownChatCount = Array.from(
+      navGap.querySelectorAll("ol")
+    ).reduce(
+      (total, group) => total + group.querySelectorAll("li.relative").length,
+      0
+    );
+  }
+
+  loadMoreChats();
+}
+
+// function processLoadedChats() {
+//   const chatGroups = document.querySelectorAll("nav ol");
+//   let totalChats = 0;
+//   chatGroups.forEach((group) => {
+//     totalChats += group.querySelectorAll("li.relative").length;
+//   });
+//   // console.log(`Processing ${totalChats} individual chats`);
+//   // Add your chat processing logic here
+//   // For example:
+//   let inputValue;
+//   const inputEle = document.querySelector(".search-bar");
+//   const addChatsIcon = document.querySelector("_folder_menu_chat_icon");
+//   console.log("inputEle: ", inputEle);
+//   console.log("addChatsIcon: ", addChatsIcon);
+//   inputEle.addEventListener("input", () => {
+//     inputValue = inputEle.value;
+//     console.log(inputValue); // Debugging
+
+//     chatGroups.forEach((group, groupIndex) => {
+//       const chats = group.querySelectorAll("li.relative");
+//       let searchRes = chats.filter((chat) => chat.innerText === inputValue);
+//       searchRes.forEach((chat, chatIndex) => {
+//         // Process each chat item
+//         console.log(chat);
+//         // You can extract information, modify content, etc.
+//         // console.log(`Processing chat ${groupIndex + 1}.${chatIndex + 1}`);
+//       });
+//     });
+//   });
+//   let searchInput = inputEle.value;
+//   console.log("searchInput: ", inputValue);
+// }
+
+// Throttle function remains the same
+function throttle(func, limit) {
+  let inThrottle;
+  return function () {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+
+// Throttled version of loadAllChatsInBackground
+const throttledLoadChats = throttle(loadAllChatsInBackground, 5000);
+
+// Call this function to start loading all chats in the background
+// throttledLoadChats();
+
+function observeDOMChanges() {
+  const targetNode = document.querySelector("nav");
+  const config = { childList: true, subtree: true };
+
+  const callback = (mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+      if (mutation.type === "childList") {
+        console.log("A child node has been added or removed.");
+        throttledLoadChats();
+      }
+    }
+  };
+
+  const observer = new MutationObserver(callback);
+  observer.observe(targetNode, config);
+}
+
+observeDOMChanges();
+
+// Call this function to start loading all chats in the background
+// throttledLoadChats();
