@@ -1159,7 +1159,6 @@ function handleSearchBar() {
 
 // Setup search bar events
 function setupSearchInput(inputEle) {
-  // let inputValue;
   inputEle.addEventListener("focus", () => {
     inputEle.classList.add("search-bar_focus");
   });
@@ -1168,7 +1167,44 @@ function setupSearchInput(inputEle) {
     inputEle.classList.remove("search-bar_focus");
   });
 
-  // return inputValue;
+  inputEle.addEventListener("input", () => {
+    let searchTerm = searchInput.value.toLowerCase();
+    const chatGroups = document.querySelectorAll("nav ol");
+
+    if (isFinishedLoading) {
+      chatGroups.forEach((group) => {
+        let chats = group.querySelectorAll("li.relative");
+
+        chats.forEach((chat) => {
+          if (searchTerm === "") {
+            // Reset visibility when search term is empty
+            chat.style.display = "";
+          } else if (chat.textContent.toLowerCase().includes(searchTerm)) {
+            chat.style.display = "";
+          } else {
+            chat.style.backgroundColor = "";
+            chat.style.display = "none";
+          }
+        });
+
+        // After filtering chats, remove empty groups
+        const chatGroups = document.querySelectorAll(
+          "nav div.flex.flex-col div.relative.mt-5.first\\:mt-0.last\\:mb-5"
+        );
+
+        chatGroups.forEach((group) => {
+          const visibleChats = group.querySelectorAll(
+            "li.relative:not([style*='display: none'])"
+          );
+          if (visibleChats.length === 0) {
+            group.style.display = "none";
+          } else {
+            group.style.display = "";
+          }
+        });
+      });
+    }
+  });
 }
 
 // Appending element to the main container
