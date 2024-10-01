@@ -1,4 +1,4 @@
-let chats = [];
+// let chats = [];
 let isFinishedLoading = false;
 
 // The chat icon
@@ -931,6 +931,14 @@ let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
             chatInput.addEventListener("change", (event) => {
               if (event.target.checked) {
                 nCleanChatAndAppend(folderDiv, chat);
+              } else {
+                let folderChats = folderDiv.querySelectorAll("li.relative");
+
+                for (let i = 0; i < folderChats.length; i++) {
+                  let folderChatText = folderChats[i].textContent;
+                  if (folderChatText === chat.textContent)
+                    folderChats[i].remove();
+                }
               }
             });
           }
@@ -1132,7 +1140,7 @@ function addElements() {
     const firstChild = element.firstChild;
     if (!firstChild || !firstChild.id?.includes("custom-icon")) {
       element.insertBefore(icon.cloneNode(true), firstChild); // Add the custom icon
-      chats.push(element.innerText); // Add to chats array if not already present
+      // chats.push(element.innerText); // Add to chats array if not already present
     }
   });
 
@@ -1364,11 +1372,9 @@ let originalScrollTop = 0;
 function loadAllChatsInBackground() {
   if (isLoading) return;
   isLoading = true;
-  console.log("Starting background chat loading");
 
   const navGap = document.querySelector("nav > :nth-child(2)");
   if (!navGap) {
-    console.error("navGap is not found in the cloned nav!");
     isLoading = false;
     return;
   }
@@ -1390,28 +1396,12 @@ function loadAllChatsInBackground() {
 
       if (totalChats > window.lastKnownChatCount) {
         window.lastKnownChatCount = totalChats;
-        console.log(`Loaded ${totalChats} individual chats`);
         loadMoreChats(); // Continue loading
       } else {
-        console.log("All chats loaded");
-        // Log all loaded chats
-        // chatGroups.forEach((chatGroup, groupIndex) => {
-        //   const groupTitle = chatGroup.previousElementSibling
-        //     ? chatGroup.previousElementSibling.textContent.trim()
-        //     : `Group ${groupIndex + 1}`;
-        //   console.log(`Chat group: ${groupTitle}`);
-        //   const chats = chatGroup.querySelectorAll("li.relative");
-        //   chats.forEach((chat, chatIndex) => {
-        //     console.log(
-        //       `  Chat ${chatIndex + 1}: ${chat.textContent.substring(0, 50)}...`
-        //     );
-        //   });
-        // });
         // Restore the original scroll position
         navGap.scrollTop = originalScrollTop;
         isLoading = false;
         isFinishedLoading = true;
-        // processLoadedChats();
       }
     }, 1000); // Adjust timeout as needed
   }
@@ -1429,39 +1419,6 @@ function loadAllChatsInBackground() {
   loadMoreChats();
 }
 
-// function processLoadedChats() {
-//   const chatGroups = document.querySelectorAll("nav ol");
-//   let totalChats = 0;
-//   chatGroups.forEach((group) => {
-//     totalChats += group.querySelectorAll("li.relative").length;
-//   });
-//   // console.log(`Processing ${totalChats} individual chats`);
-//   // Add your chat processing logic here
-//   // For example:
-//   let inputValue;
-//   const inputEle = document.querySelector(".search-bar");
-//   const addChatsIcon = document.querySelector("_folder_menu_chat_icon");
-//   console.log("inputEle: ", inputEle);
-//   console.log("addChatsIcon: ", addChatsIcon);
-//   inputEle.addEventListener("input", () => {
-//     inputValue = inputEle.value;
-//     console.log(inputValue); // Debugging
-
-//     chatGroups.forEach((group, groupIndex) => {
-//       const chats = group.querySelectorAll("li.relative");
-//       let searchRes = chats.filter((chat) => chat.innerText === inputValue);
-//       searchRes.forEach((chat, chatIndex) => {
-//         // Process each chat item
-//         console.log(chat);
-//         // You can extract information, modify content, etc.
-//         // console.log(`Processing chat ${groupIndex + 1}.${chatIndex + 1}`);
-//       });
-//     });
-//   });
-//   let searchInput = inputEle.value;
-//   console.log("searchInput: ", inputValue);
-// }
-
 // Throttle function remains the same
 function throttle(func, limit) {
   let inThrottle;
@@ -1478,9 +1435,6 @@ function throttle(func, limit) {
 
 // Throttled version of loadAllChatsInBackground
 const throttledLoadChats = throttle(loadAllChatsInBackground, 5000);
-
-// Call this function to start loading all chats in the background
-// throttledLoadChats();
 
 function observeDOMChanges() {
   const targetNode = document.querySelector("nav");
@@ -1500,6 +1454,3 @@ function observeDOMChanges() {
 }
 
 observeDOMChanges();
-
-// Call this function to start loading all chats in the background
-// throttledLoadChats();
