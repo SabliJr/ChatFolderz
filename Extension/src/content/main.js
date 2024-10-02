@@ -186,13 +186,14 @@ let addToggleListener = (
   return toggleBookmark;
 };
 
-function addToBookmarkedFolder(chat) {
+function addToBookmarkedFolder(chat, isFromStorage = false) {
   let bookmarkedFolder = createBookmarks();
   let bookmarkedChatContainer = bookmarkedFolder.querySelector(
     "._bookmarked_chats_container"
   );
+
   if (bookmarkedChatContainer) {
-    let clonedChat = chat.cloneNode(true);
+    let clonedChat = isFromStorage ? chat : chat.cloneNode(true);
 
     // Remove the options button
     let optionBtn = clonedChat.querySelector(
@@ -278,6 +279,16 @@ function addToBookmarkedFolder(chat) {
 
     // Append the cloned chat to the bookmarked container
     bookmarkedChatContainer.appendChild(clonedChat);
+
+    // Save the bookmark if it wasn't loaded from storage
+    if (!isFromStorage) {
+      let bookmarkData = {
+        id: chat.dataset.chatId || new Date().getTime(), // Use chat id or timestamp if id is not available
+        content: clonedChat.outerHTML,
+      };
+
+      saveBookmarkToStorage(bookmarkData);
+    }
   }
 }
 
@@ -295,6 +306,7 @@ const removeUnbookmarkedChat = (unbookmarkedChat) => {
   for (let chat of bookmarkedChats) {
     if (chat.innerText === unbookmarkedChatData) {
       bookmarkedChatContainer.removeChild(chat);
+      removeBookmarkFromStorage(unbookmarkedChat); // Remove the chat from storage as well
       break;
     }
   }
@@ -749,7 +761,13 @@ const doChatCleaning = (toAppendDiv, elementToRemove) => {
 };
 
 let openMenu = null; // Track the currently open menu
-let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
+let createNewFolder = (
+  folderName,
+  colorVal,
+  container,
+  doNotAppend,
+  isFromStorage = false
+) => {
   // Create new folder element
   let folderDiv = document.createElement("div");
   folderDiv.classList.add("_la_folder");
@@ -960,6 +978,11 @@ let createNewFolder = (folderName, colorVal, container, doNotAppend) => {
     }
   });
 
+  if (!isFromStorage) {
+    // Save folder to storage
+    saveFolderToStorage(folderName, colorVal);
+  }
+
   return folderDiv;
 };
 
@@ -1025,6 +1048,8 @@ let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
       folderTitleSpan.style.backgroundColor = `${colorVal}`;
       folderContent.style.borderLeft = `1.3px solid ${colorVal}`;
       onRemovePop(popup);
+
+      updateFolderInStorage(folderName, colorVal);
     } else {
       alert("Please enter a valid folder name.");
     }
@@ -1168,11 +1193,11 @@ function handleSearchBar() {
 // Setup search bar events
 function setupSearchInput(inputEle) {
   inputEle.addEventListener("focus", () => {
-    inputEle.classList.add("search-bar_focus");
+    inputEle.id = "search-bar_focus";
   });
 
   inputEle.addEventListener("blur", () => {
-    inputEle.classList.remove("search-bar_focus");
+    inputEle.id = "";
   });
 
   inputEle.addEventListener("input", () => {
@@ -1306,7 +1331,6 @@ function observeDOMChanges() {
   const callback = (mutationsList, observer) => {
     for (let mutation of mutationsList) {
       if (mutation.type === "childList") {
-        console.log("A child node has been added or removed.");
         throttledLoadChats();
       }
     }
@@ -1317,3 +1341,106 @@ function observeDOMChanges() {
 }
 
 observeDOMChanges();
+
+// ---------------------------------------------------------------------------------------------------
+// Implementing storage:
+
+function loadFoldersFromStorage() {
+  chrome.storage.sync.get({ folders: [] }, (data) => {
+    const folders = data.folders;
+    folders.forEach((folder) => {
+      createNewFolder(folder.name, folder.color, container, true);
+    });
+  });
+}
+
+function loadBookmarksFromStorage() {
+  chrome.storage.sync.get(["bookmarks"], (result) => {
+    let bookmarks = result.bookmarks || [];
+
+    bookmarks.forEach((bookmarkData) => {
+      // Use a temporary container to store the bookmark content
+      let tempDiv = document.createElement("div");
+      tempDiv.innerHTML = bookmarkData.content;
+
+      // Extract the `li` element from the container
+      let chat = tempDiv.querySelector("li");
+      if (chat) {
+        addToBookmarkedFolder(chat, true); // Pass true to indicate it's from storage
+      }
+    });
+  });
+}
+
+function saveBookmarkToStorage(bookmarkData) {
+  // Get the existing bookmarks from storage
+  chrome.storage.sync.get(["bookmarks"], (result) => {
+    let bookmarks = result.bookmarks || [];
+    bookmarks.push(bookmarkData);
+
+    // Save the updated bookmarks back to storage
+    chrome.storage.sync.set({ bookmarks });
+  });
+}
+
+function removeBookmarkFromStorage(chatToRemove) {
+  // Get the existing bookmarks from storage
+  chrome.storage.sync.get(["bookmarks"], (result) => {
+    let bookmarks = result.bookmarks || [];
+
+    const chatToRemoveData = chatToRemove.innerText;
+
+    // Filter out the bookmark that matches the chat to be removed
+    bookmarks = bookmarks.filter((bookmarkData) => {
+      // Use a temporary container to store the bookmark content
+      let tempDiv = document.createElement("div");
+      tempDiv.innerHTML = bookmarkData.content;
+
+      // Extract the `li` element from the container
+      let chat = tempDiv.querySelector("li");
+      return chat && chat.innerText !== chatToRemoveData;
+    });
+
+    // Save the updated bookmarks back to storage
+    chrome.storage.sync.set({ bookmarks });
+  });
+}
+
+function updateFolderInStorage(folderName, colorVal) {
+  chrome.storage.sync.get({ folders: [] }, (data) => {
+    const folders = data.folders;
+
+    // Find the folder and update its data
+    const folderIndex = folders.findIndex(
+      (folder) => folder.name === folderTitle.innerText
+    );
+    if (folderIndex > -1) {
+      folders[folderIndex] = { name: folderName, color: colorVal };
+    }
+
+    // Save the updated folders array
+    chrome.storage.sync.set({ folders: folders });
+  });
+}
+
+function saveFolderToStorage(folderName, colorVal) {
+  // Retrieve existing folders from storage
+  chrome.storage.sync.get({ folders: [] }, (data) => {
+    const folders = data.folders;
+
+    // Add new folder to the folders array
+    folders.push({
+      name: folderName,
+      color: colorVal,
+    });
+
+    // Save the updated folders array back to storage
+    chrome.storage.sync.set({ folders: folders });
+  });
+}
+
+// Call these functions when the extension and the dom loads
+window.addEventListener("load", () => {
+  loadBookmarksFromStorage();
+  loadFoldersFromStorage();
+});
