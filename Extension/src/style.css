@@ -38,12 +38,12 @@ body {
   color: #000;
 }
 
-.search-bar_focus {
+#search-bar_focus {
   border: none;
   outline: none;
 }
 
-.search-bar:focus {
+input.search-bar:focus {
   border: none;
   outline: none;
 }

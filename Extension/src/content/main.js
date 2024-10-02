@@ -270,6 +270,22 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
               false
             );
 
+            let folderId = Date.now().toString(); // Generate a unique id
+            let folderData = {
+              id: folderId,
+              name: folderName,
+              color: colorVal,
+              chats: [], // Initialize an empty array for chats
+            };
+
+            console.log("chat chat: ", chat);
+
+            folderData.chats.push({
+              id: chat.dataset.chatId,
+              content: chat.outerHTML,
+            });
+
+            saveFolderToStorage(folderData);
             nCleanChatAndAppend(folder_div, chat);
 
             // At the end remove the popup
@@ -371,24 +387,31 @@ function nCleanChatAndAppend(folder_div, chat) {
   doChatCleaning(toAppendDiv, cloneChat);
   if (folderContent) {
     // Adding the chat to the storage
-    chrome.storage.sync.get(["folders"], (result) => {
-      let folders = result.folders || [];
-      let folderId = folder_div.dataset.folderId;
+    // chrome.storage.sync.get(["folders"], (result) => {
+    //   let folders = result.folders || [];
+    //   console.log("Folders from the storage: ", folders);
+    //   let folderTitle = folder_div.querySelector(
+    //     "._folder_title_span"
+    //   )?.innerText;
 
-      // Find the folder in storage
-      let folder = folders.find((f) => f.id === folderId);
-      if (folder) {
-        // Add the chat's HTML and any other metadata you want to save
-        let chatData = {
-          id: cloneChat.dataset.chatId,
-          content: cloneChat.outerHTML,
-        };
+    //   console.log("folder Id from nClean: ", folderTitle);
 
-        // Add the chat to the folder's chats array
-        folder.chats.push(chatData);
-        saveFolderToStorage(folder);
-      }
-    });
+    //   // Find the folder in storage
+    //   let folder = folders.find((f) => f.name === folderTitle);
+    //   console.log("The found folder: ", folder);
+    //   if (folder) {
+    //     // Add the chat's HTML and any other metadata you want to save
+    //     let chatData = {
+    //       id: cloneChat.dataset.chatId,
+    //       content: cloneChat.outerHTML,
+    //     };
+
+    //     // Add the chat to the folder's chats array
+    //     folder.chats.push(chatData);
+    //     console.log("The save folder: ", folder);
+    //     saveFolderToStorage(folder);
+    //   }
+    // });
 
     // Then append it to the folder
     folderContent.appendChild(cloneChat);
@@ -584,6 +607,22 @@ let addBookmarkIcons = () => {
                   false
                 );
 
+                let folderId = Date.now().toString(); // Generate a unique id
+                let folderData = {
+                  id: folderId,
+                  name: folderName,
+                  color: colorVal,
+                  chats: [], // Initialize an empty array for chats
+                };
+
+                console.log("chat chat: ", chat);
+
+                folderData.chats.push({
+                  id: chat.dataset.chatId,
+                  content: chat.outerHTML,
+                });
+
+                saveFolderToStorage(folderData);
                 nCleanChatAndAppend(folder_div, chat);
 
                 // At the end remove the popup
@@ -800,15 +839,15 @@ function handleDrop(e) {
 
   chrome.storage.sync.get(["folders"], (result) => {
     let folders = result.folders || [];
-    let folderId = laFolder.dataset.folderId;
+    let folderTitle = laFolder.innerText;
 
     // Find the folder in storage
-    let folder = folders.find((f) => f.id === folderId);
+    let folder = folders.find((f) => f.name === folderTitle);
     if (folder) {
       // Add the chat's HTML and any other metadata you want to save
       let chatData = {
-        id: cloneChat.dataset.chatId,
-        content: cloneChat.outerHTML,
+        id: clonedElement.dataset.chatId,
+        content: clonedElement.outerHTML,
       };
 
       // Add the chat to the folder's chats array
@@ -974,11 +1013,15 @@ let createNewFolder = (
 
   folderEdit.addEventListener("click", () => {
     folderMenuHolder.style.display = "none";
-    openEditPopup(folderTitle, folderTitleSpan, folderContent);
+    let oldFolderName = folderTitle.innerText;
+    openEditPopup(folderTitle, folderTitleSpan, folderContent, oldFolderName);
   });
 
   // Deleting the folder
   folderDelete.addEventListener("click", () => {
+    let folderName = folderTitle.innerText;
+
+    ft_delete_folder(folderName);
     folderDiv.remove();
     openMenu = null; // Reset openMenu when folder is deleted
   });
@@ -1013,6 +1056,8 @@ let createNewFolder = (
     doneBtn.innerText = "Done / Close";
     doneBtn.classList.add("_done_btn");
 
+    // This is to prevent adding chats to a folder if they did load all!
+    // isFinishLoading variable is glob that checks if the chat's has been loaded or not
     if (isFinishedLoading) {
       chatGroups.forEach((group) => {
         const chats = group.querySelectorAll("li.relative");
@@ -1036,6 +1081,22 @@ let createNewFolder = (
           if (chatInput) {
             chatInput.addEventListener("change", (event) => {
               if (event.target.checked) {
+                let folderId = Date.now().toString(); // Generate a unique id
+                let folderData = {
+                  id: folderId,
+                  name: folderName,
+                  color: colorVal,
+                  chats: [], // Initialize an empty array for chats
+                };
+
+                console.log("chat chat: ", chat);
+
+                folderData.chats.push({
+                  id: chat.dataset.chatId,
+                  content: chat.outerHTML,
+                });
+
+                saveFolderToStorage(folderData);
                 nCleanChatAndAppend(folderDiv, chat);
               } else {
                 let folderChats = folderDiv.querySelectorAll("li.relative");
@@ -1087,10 +1148,6 @@ let createNewFolder = (
       chats: [], // Initialize an empty array for chats
     };
 
-    console.log("name: ", folderData.name);
-    console.log("color: ", folderData.color);
-    console.log("id: ", folderData.id);
-
     saveFolderToStorage(folderData); // Save folder to storage
   }
 
@@ -1131,7 +1188,12 @@ function rgbToHex(rgb) {
 }
 
 // This function is to edit the folder
-let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
+let openEditPopup = (
+  folderTitle,
+  folderTitleSpan,
+  folderContent,
+  oldFolderName
+) => {
   let popup = createPopup(); // Create and append popup to body again to edit it
 
   // Get the original folder name and color
@@ -1158,9 +1220,9 @@ let openEditPopup = (folderTitle, folderTitleSpan, folderContent) => {
       folderTitle.innerText = folderName;
       folderTitleSpan.style.backgroundColor = `${colorVal}`;
       folderContent.style.borderLeft = `1.3px solid ${colorVal}`;
-      onRemovePop(popup);
 
-      updateFolderInStorage(folderName, colorVal);
+      updateFolderInStorage(folderName, colorVal, oldFolderName);
+      onRemovePop(popup);
     } else {
       alert("Please enter a valid folder name.");
     }
@@ -1508,51 +1570,9 @@ function removeBookmarkFromStorage(chatToRemove) {
   });
 }
 
-// function loadFoldersFromStorage() {
-//   chrome.storage.sync.get(["folders"], (result) => {
-//     let folders = result.folders || [];
-//     console.log("Folders: ", folders);
-
-//     folders.forEach((folderData) => {
-//       console.log("The folder itself: ", folderData);
-//       console.log("loaded folder name: ", folderData.name);
-//       console.log("loaded folder color: ", folderData.color);
-
-//       let folderContainer = document.querySelector("._folderz");
-//       let folderElement = createNewFolder(
-//         folderData.name,
-//         folderData.color,
-//         folderContainer,
-//         true,
-//         false
-//       );
-
-//       // Append the folder to the container
-//       folderContainer.appendChild(folderElement);
-
-//       // Now load the chats stored in this folder
-//       folderData.chats.forEach((chatData) => {
-//         // Recreate the chat element from its stored HTML
-//         let tempDiv = document.createElement("div");
-//         tempDiv.innerHTML = chatData.content;
-//         let chatElement = tempDiv.querySelector("li"); // Assuming chats are `li` elements
-
-//         // Append the chat to the folder in the DOM
-//         let folderChatsContainer = folderElement.querySelector(
-//           "._folder_chats_container"
-//         );
-//         if (folderChatsContainer) {
-//           folderChatsContainer.appendChild(chatElement);
-//         }
-//       });
-//     });
-//   });
-// }
-
 function loadFoldersFromStorage() {
   chrome.storage.sync.get(["folders"], (result) => {
     let folders = result.folders || [];
-    console.log("Folders: ", folders);
 
     folders.forEach((folderData) => {
       // Check if the folder has an id, if not, generate one and update it in storage
@@ -1561,17 +1581,13 @@ function loadFoldersFromStorage() {
         saveFolderToStorage(folderData); // Save the folder with the new id back to storage
       }
 
-      console.log("The folder itself: ", folderData);
-      console.log("loaded folder name: ", folderData.name);
-      console.log("loaded folder color: ", folderData.color);
-
       let folderContainer = document.querySelector("._folderz");
       let folderElement = createNewFolder(
         folderData.name,
         folderData.color,
         folderContainer,
         true,
-        false
+        true
       );
 
       // Append the folder to the container
@@ -1585,9 +1601,9 @@ function loadFoldersFromStorage() {
         let chatElement = tempDiv.querySelector("li"); // Assuming chats are `li` elements
 
         // Append the chat to the folder in the DOM
-        let folderChatsContainer = folderElement.querySelector(
-          "._folder_chats_container"
-        );
+        let folderChatsContainer =
+          folderElement.querySelector("._folder-content");
+
         if (folderChatsContainer) {
           folderChatsContainer.appendChild(chatElement);
         }
@@ -1596,14 +1612,15 @@ function loadFoldersFromStorage() {
   });
 }
 
-function updateFolderInStorage(folderName, colorVal) {
-  chrome.storage.sync.get({ folders: [] }, (data) => {
+function updateFolderInStorage(folderName, colorVal, oldFolderName) {
+  chrome.storage.sync.get(["folders"], (data) => {
     const folders = data.folders;
 
     // Find the folder and update its name and color
     const folderIndex = folders.findIndex(
-      (folder) => folder.name === folderTitle.innerText
+      (folder) => folder.name === oldFolderName
     );
+
     if (folderIndex > -1) {
       folders[folderIndex].name = folderName;
       folders[folderIndex].color = colorVal;
@@ -1617,6 +1634,9 @@ function updateFolderInStorage(folderName, colorVal) {
 function saveFolderToStorage(folderData) {
   chrome.storage.sync.get(["folders"], (result) => {
     let folders = result.folders || [];
+
+    console.log("We are adding the folder first");
+    console.log("id :", folderData.chats);
 
     // Check if folder already exists, and update it if necessary
     let existingFolderIndex = folders.findIndex((f) => f.id === folderData.id);
@@ -1665,23 +1685,17 @@ function removeChatFromFolder(folderId, chatText) {
   });
 }
 
-function deleteFolder(folderId) {
+function ft_delete_folder(folderName) {
   chrome.storage.sync.get(["folders"], (result) => {
     let folders = result.folders || [];
 
     // Find the index of the folder to delete
-    const folderIndex = folders.findIndex((f) => f.id === folderId);
-
+    const folderIndex = folders.findIndex((f) => f.name === folderName);
     if (folderIndex > -1) {
-      // Remove the folder from the array
-      folders.splice(folderIndex, 1);
+      folders.splice(folderIndex, 1); // Remove the folder from the array
 
       // Save the updated folders array back to storage
-      chrome.storage.sync.set({ folders }, () => {
-        console.log(
-          `Folder with ID ${folderId} and its contents have been deleted.`
-        );
-      });
+      chrome.storage.sync.set({ folders });
     }
   });
 }
