@@ -373,8 +373,8 @@ function nCleanChatAndAppend(folder_div, chat) {
     "div.no-draggable span[data-state='closed']"
   );
 
-  doChatCleaning(toAppendDiv, cloneChat);
   let folderId = folder_div.id;
+  doChatCleaning(toAppendDiv, cloneChat, folderId, folder_div);
   if (folderContent) {
     chrome.storage.local.get(["folders"], (result) => {
       let folders = result.folders || [];
@@ -453,7 +453,6 @@ let addIconsToChat = () => {
             addToFolderGlobally(chat);
           } else {
             let popup = createPopup();
-            console.log("We are here going to add to the folder");
 
             // Add event listener to update the folder upon popup confirmation
             popup
@@ -506,8 +505,8 @@ const addingToStorageWhileCreatingFirstFolder = (
     "div.no-draggable span[data-state='closed']"
   );
 
-  doChatCleaning(toAppendDiv, cloneChat);
   let folderId = folder_div.id; //Get the unique id of the folder that was assigned during the creation
+  doChatCleaning(toAppendDiv, cloneChat, folderId, folder_div);
   let folderData = {
     id: folderId,
     name: folderName,
@@ -661,10 +660,17 @@ function handleDragOver(e) {
 }
 
 // Define the event listener function
-const removeClickEvent = (elementToRemove, folderMinusIcon) => {
+const removeClickEvent = (
+  elementToRemove,
+  folderMinusIcon,
+  folderId,
+  theFolder
+) => {
   return () => {
     if (elementToRemove) {
+      let chatText = elementToRemove.innerText;
       elementToRemove.remove(); // Remove the element
+      removeChatFromFolder(folderId, chatText, theFolder);
       folderMinusIcon.removeEventListener("click", removeClickEvent); // Remove the click event listener
     }
   };
@@ -716,7 +722,7 @@ function handleDrop(e) {
     let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
-    doChatCleaning(toAppendDiv, optionBtn[r]);
+    doChatCleaning(toAppendDiv, optionBtn[r], folder_id, laFolder);
   }
 
   chrome.storage.local.get(["folders"], (result) => {
@@ -737,10 +743,7 @@ function handleDrop(e) {
   });
 }
 
-const doChatCleaning = (toAppendDiv, elementToRemove) => {
-  console.log("T f..ing remove: ", elementToRemove);
-  console.log("To addend: ", toAppendDiv);
-
+const doChatCleaning = (toAppendDiv, elementToRemove, folderId, theFolder) => {
   // Remove the bookmark and the options btn
   let rBtn = toAppendDiv.querySelector("button");
   let rImgFolderPlus = toAppendDiv.querySelector("img._add_to_folder_icon");
@@ -764,8 +767,12 @@ const doChatCleaning = (toAppendDiv, elementToRemove) => {
     // const elementToRemove = optionBtn[r]; // Capture the element to remove before attaching the listener
 
     // Attach the event listener for removing the specific element
-    console.log("The element to remove it: ", elementToRemove);
-    let handleRemoveClick = removeClickEvent(elementToRemove, folderMinusIcon);
+    let handleRemoveClick = removeClickEvent(
+      elementToRemove,
+      folderMinusIcon,
+      folderId,
+      theFolder
+    );
     folderMinusIcon.addEventListener("click", handleRemoveClick);
   }
 };
@@ -1009,8 +1016,6 @@ let createNewFolder = (
   });
 
   if (!isFromStorage) {
-    console.log("The folder id that is appended: ", folderDiv.id);
-
     let folderData = {
       id: folderDiv.id,
       name: folderName,
@@ -1438,7 +1443,6 @@ function removeBookmarkFromStorage(chatToRemove) {
 function loadFoldersFromStorage() {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
-    console.log("Folders loaded from storage:", folders);
 
     folders.forEach((folderData) => {
       let folderContainer = document.querySelector("._folderz");
@@ -1461,17 +1465,17 @@ function loadFoldersFromStorage() {
         tempDiv.innerHTML = chatData.content;
         let chatElement = tempDiv.querySelector("li");
 
-        let chatRemoveIcon = chatElement.querySelector("._folder_minus_icon");
-        let chatText = chatElement.innerText;
-
-        chatRemoveIcon.addEventListener("click", () => {
-          removeChatFromFolder(folderData.id, chatText);
-        });
-
         let folderChatsContainer =
           folderElement.querySelector("._folder-content");
         if (folderChatsContainer) {
           folderChatsContainer.appendChild(chatElement);
+
+          let chatRemoveIcon = chatElement.querySelector("._folder_minus_icon");
+          let chatText = chatElement.innerText;
+
+          chatRemoveIcon.addEventListener("click", () => {
+            removeChatFromFolder(folderData.id, chatText, folderChatsContainer);
+          });
         }
       });
     });
@@ -1498,11 +1502,9 @@ function updateFolderInStorage(folderName, colorVal, folderId) {
 function saveChatAndFoldersToStorage(folderData) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
-    console.log("The foz: ", folders);
 
     // Check if folder already exists, and update it if necessary
     let existingFolderIndex = folders.findIndex((f) => f.id === folderData.id);
-    console.log("Update this one: ", existingFolderIndex);
     if (existingFolderIndex !== -1) {
       // Update the existing folder
       folders[existingFolderIndex] = folderData;
@@ -1511,16 +1513,11 @@ function saveChatAndFoldersToStorage(folderData) {
     }
 
     // Save folders back to storage
-    chrome.storage.local.set({ folders: folders }, () => {
-      console.log("Folder saved successfully:", folderData);
-      if (chrome.runtime.lastError) {
-        console.error("Error saving folder:", chrome.runtime.lastError);
-      }
-    });
+    chrome.storage.local.set({ folders: folders });
   });
 }
 
-function removeChatFromFolder(folderId, chatText) {
+function removeChatFromFolder(folderId, chatText, theFolder) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
 
@@ -1539,9 +1536,12 @@ function removeChatFromFolder(folderId, chatText) {
       if (chatIndex > -1) {
         // Remove the chat from the folder
         folder.chats.splice(chatIndex, 1);
-        // console.log('To remove index: ', chatIndex);
-        // let updateFolder = document.querySelector(`#${folderId}`);
-        // console.log('To remove the chat from folder: ', updateFolder);
+        let updateFolder = theFolder.querySelectorAll("li.relative");
+        let idx = -1;
+        while (++idx < updateFolder.length) {
+          let removeChatText = updateFolder[idx].innerText;
+          if (removeChatText === chatText) updateFolder[idx].remove();
+        }
 
         // Save the updated folder back to storage
         saveChatAndFoldersToStorage(folder);
@@ -1608,8 +1608,7 @@ const saveChatsToFolders = async (
           "div.no-draggable span[data-state='closed']"
         );
 
-        doChatCleaning(toAppendDiv, cloneChat);
-        console.log("The folder id: ", folderId);
+        doChatCleaning(toAppendDiv, cloneChat, folderId, folder);
         if (folderContent && goLookUp) {
           const chatData = { content: cloneChat.outerHTML };
           foldersToUpdate.push({ id: folderId, chatData });
@@ -1685,10 +1684,7 @@ function updateFoldersInStorage(foldersToUpdate) {
       let folders = result.folders || [];
       foldersToUpdate.forEach((folderToUpdate) => {
         let existingFolder = folders.find((f) => f.id === folderToUpdate.id);
-        if (existingFolder) {
-          console.log("The updating folder: ", existingFolder);
-          existingFolder.chats.push(folderToUpdate.chatData);
-        }
+        if (existingFolder) existingFolder.chats.push(folderToUpdate.chatData);
       });
       chrome.storage.local.set({ folders: folders }, () => {
         resolve();
