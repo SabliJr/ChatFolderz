@@ -374,7 +374,7 @@ function nCleanChatAndAppend(folder_div, chat) {
   );
 
   let folderId = folder_div.id;
-  doChatCleaning(toAppendDiv, cloneChat, folderId, folder_div);
+  doChatCleaning(toAppendDiv, cloneChat, folderId);
   if (folderContent) {
     chrome.storage.local.get(["folders"], (result) => {
       let folders = result.folders || [];
@@ -506,7 +506,7 @@ const addingToStorageWhileCreatingFirstFolder = (
   );
 
   let folderId = folder_div.id; //Get the unique id of the folder that was assigned during the creation
-  doChatCleaning(toAppendDiv, cloneChat, folderId, folder_div);
+  doChatCleaning(toAppendDiv, cloneChat, folderId);
   let folderData = {
     id: folderId,
     name: folderName,
@@ -532,8 +532,22 @@ function doFolderCreation() {
       let folderName = popup.querySelector("._folder_name_input").value.trim();
       let colorVal = popup.querySelector("._folder_color_input").value;
       let container = document.querySelector("._folderz");
+      let allFolders = container.querySelectorAll("._la_folder");
 
-      // Create New Folder
+      // Check if a folder with the same name already exists
+      let duplicateFolder = Array.from(allFolders).some((folder) => {
+        let existingFolderName =
+          folder.querySelector("._folder-name").innerText;
+
+        return existingFolderName.toLowerCase() === folderName.toLowerCase();
+      });
+
+      if (duplicateFolder) {
+        alert("A folder with this name already exists!");
+        return;
+      }
+
+      // Create New Folder if no duplicates
       let folder_div = createNewFolder(
         folderName,
         colorVal,
@@ -604,6 +618,7 @@ let addToFolderGlobally = (chat) => {
   let laCreateBtn = folderzClone.querySelector("._create_folder_container");
   laCreateBtn.addEventListener("click", () => {
     goLookUp = false;
+
     doFolderCreation().then((folder_div) => {
       insertCheckboxIntoFolder(folder_div); // Insert checkbox into the new folder
       folderzClone.insertBefore(folder_div, saveBtn);
@@ -660,17 +675,13 @@ function handleDragOver(e) {
 }
 
 // Define the event listener function
-const removeClickEvent = (
-  elementToRemove,
-  folderMinusIcon,
-  folderId,
-  theFolder
-) => {
+const removeClickEvent = (elementToRemove, folderMinusIcon, folderId) => {
   return () => {
     if (elementToRemove) {
-      let chatText = elementToRemove.innerText;
+      let chatId = elementToRemove.id;
       elementToRemove.remove(); // Remove the element
-      removeChatFromFolder(folderId, chatText, theFolder);
+      removeChatFromFolder(folderId, chatId);
+
       folderMinusIcon.removeEventListener("click", removeClickEvent); // Remove the click event listener
     }
   };
@@ -701,7 +712,7 @@ function handleDrop(e) {
   let compareInnerT = folderContent.querySelectorAll("li.relative");
   for (let textCompare of compareInnerT) {
     if (textCompare.innerText === laInnerT) {
-      alert("This chat already exist!");
+      alert("This chat is already exist in this folder!");
       return;
     }
   }
@@ -722,7 +733,7 @@ function handleDrop(e) {
     let toAppendDiv = optionBtn[r].querySelector(
       "div.no-draggable span[data-state='closed']"
     );
-    doChatCleaning(toAppendDiv, optionBtn[r], folder_id, laFolder);
+    doChatCleaning(toAppendDiv, optionBtn[r], folder_id);
   }
 
   chrome.storage.local.get(["folders"], (result) => {
@@ -743,7 +754,7 @@ function handleDrop(e) {
   });
 }
 
-const doChatCleaning = (toAppendDiv, elementToRemove, folderId, theFolder) => {
+const doChatCleaning = (toAppendDiv, elementToRemove, folderId) => {
   // Remove the bookmark and the options btn
   let rBtn = toAppendDiv.querySelector("button");
   let rImgFolderPlus = toAppendDiv.querySelector("img._add_to_folder_icon");
@@ -770,8 +781,7 @@ const doChatCleaning = (toAppendDiv, elementToRemove, folderId, theFolder) => {
     let handleRemoveClick = removeClickEvent(
       elementToRemove,
       folderMinusIcon,
-      folderId,
-      theFolder
+      folderId
     );
     folderMinusIcon.addEventListener("click", handleRemoveClick);
   }
@@ -972,15 +982,31 @@ let createNewFolder = (
           // Event listener for the checkbox
           if (chatInput) {
             chatInput.addEventListener("change", (event) => {
+              let folderChats = folderDiv.querySelectorAll("li.relative");
+              let isExist = 0;
               if (event.target.checked) {
-                nCleanChatAndAppend(folderDiv, chat);
-              } else {
-                let folderChats = folderDiv.querySelectorAll("li.relative");
-
                 for (let i = 0; i < folderChats.length; i++) {
                   let folderChatText = folderChats[i].textContent;
-                  if (folderChatText === chat.textContent)
+
+                  if (folderChatText === chat.textContent) {
+                    isExist = 1;
+                    break;
+                  }
+                }
+
+                // If the chat is already exist, don't add it to the folder.
+                isExist
+                  ? alert("This chat is already exist in this folder :)")
+                  : nCleanChatAndAppend(folderDiv, chat);
+              } else {
+                for (let i = 0; i < folderChats.length; i++) {
+                  let chatId = folderChats[i].id;
+                  let folderId = folderDiv.id;
+
+                  if (chatId === chat.id) {
                     folderChats[i].remove();
+                    removeChatFromFolder(folderId, chatId);
+                  }
                 }
               }
             });
@@ -993,18 +1019,6 @@ let createNewFolder = (
       });
 
       doneBtn.addEventListener("click", () => {
-        // To clear the storage in case I needed!!
-        // chrome.storage.sync.clear(() => {
-        //   if (chrome.runtime.lastError) {
-        //     console.error(
-        //       "Error clearing chrome.storage.sync:",
-        //       chrome.runtime.lastError
-        //     );
-        //   } else {
-        //     console.log("chrome.storage.sync cleared successfully.");
-        //   }
-        // });
-
         chatDiv.remove();
       });
 
@@ -1208,7 +1222,6 @@ function addElements() {
     const firstChild = element.firstChild;
     if (!firstChild || !firstChild.id?.includes("custom-icon")) {
       element.insertBefore(icon.cloneNode(true), firstChild); // Add the custom icon
-      // chats.push(element.innerText); // Add to chats array if not already present
     }
   });
 
@@ -1460,30 +1473,32 @@ function loadFoldersFromStorage() {
       folderContainer.appendChild(folderElement);
 
       // Load the chats for this folder
-      folderData.chats.forEach((chatData) => {
+      for (let chat_data of folderData.chats) {
         let tempDiv = document.createElement("div");
-        tempDiv.innerHTML = chatData.content;
+        tempDiv.innerHTML = chat_data.content;
         let chatElement = tempDiv.querySelector("li");
 
         let folderChatsContainer =
           folderElement.querySelector("._folder-content");
         if (folderChatsContainer) {
           folderChatsContainer.appendChild(chatElement);
-
           let chatRemoveIcon = chatElement.querySelector("._folder_minus_icon");
-          let chatText = chatElement.innerText;
+          // let chatText = chatElement.innerText;
 
-          chatRemoveIcon.addEventListener("click", () => {
-            removeChatFromFolder(folderData.id, chatText, folderChatsContainer);
-          });
+          let handleRemoveClick = removeClickEvent(
+            chatElement,
+            chatRemoveIcon,
+            folderData.id
+          );
+          chatRemoveIcon.addEventListener("click", handleRemoveClick);
         }
-      });
+      }
     });
   });
 }
 
 function updateFolderInStorage(folderName, colorVal, folderId) {
-  chrome.storage.sync.get(["folders"], (data) => {
+  chrome.storage.local.get(["folders"], (data) => {
     const folders = data.folders;
 
     // Find the folder and update its name and color
@@ -1517,7 +1532,7 @@ function saveChatAndFoldersToStorage(folderData) {
   });
 }
 
-function removeChatFromFolder(folderId, chatText, theFolder) {
+function removeChatFromFolder(folderId, chatId) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
 
@@ -1530,18 +1545,12 @@ function removeChatFromFolder(folderId, chatText, theFolder) {
         tempDiv.innerHTML = chat.content;
         let chatElement = tempDiv.querySelector("li");
 
-        return chatElement && chatElement.innerText === chatText; // Compare innerText
+        return chatElement && chatElement.id === chatId; // Compare innerText
       });
 
       if (chatIndex > -1) {
         // Remove the chat from the folder
         folder.chats.splice(chatIndex, 1);
-        let updateFolder = theFolder.querySelectorAll("li.relative");
-        let idx = -1;
-        while (++idx < updateFolder.length) {
-          let removeChatText = updateFolder[idx].innerText;
-          if (removeChatText === chatText) updateFolder[idx].remove();
-        }
 
         // Save the updated folder back to storage
         saveChatAndFoldersToStorage(folder);
@@ -1571,6 +1580,24 @@ window.addEventListener("load", () => {
   loadFoldersFromStorage();
 });
 
+function updateFoldersInStorage(foldersToUpdate) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["folders"], (result) => {
+      let folders = result.folders || [];
+
+      foldersToUpdate.forEach((folderToUpdate) => {
+        let existingFolder = folders.find((f) => f.id === folderToUpdate.id);
+
+        if (existingFolder) existingFolder.chats.push(folderToUpdate.chatData);
+      });
+
+      chrome.storage.local.set({ folders: folders }, () => {
+        resolve();
+      });
+    });
+  });
+}
+
 const saveChatsToFolders = async (
   chat,
   folderzClone,
@@ -1580,6 +1607,17 @@ const saveChatsToFolders = async (
   try {
     let allFolders = folderzClone.querySelectorAll("._la_folder");
     let foldersToUpdate = [];
+
+    // Helper function to compare chat content
+    const areChatsSame = (chat1, chat2) => {
+      // You can adjust these selectors based on your chat structure
+      const getChatContent = (chatEl) => {
+        const mainContent = chatEl.textContent;
+        return mainContent.trim();
+      };
+
+      return getChatContent(chat1) === getChatContent(chat2);
+    };
 
     allFolders.forEach((folder) => {
       let folder_input = folder.querySelector("#_folder_chat_input");
@@ -1596,9 +1634,8 @@ const saveChatsToFolders = async (
           let laChats = folderContent.querySelectorAll("li.relative");
           let k = -1;
           while (++k < laChats?.length) {
-            let laText = laChats[k].innerText;
-            if (chat.innerText === laText) {
-              alert("This chat already exist, so it won't be added!");
+            if (areChatsSame(chat, laChats[k])) {
+              alert("This chat already exists, so it won't be added!");
               return;
             }
           }
@@ -1608,7 +1645,7 @@ const saveChatsToFolders = async (
           "div.no-draggable span[data-state='closed']"
         );
 
-        doChatCleaning(toAppendDiv, cloneChat, folderId, folder);
+        doChatCleaning(toAppendDiv, cloneChat, folderId);
         if (folderContent && goLookUp) {
           const chatData = { content: cloneChat.outerHTML };
           foldersToUpdate.push({ id: folderId, chatData });
@@ -1626,7 +1663,6 @@ const saveChatsToFolders = async (
           let allFolders = container.querySelectorAll("._la_folder");
           let folderExists = false;
 
-          // This is to prevent creating a folder with the same name twice
           for (let i = 0; i < allFolders.length; i++) {
             let laDomFolderId = allFolders[i].id;
 
@@ -1635,14 +1671,16 @@ const saveChatsToFolders = async (
               let existingContentFolder =
                 allFolders[i].querySelector("._folder-content");
 
-              // Check if cloneChat already exists in the existingContentFolder
+              // Check if chat already exists by comparing IDs
               let chatExists = Array.from(existingContentFolder.children).some(
-                (child) => child.isEqualNode(cloneChat)
+                (child) => areChatsSame(child, cloneChat)
               );
 
-              // If the chat doesn't exist on the folder then add it!
               if (!chatExists) {
                 existingContentFolder.appendChild(cloneChat);
+
+                const chatData = { content: cloneChat.outerHTML };
+                foldersToUpdate.push({ id: folderId, chatData });
               }
               break;
             }
@@ -1655,15 +1693,6 @@ const saveChatsToFolders = async (
             contentFolder.appendChild(cloneChat);
             folder.appendChild(contentFolder);
             container.appendChild(folder);
-          } else {
-            let existingFolderz = document.querySelectorAll("._la_folder");
-            for (let existFolder of existingFolderz) {
-              let leId = existFolder.id;
-              if (leId === folderId) {
-                const chatData = { content: cloneChat.outerHTML }; // or other data
-                foldersToUpdate.push({ id: folderId, chatData });
-              }
-            }
           }
         }
 
@@ -1677,18 +1706,3 @@ const saveChatsToFolders = async (
     console.error("Error updating folders:", error);
   }
 };
-
-function updateFoldersInStorage(foldersToUpdate) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["folders"], (result) => {
-      let folders = result.folders || [];
-      foldersToUpdate.forEach((folderToUpdate) => {
-        let existingFolder = folders.find((f) => f.id === folderToUpdate.id);
-        if (existingFolder) existingFolder.chats.push(folderToUpdate.chatData);
-      });
-      chrome.storage.local.set({ folders: folders }, () => {
-        resolve();
-      });
-    });
-  });
-}
