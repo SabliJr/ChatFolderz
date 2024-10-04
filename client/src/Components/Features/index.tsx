@@ -12,10 +12,6 @@ const Index = () => {
       <div className='_features_copy'>
         <div className='_features_title'>
           <h2>Your Ultimate AI Chat Management Toolkit.</h2>
-          {/* <p>
-            Stay organized with folders, quick search, and bookmarking for all
-            your AI conversations.
-          </p> */}
         </div>
         <ul className='_features_points'>
           <li>Organize chats into custom folders for easy access.</li>
@@ -25,12 +21,13 @@ const Index = () => {
           </li>
           <li>Bookmark important chats to find them quickly later.</li>
           <li>
-            Create and manage a personalized prompt library for quick use.
+            Effortlessly navigate through your chat history with intuitive
+            tools.
           </li>
           <li>Tag and categorize conversations for better organization.</li>
           <li>
-            Effortlessly navigate through your chat history with intuitive
-            tools.
+            Create and manage a personalized prompt library for quick use.{" "}
+            <span className='_features_coming_soon'>coming soon</span>
           </li>
         </ul>
         <button className='_features_btn'>Try It For Free</button>

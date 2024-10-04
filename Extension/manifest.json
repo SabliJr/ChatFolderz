@@ -3,12 +3,13 @@
   "name": "Chat Folderz",
   "version": "0.1.0",
   "description": "Boost productivity with our AI chat management tool. Organize your conversations into folders, search easily, and bookmark key chats for quick access.",
-  "permissions": ["activeTab", "unlimitedStorage", "storage"],
+  "permissions": ["storage", "unlimitedStorage"],
   "content_scripts": [
     {
       "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
+      "run_at": "document_start",
       "js": ["src/content.js"],
-      "css": ["src/styles.css"]
+      "css": ["src/style.css"]
     }
   ],
   "icons": {
@@ -22,5 +23,18 @@
       "resources": ["images/*"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "host_permissions": ["https://chat.openai.com/*"],
+  "background": {
+    "service_worker": "src/background/workers.js"
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "Favicon/icon16.png",
+      "32": "Favicon/icon32.png",
+      "48": "Favicon/icon192.png",
+      "128": "Favicon/icon512.png"
+    }
+  }
 }

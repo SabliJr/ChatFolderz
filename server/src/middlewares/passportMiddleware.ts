@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { ACCESS_SECRET_KEY } from '../constants';
+import { ACCESS_SECRET_KEY } from "../Constants";
 import { query } from '../db';
 import { compare } from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
