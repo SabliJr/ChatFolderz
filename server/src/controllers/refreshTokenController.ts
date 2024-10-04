@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { REFRESH_TOKEN_SECRET, ACCESS_SECRET_KEY } from '../constants';
+import { REFRESH_TOKEN_SECRET, ACCESS_SECRET_KEY } from "../Constants";
 import { query } from '../db';
 
 const handleRefreshToken = async (req: Request, res: Response) => {

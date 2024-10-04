@@ -1,6 +1,6 @@
 import React from "react";
 
-import SignUp from "../Components/Register/SignUp";
+import SignUp from "../Components/Register/gAuth";
 import Skeleton from "../utils/Skeleton";
 
 const SignUpPage = () => {

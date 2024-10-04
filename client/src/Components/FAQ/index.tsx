@@ -114,8 +114,8 @@ const Index = () => {
           <img src={Line3} alt='' className='_footer_line' />
         </h3>
         <p className='_q_chat_text'>
-          send us an email on <span>info.chatfolderz@gmail.com</span> and we
-          will get back to you on no time! Otherwise...
+          send us an email on <span>chatfolderz@gmail.com</span> and we will get
+          back to you on no time! Otherwise...
         </p>
         <button className='_get_started_btn'>Add To Browser</button>
       </div>

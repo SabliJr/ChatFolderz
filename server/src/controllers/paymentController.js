@@ -4,7 +4,7 @@ import {
   SERVER_URL,
   CLIENT_URL,
   WEBHOOK_SIGNING_SECRET,
-} from "../constants/index";
+} from "../Constants/index";
 import jwt from "jsonwebtoken";
 import { query, pool } from "../db";
 import crypto from "crypto";

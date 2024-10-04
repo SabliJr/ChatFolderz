@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import PublicHeader from "../Components/TheHeader/index";
 import Footer from "../Components/Footer/index";
-import CreatorHeader from "../Container/TheHeader/index";
+// import CreatorHeader from "../Container/TheHeader/index";
 
 import { useLocation } from "react-router-dom";
 import Loader from "./Loader";
@@ -25,7 +25,7 @@ const Skeleton = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      {state.isAuthenticated ? <CreatorHeader /> : <PublicHeader />}
+      {/* {state.isAuthenticated ? <CreatorHeader /> : <PublicHeader />} */}
       {children}
       <Footer />
     </>

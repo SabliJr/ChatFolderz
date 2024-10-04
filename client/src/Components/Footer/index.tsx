@@ -14,18 +14,7 @@ const Index = () => {
   return (
     <footer className='Footer'>
       <main className='footerMain'>
-        {/* <div className='logoAndSM'> */}
         <img src={FooterLogo} alt='' className='footerLogo' />
-        {/* <div className='SocialIcons'>
-            <a
-              href='https://www.instagram.com/wishties_/'
-              target='_blank'
-              rel='noopener noreferrer'>
-              <BsInstagram />
-            </a>
-           
-          </div> */}
-        {/* </div> */}
         <div className='footerLinks'>
           <p onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
           <p onClick={() => navigate("/privacy-policy")}> Privacy Policy</p>

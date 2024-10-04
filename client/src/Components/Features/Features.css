@@ -66,6 +66,13 @@
   margin: 0rem 0;
 }
 
+._features_coming_soon {
+  font-size: .8rem;
+  font-style: italic;
+  color: #606060;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
 
 @media screen and (max-width: 1042px) {
   ._features_title h2 {
