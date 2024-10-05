@@ -7,9 +7,8 @@
   "content_scripts": [
     {
       "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
-      "run_at": "document_start",
-      "js": ["src/content.js"],
-      "css": ["src/style.css"]
+      "js": ["src/content.js", "src/content/more_content.js"],
+      "css": ["src/style.css", "src/content/more_content_style.css"]
     }
   ],
   "icons": {
@@ -20,16 +19,16 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/*"],
-      "matches": ["<all_urls>"]
+      "resources": ["src/content/*.js", "images/*"],
+      "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"]
     }
   ],
   "host_permissions": ["https://chat.openai.com/*"],
   "background": {
-    "service_worker": "src/background/workers.js"
+    "service_worker": "src/background/workers.js",
+    "type": "module"
   },
   "action": {
-    "default_popup": "src/popup.html",
     "default_icon": {
       "16": "Favicon/icon16.png",
       "32": "Favicon/icon32.png",
