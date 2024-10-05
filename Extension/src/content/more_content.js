@@ -31,13 +31,16 @@ signUpBtn.id = "_chat_folderz_signUP_btn";
    loginDiv.appendChild(googleIcon);
    loginDiv.appendChild(laBtn);
 
-   console.log("Requesting Google login via background");
-   chrome.runtime.sendMessage({ action: "startGoogleAuth" }, (response) => {
-     if (response.success) {
-       console.log("Google login success:", response.data);
-     } else {
-       console.error("Google login failed:", response.error);
-     }
+   loginDiv.addEventListener("click", () => {
+     console.log("Requesting Google login via background");
+     chrome.runtime.sendMessage({ action: "startGoogleAuth" }, (response) => {
+       console.log("The res: ", response);
+       if (response?.success) {
+         console.log("Google login success:", response?.data);
+       } else {
+         console.error("Google login failed:", response?.error);
+       }
+     });
    });
 
    return loginDiv;
