@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { REFRESH_TOKEN_SECRET, ACCESS_SECRET_KEY } from "../Constants";
-import { query } from '../db';
+import { query } from "../config/dbConfig";
 
 const handleRefreshToken = async (req: Request, res: Response) => {
   const cookies = req.cookies;

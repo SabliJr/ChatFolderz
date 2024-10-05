@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { ACCESS_SECRET_KEY } from "../Constants";
-import { query } from '../db';
+import { query } from "../config/dbConfig";
 import { compare } from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';

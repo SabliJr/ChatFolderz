@@ -6,7 +6,7 @@ import {
   WEBHOOK_SIGNING_SECRET,
 } from "../Constants/index";
 import jwt from "jsonwebtoken";
-import { query, pool } from "../db";
+import { query, pool } from "../config/dbConfig";
 import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 

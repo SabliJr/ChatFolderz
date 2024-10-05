@@ -2,10 +2,7 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 
 // Controllers
-import {
-  userLogout,
-  onAuthWithGoogle,
-} from "../controllers/loginRegistrationRoutes";
+import { userLogout, onAuthWithGoogle } from "../controllers/gAuth";
 import {
   onPaymentSetup,
   onStripeReturn,
@@ -22,7 +19,7 @@ const router = Router();
 // Authentication routes
 router.get("/logout", userLogout); // logout creator
 router.get("/refresh-token", handleRefreshToken); // refresh token
-router.get("/auth/google/callback", onAuthWithGoogle); // google sign in
+router.get("/auth/google", onAuthWithGoogle); // google sign in
 
 router.post("/reset-password"); // reset password
 

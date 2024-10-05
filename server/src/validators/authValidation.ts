@@ -1,5 +1,5 @@
 import { check } from 'express-validator';
-import { query } from '../db';
+import { query } from "../config/dbConfig";
 import { compare } from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { isValidAuthToken } from '../util/verificationFunctions';

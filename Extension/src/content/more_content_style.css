@@ -11,3 +11,65 @@
   cursor: pointer;
   border-radius: 1.2rem;
 }
+
+/* Initial hidden state */
+._account_sidebar {
+  position: fixed;
+  top: 5rem;
+  right: -500px;
+  width: 500px;
+  border-radius: 1rem;
+  height: 80vh;
+  background-color: #f4f4f4;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+  transition: right 0.3s ease;
+  z-index: 1000; 
+  padding: 1rem;
+}
+
+/* Visible state */
+._visible_side {
+  right: 1rem;
+}
+
+/* Additional styling for sidebar content */
+._sidebar_title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #212121;
+}
+
+._sidebar_text {
+  margin: .65rem 0;
+  font-size: 1rem;
+  color: #272b31;
+}
+
+._sidebar_header_text_span {
+  display: block;
+  padding: 20px;
+}
+
+._login_div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  border-radius: .6rem;
+  margin: 3rem 1rem;
+  padding: .5rem .8rem;
+  width: 60%;
+  border: 1px solid #272b31;
+}
+
+._google_login_icon {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+._login_with_google_btn {
+  color: #212121;
+  font-size: 1rem;
+  font-weight: 600;
+  border: transparent;
+}
