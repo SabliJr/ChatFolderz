@@ -1,7 +1,7 @@
 import React from "react";
 import "./Features.css";
 
-import UseChatFolderz from "../../Assets/pexels-bertellifotografia-16094053.jpg";
+import UseChatFolderz from "../../Assets/Cf.jpg";
 
 const Index = () => {
   return (

@@ -1,0 +1,13 @@
+#_chat_folderz_signUP_btn {
+  position: absolute;
+  top: .6rem;
+  right: 10.6rem;
+  color: #212121;
+  background-color: #ff724f;
+  z-index: 1000;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: .5rem .8rem;
+  cursor: pointer;
+  border-radius: 1.2rem;
+}
