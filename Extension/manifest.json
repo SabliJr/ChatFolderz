@@ -3,7 +3,12 @@
   "name": "Chat Folderz",
   "version": "0.1.0",
   "description": "AI Chat Management Extension:  Organize conversations into folders, bookmark important chats, and search with ease.",
-  "permissions": ["storage", "unlimitedStorage"],
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "identity",
+    "https://accounts.google.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
