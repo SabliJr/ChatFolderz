@@ -58,6 +58,7 @@ const exchangeCodeForTokens = async (code: string) => {
 // Google Sign Up
 const onAuthWithGoogle = async (req: Request, res: Response) => {
   const { token } = req.query;
+  console.log("The incoming token: ", token);
 
   try {
     const tokens = await exchangeCodeForTokens(token as string);

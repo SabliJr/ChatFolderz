@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Chat Folderz",
   "version": "0.1.0",
-  "description": "Boost productivity with our AI chat management tool. Organize your conversations into folders, search easily, and bookmark key chats for quick access.",
+  "description": "AI Chat Management Extension:  Organize conversations into folders, bookmark important chats, and search with ease.",
   "permissions": ["storage", "unlimitedStorage"],
   "content_scripts": [
     {

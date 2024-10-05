@@ -23,42 +23,20 @@ declare module 'http' {
 const corsOptions = {
   credentials: true,
   origin: [
-    'https://wishties-backend.onrender.com',
-    'https://wishties-backend.onrender.com/api',
-    'https://wishties-backend.onrender.com/api/',
-    'https://wishties-backend.onrender.com/api/*',
-    'https://wishties-backend.onrender.com/*',
-    'https://wishties.com',
-    'https://www.wishties.com',
-    'https://wishties.com/api',
-    'https://wishties.com/api/',
-    'https://wishties.com/api/*',
-    'https://wishties.com/*',
-    'https://wishties-frontend.onrender.com',
-    'https://wishties-frontend.onrender.com/api',
-    'https://wishties-frontend.onrender.com/api/',
-    'https://wishties-frontend.onrender.com/api/*',
-    'https://wishties-frontend.onrender.com/*',
-    'https://api.wishties.com/api',
-    'https://www.api.wishties.com/api',
-    'https://api.wishties.com/api/',
-    'https://www.api.wishties.com/api/',
-    'https://api.wishties.com/api/*',
-    'https://www.api.wishties.com/api/*',
-    'https://api.wishties.com/*',
-    'https://api.wishties.com',
-    'https://www.wishties.com',
-    'https://www.wishties.com/api',
-    'https://www.wishties.com/api/',
-    'https://www.wishties.com/api/*',
-    'https://www.wishties.com/*',
-    'https://www.wishties.com',
-    // 'localhost:3000', //for development
-    // 'http://localhost:3000', //for development
+    "chrome-extension://bpceolnipigdieihfbbdfmfonnpmilfn", // Allow your extension to make requests
+    // 'localhost:3000', // Uncomment for local development
+    // 'http://localhost:3000', // Uncomment for local development
   ],
   optionsSuccessStatus: 204,
-  exposedHeaders: ['Set-Cookie', 'ajax_redirect'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept', 'XMLHttpRequest'],
+  exposedHeaders: ["Set-Cookie", "ajax_redirect"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Origin",
+    "X-Requested-With",
+    "Accept",
+    "XMLHttpRequest",
+  ],
 };
 
 app.use(cookieParser());
