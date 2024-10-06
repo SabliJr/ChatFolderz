@@ -4,15 +4,9 @@ import Line1 from "../../Assets/Line1.svg";
 import Line2 from "../../Assets/Line2.svg";
 import PromoImg from "../../Assets/ChatFolderz.png";
 import GPT from "../../Assets/Gpt.png";
-import Claude from "../../Assets/Claude_Ai.png";
+// import Claude from "../../Assets/Claude_Ai.png";
 
 const Index = () => {
-  // const handleGetStarted = () => {
-  //   state.isAuthenticated
-  //     ? navigate(`/edit-profile/${state?.creator_username}`)
-  //     : navigate(`/signUp`);
-  // };
-
   return (
     <section className='hero'>
       <h2>

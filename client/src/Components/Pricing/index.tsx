@@ -61,7 +61,7 @@ const Index = () => {
         </label>
       </div>
       {whoIsThis === "Monthly" ? (
-        <div className='_princing_divs'>
+        <div className='_pricing_divs'>
           <div className='pricing_item2'>
             <div className='_p_sub_title'>
               <h4>Power Plan</h4>
@@ -78,7 +78,7 @@ const Index = () => {
           </div>
         </div>
       ) : (
-        <div className='_princing_divs'>
+        <div className='_pricing_divs'>
           <div className='pricing_item2'>
             <div className='_p_sub_title'>
               <h4>Power Plan</h4>
