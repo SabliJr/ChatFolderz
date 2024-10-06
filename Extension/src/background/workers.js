@@ -8,37 +8,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     chrome.identity.launchWebAuthFlow(
       {
-        url: "https://accounts.google.com/o/oauth2/auth?client_id=224804471957-5otlq9u8e79v5fau5do5cvt5v4fbddm0.apps.googleusercontent.com&redirect_uri=https://bpceolnipigdieihfbbdfmfonnpmilfn.chromiumapp.org/&response_type=code&scope=email",
+        url: "https://accounts.google.com/o/oauth2/auth?client_id=556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com&response_type=id_token&scope=openid email profile&redirect_uri=https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org&prompt=consent",
         interactive: true,
       },
       function (responseUrl) {
         if (chrome.runtime.lastError) {
-          // Send an error response to the content script
           sendResponse({
             success: false,
             error: chrome.runtime.lastError.message,
           });
         } else {
-          const code = extractCodeFromUrl(responseUrl); // Make sure this function is defined
-
-          // Send the code to your backend for token exchange
+          const idToken = extractIdTokenFromUrl(responseUrl);
+          console.log("ID token: ", idToken);
+          // Send the ID token to your backend for verification
           fetch("http://localhost:8000/api/auth/google", {
             method: "POST",
-            body: JSON.stringify({ code }),
-            headers: {
-              "Content-Type": "application/json",
-            },
+            body: JSON.stringify({ token: idToken }),
+            headers: { "Content-Type": "application/json" },
           })
             .then((response) => response.json())
-            .then((data) => {
-              chrome.storage.sync.set({ accessToken: data.accessToken }, () => {
-                // Send success response with access token to content script
-                sendResponse({ success: true, data });
-              });
-            })
-            .catch((error) => {
-              sendResponse({ success: false, error: error.message });
-            });
+            .then((data) => sendResponse({ success: true, data }))
+            .catch((error) =>
+              sendResponse({ success: false, error: error.message })
+            );
         }
       }
     );
@@ -46,3 +38,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // Ensure the message port stays open for async response
   }
 });
+
+// Helper function to extract the access token from the URL
+function extractIdTokenFromUrl(url) {
+  const params = new URLSearchParams(new URL(url).hash.substring(1));
+  return params.get("id_token"); // Ensure you're extracting 'id_token'
+}
+
+// const oauthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=id_token&scope=openid email profile&redirect_uri=YOUR_REDIRECT_URI&prompt=consent`;

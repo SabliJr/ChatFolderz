@@ -10,7 +10,7 @@
 
 # production
 /build
-/storageAuth.json
+/oAuth.json
 
 # misc
 .DS_Store
