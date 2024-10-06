@@ -48,9 +48,28 @@ const client = new OAuth2Client(
   GOOGLE_OAUTH_CLIENT_SECRET,
   "postmessage"
 );
+
+const getUserDetails = async (accessToken: string) => {
+  try {
+    const response = await fetch(
+      "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    throw error;
+  }
+};
+
 // Google Sign Up
 const onAuthWithGoogle = async (req: Request, res: Response) => {
-  const { token } = req.body;
+  const { accessToken, idToken: token } = req.body;
   console.log("Access token received from frontend: ", token);
 
   try {
@@ -61,6 +80,10 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
     });
 
     const payload = ticket.getPayload();
+    const userInfo = await getUserDetails(accessToken);
+    console.log(userInfo);
+    console.log("Getting the payload: ", payload);
+
     const user_id = payload?.sub as string;
     const email = payload?.email;
     const user_name = payload?.name;
