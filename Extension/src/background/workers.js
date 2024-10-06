@@ -33,7 +33,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             headers: { "Content-Type": "application/json" },
           })
             .then((response) => response.json())
-            .then((data) => sendResponse({ success: true, data }))
+            .then((data) => {
+              sendResponse({ success: true, data }); // Send tokens in response
+            })
             .catch((error) =>
               sendResponse({ success: false, error: error.message })
             );

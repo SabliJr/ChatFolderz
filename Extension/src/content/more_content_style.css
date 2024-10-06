@@ -20,11 +20,11 @@
   width: 500px;
   border-radius: 1rem;
   height: 80vh;
-  background-color: #f4f4f4;
+  background-color: #efeef0;
   box-shadow: -2px 0 5px rgba(0,0,0,0.5);
   transition: right 0.3s ease;
   z-index: 1000; 
-  padding: 1rem;
+  padding: 2rem 1rem;
 }
 
 /* Visible state */
@@ -36,13 +36,14 @@
 ._sidebar_title {
   font-size: 1.3rem;
   font-weight: 600;
+  margin-top: 2rem;
   color: #212121;
 }
 
 ._sidebar_text {
   margin: .65rem 0;
   font-size: 1rem;
-  color: #272b31;
+  color: #606060;
 }
 
 ._sidebar_header_text_span {
@@ -51,15 +52,19 @@
 }
 
 ._login_div {
+  margin: 2rem 1rem;
+}
+
+._login_btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2rem;
   border-radius: .6rem;
-  margin: 3rem 1rem;
+  margin: 1rem 0;
   padding: .5rem .8rem;
   width: 60%;
-  border: 1px solid #272b31;
+  border: 1px solid #212121;
 }
 
 ._google_login_icon {
@@ -72,4 +77,17 @@
   font-size: 1rem;
   font-weight: 600;
   border: transparent;
+}
+
+._sidebar_close_icon {
+   width: 2rem;
+  position: absolute;
+  top: .5rem;
+  right: .8rem;
+  cursor: pointer;
+}
+
+._login_text {
+  color: #ff724f;
+  font-size: 1.2rem;
 }
