@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import {
   ACCESS_SECRET_KEY,
   REFRESH_TOKEN_SECRET,
-  CLIENT_URL,
   GOOGLE_OAUTH_CLIENT_ID,
   GOOGLE_OAUTH_CLIENT_SECRET,
 } from "../Constants";
@@ -18,9 +17,7 @@ const userLogout = async (req: Request, res: Response) => {
     // This will depend on how you're sending the token (e.g., in the Authorization header, in a cookie, etc.)
     const token = req.cookies.refreshToken;
 
-    // Add the token to the blacklist
-    // await addToBlacklist(token);
-    // Clear the refreshToken cookie
+    // Clear out the cookie from the browser and that's it!
     res.clearCookie("refreshToken", {
       secure: true,
       sameSite: "strict",
@@ -81,13 +78,90 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
     const payload = ticket.getPayload();
     const userInfo = await getUserDetails(accessToken);
 
+    const user_name = userInfo.names?.[0]?.displayName;
+    const picture = userInfo.photos?.[0]?.url;
     const user_id = payload?.sub as string;
     const email = payload?.email;
-    const user_name = payload?.name;
-    const picture = payload?.picture;
+    const email_verified = payload?.email_verified;
 
-    // Check if the user exists in the database and handle login/registration
-    // Same code as before...
+    // Check if the user exists in the database
+    const userExists = await query("SELECT * FROM creator WHERE user_id=$1", [
+      user_id,
+    ]);
+
+    if (userExists.rows.length > 0) {
+      // If they do, log them in
+      const { user_id, user_name } = userExists.rows[0];
+      const accessToken = await jwt.sign(
+        { user_id, user_name },
+        ACCESS_SECRET_KEY as string,
+        { expiresIn: "30m" }
+      );
+
+      const refreshToken = await jwt.sign(
+        { user_id, user_name },
+        REFRESH_TOKEN_SECRET as string,
+        { expiresIn: "20d" }
+      );
+
+      res
+        .status(202)
+        .cookie("refreshToken", refreshToken, {
+          maxAge: 1000 * 60 * 60 * 24 * 10,
+          path: "/",
+          sameSite: "strict",
+          httpOnly: true,
+          secure: true,
+          // domain: '.wishties.com',
+        })
+        .json({
+          success: true,
+          message: "The login was successful!",
+          user: {
+            user_id: userExists.rows[0].user_id,
+            username: userExists.rows[0].username,
+          },
+          accessToken: accessToken,
+        });
+    } else {
+      // If they don't, store their info in the database and log them in
+      await query(
+        "INSERT INTO creator (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
+        [user_id, user_name, email, email_verified, picture]
+      );
+
+      const accessToken = await jwt.sign(
+        { user_id, user_name },
+        ACCESS_SECRET_KEY as string,
+        { expiresIn: "30m" }
+      );
+
+      const refreshToken = await jwt.sign(
+        { user_id, user_name },
+        REFRESH_TOKEN_SECRET as string,
+        { expiresIn: "10d" }
+      );
+
+      res
+        .status(201)
+        .cookie("refreshToken", refreshToken, {
+          maxAge: 1000 * 60 * 60 * 24 * 10,
+          path: "/",
+          sameSite: "strict",
+          httpOnly: true,
+          secure: true,
+          // domain: '.wishties.com',
+        })
+        .json({
+          success: true,
+          message: "The registration was successful.",
+          user: {
+            user_id,
+            user_name,
+          },
+          accessToken,
+        });
+    }
   } catch (error) {
     console.error("Error verifying Google token:", error);
     res.status(500).json({
