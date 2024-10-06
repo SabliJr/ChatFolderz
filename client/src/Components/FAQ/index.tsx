@@ -17,12 +17,6 @@ const Index = () => {
     setReveal(revealQuestion.map((item, i) => (i === idx ? !item : false)));
   };
 
-  // const handleAccess = () => {
-  //   state.isAuthenticated && state.accessToken
-  //     ? navigate(`/dashboard/${state.customer_id}`)
-  //     : navigate("/signUp");
-  // };
-
   return (
     <main className='_questions_container' id='faq'>
       <h2>FAQs.</h2>

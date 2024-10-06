@@ -70,7 +70,6 @@ const getUserDetails = async (accessToken: string) => {
 // Google Sign Up
 const onAuthWithGoogle = async (req: Request, res: Response) => {
   const { accessToken, idToken: token } = req.body;
-  console.log("Access token received from frontend: ", token);
 
   try {
     // Directly verify the token received from the frontend
@@ -81,19 +80,11 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
 
     const payload = ticket.getPayload();
     const userInfo = await getUserDetails(accessToken);
-    console.log(userInfo);
-    console.log("Getting the payload: ", payload);
 
     const user_id = payload?.sub as string;
     const email = payload?.email;
     const user_name = payload?.name;
     const picture = payload?.picture;
-
-    console.log("User info: ", payload);
-    console.log("User Id: ", user_id);
-    console.log("email: ", email);
-    console.log("username: ", user_name);
-    console.log("User pic:", picture);
 
     // Check if the user exists in the database and handle login/registration
     // Same code as before...

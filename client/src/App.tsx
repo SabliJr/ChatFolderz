@@ -3,7 +3,6 @@ import "./App.css";
 
 //RoutersFile
 import LaRoutes from "./Routes";
-import { AuthProvider } from "./Context/AuthProvider";
 
 import ReactGA from "react-ga4";
 ReactGA.initialize("G-BVRQT2SHLP");
@@ -18,9 +17,7 @@ const App = () => {
 
   return (
     <div className='App'>
-      <AuthProvider>
-        <LaRoutes />
-      </AuthProvider>
+      <LaRoutes />
     </div>
   );
 };

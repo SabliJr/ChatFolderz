@@ -1,14 +1,17 @@
 import React from "react";
 import "./Pages.css";
-import Skeleton from "../utils/Skeleton";
 
 import { GrLinkedinOption } from "react-icons/gr";
 import { RiTwitterXLine } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
 
+import Footer from "../Components/Footer/index";
+import Header from "../Components/TheHeader/index";
+
 const Contact = () => {
   return (
-    <Skeleton>
+    <>
+      <Header />
       <div className='_contact_help'>
         <div>
           <h3 className='_contact_title'>Contact us.</h3>
@@ -51,7 +54,8 @@ const Contact = () => {
           </li>
         </ul>
       </div>
-    </Skeleton>
+      <Footer />
+    </>
   );
 };
 

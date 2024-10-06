@@ -75,60 +75,13 @@
         width: 5.8rem;
       }
 
-      .navButtons {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-
-      .navButtons p {
-        font-size: 1.2rem;
+      ._nav_scrolled {
+        top: .3rem;
       }
 
       .Header {
         margin-top: 1.5rem;
         position: relative;
-      }
-
-      .navStuff nav {
-        flex-direction: column;
-        gap: 1.3rem;
-      }
-
-      .navStuff {
-        display: flex;
-        position: absolute;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        top: 3.42rem;
-        right: -100%;
-        border-radius: 0.75rem;
-        padding: 2.5rem 0 0 1.25rem;
-        width: 250px;
-        height: 100vh;
-        box-shadow: rgba(142, 171, 180, 0.73) 0px 2px 8px 0px;
-        backdrop-filter: blur(.875rem);
-        transition: .3s all ease-in-out;
-        z-index: 100;
-        gap: 2rem;
-      }
-
-      .expand {
-        right: 0.2188rem;
-        transition: right 0.3s ease;
-      }
-
-      .menuIcon {
-        display: block;
-      }
-
-      .navButtons {
-        align-self: self-start;
-      }
-
-      .navButtons button {
-        font-size: 1.2rem;
       }
     }
   }

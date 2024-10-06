@@ -2,7 +2,6 @@
   margin: 10rem 2rem;
   display: flex;
   align-items: center;
-  /* justify-content: center; */
   gap: 3rem;
 }
 
@@ -32,7 +31,6 @@
 
 ._features_points {
   display: flex;
-  /* justify-content: center; */
   flex-direction: column;
   margin: 3rem 1.8rem;
   gap: 1rem;

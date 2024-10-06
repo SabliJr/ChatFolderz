@@ -6,13 +6,11 @@
   font-size: 2.3rem;
   margin: .5rem auto;
   color: #21212f;
-  /* font-family: "Yanone Kaffeesatz", sans-serif; */
   font-family: "Inter Tight", sans-serif;
 }
 
 ._q_title_text {
   font-size: 1.5rem;
-  /* color: #8972a3; */
   color: #606060;
 }
 
@@ -76,9 +74,7 @@
 
 ._q_chat_title {
   font-size: 1.5rem;
-  /* font-family: "Yanone Kaffeesatz", sans-serif; */
   font-family: "Inter Tight", sans-serif;
-  /* color: #ff724f; */
   color: #21212f;
   position: relative;
 }
@@ -115,20 +111,12 @@
   background-color: #ff724f;
   font-size: 1.3rem;
   padding: .8rem 1.2rem;
-  /* font-family: "Yanone Kaffeesatz", sans-serif; */
     font-family: "Inter Tight", sans-serif;
   font-weight: 700;
   cursor: pointer;
   letter-spacing: .8px;
   text-align: center;
   color: white;
-}
-
-._q_click_here {
-  font-style: italic;
-  color: #ff724f;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 @media screen and (max-width: 1042px) {

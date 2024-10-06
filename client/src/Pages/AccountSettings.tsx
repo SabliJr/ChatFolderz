@@ -1,9 +1,10 @@
 import React from "react";
 
-import Skeleton from "../utils/Skeleton";
-
 import { FaXTwitter } from "react-icons/fa6";
 import { RiArrowRightSLine } from "react-icons/ri";
+
+import Footer from "../Components/Footer/index";
+import Header from "../Components/TheHeader/index";
 
 const AccountSettings = () => {
   // useEffect(() => {
@@ -27,7 +28,8 @@ const AccountSettings = () => {
   // }, [navigate]);
 
   return (
-    <Skeleton>
+    <>
+      <Header />
       <div className='_account_settings_container'>
         <h1 className='_account_setting_title'>Account Settings</h1>
         <div className='_setting_items'>
@@ -65,7 +67,8 @@ const AccountSettings = () => {
           </p>
         </div>
       </div>
-    </Skeleton>
+      <Footer />
+    </>
   );
 };
 
