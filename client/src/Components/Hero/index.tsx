@@ -1,23 +1,17 @@
 import "./Hero.css";
 
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthProvider";
-
 import Line1 from "../../Assets/Line1.svg";
 import Line2 from "../../Assets/Line2.svg";
-import PromoImg from "../../Assets/rWishties.jpg";
+import PromoImg from "../../Assets/ChatFolderz.png";
 import GPT from "../../Assets/Gpt.png";
 import Claude from "../../Assets/Claude_Ai.png";
 
 const Index = () => {
-  const { state } = useAuth();
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    state.isAuthenticated
-      ? navigate(`/edit-profile/${state?.creator_username}`)
-      : navigate(`/signUp`);
-  };
+  // const handleGetStarted = () => {
+  //   state.isAuthenticated
+  //     ? navigate(`/edit-profile/${state?.creator_username}`)
+  //     : navigate(`/signUp`);
+  // };
 
   return (
     <section className='hero'>
@@ -40,7 +34,7 @@ const Index = () => {
         history effortlessly.
       </p>
       <div className='emailDiv'>
-        <button onClick={handleGetStarted}>Add To Browser</button>
+        <button>Add To Browser</button>
       </div>
       <div className='_i_img_container'>
         <span className='_best_i'>Best Integrated With:</span>

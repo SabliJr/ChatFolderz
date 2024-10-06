@@ -19,7 +19,7 @@ const router = Router();
 // Authentication routes
 router.get("/logout", userLogout); // logout creator
 router.get("/refresh-token", handleRefreshToken); // refresh token
-router.get("/auth/google", onAuthWithGoogle); // google sign in
+router.post("/auth/google", onAuthWithGoogle); // google sign in
 
 router.post("/reset-password"); // reset password
 
