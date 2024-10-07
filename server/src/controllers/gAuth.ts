@@ -85,13 +85,14 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
     const email_verified = payload?.email_verified;
 
     // Check if the user exists in the database
-    const userExists = await query("SELECT * FROM creator WHERE user_id=$1", [
-      user_id,
-    ]);
+    const userExists = await query(
+      "SELECT * FROM user_profile WHERE user_id=$1",
+      [user_id]
+    );
 
     if (userExists.rows.length > 0) {
       // If they do, log them in
-      const { user_id, user_name } = userExists.rows[0];
+      const { user_id, user_name, customer_id } = userExists.rows[0];
       const accessToken = await jwt.sign(
         { user_id, user_name },
         ACCESS_SECRET_KEY as string,
@@ -104,31 +105,24 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         { expiresIn: "20d" }
       );
 
-      res
-        .status(202)
-        .cookie("refreshToken", refreshToken, {
-          maxAge: 1000 * 60 * 60 * 24 * 10,
-          path: "/",
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-          // domain: '.wishties.com',
-        })
-        .json({
-          success: true,
-          message: "The login was successful!",
-          user: {
-            user_id: userExists.rows[0].user_id,
-            username: userExists.rows[0].username,
-          },
-          accessToken: accessToken,
-        });
+      res.status(202).json({
+        success: true,
+        message: "The login was successful!",
+        user: {
+          user_id,
+          user_name,
+          customer_id,
+        },
+        accessToken: refreshToken,
+      });
     } else {
       // If they don't, store their info in the database and log them in
-      await query(
-        "INSERT INTO creator (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
+      let user_registration = await query(
+        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
         [user_id, user_name, email, email_verified, picture]
       );
+
+      const { customer_id } = user_registration.rows[0];
 
       const accessToken = await jwt.sign(
         { user_id, user_name },
@@ -142,25 +136,16 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         { expiresIn: "10d" }
       );
 
-      res
-        .status(201)
-        .cookie("refreshToken", refreshToken, {
-          maxAge: 1000 * 60 * 60 * 24 * 10,
-          path: "/",
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-          // domain: '.wishties.com',
-        })
-        .json({
-          success: true,
-          message: "The registration was successful.",
-          user: {
-            user_id,
-            user_name,
-          },
-          accessToken,
-        });
+      res.status(201).json({
+        success: true,
+        message: "The registration was successful.",
+        user: {
+          user_id,
+          user_name,
+          customer_id,
+        },
+        accessToken: refreshToken,
+      });
     }
   } catch (error) {
     console.error("Error verifying Google token:", error);

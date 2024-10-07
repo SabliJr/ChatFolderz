@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { REFRESH_TOKEN_SECRET, EMAIL_HOST, CLIENT_URL } from "../Constants";
+import { REFRESH_TOKEN_SECRET, CLIENT_URL } from "../Constants";
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
