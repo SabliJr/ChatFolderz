@@ -92,7 +92,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
 
     if (userExists.rows.length > 0) {
       // If they do, log them in
-      const { user_id, user_name, customer_id } = userExists.rows[0];
+      const { user_id, user_name, customer_id } = userExists?.rows[0];
       const accessToken = await jwt.sign(
         { user_id, user_name },
         ACCESS_SECRET_KEY as string,

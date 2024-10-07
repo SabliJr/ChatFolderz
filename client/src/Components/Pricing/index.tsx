@@ -64,7 +64,7 @@ const Index = () => {
         <div className='_pricing_divs'>
           <div className='pricing_item2'>
             <div className='_p_sub_title'>
-              <h4>Power Plan</h4>
+              <h4>Monthly Plan</h4>
               <p>
                 Upgrade your AI chat experience. Organize, and optimize your
                 workflow seamlessly.
@@ -81,7 +81,7 @@ const Index = () => {
         <div className='_pricing_divs'>
           <div className='pricing_item2'>
             <div className='_p_sub_title'>
-              <h4>Power Plan</h4>
+              <h4>Yearly Plan</h4>
               <p>
                 Upgrade your AI chat experience. Organize, and optimize your
                 workflow seamlessly.
@@ -94,9 +94,10 @@ const Index = () => {
                 <br />
               </p>
               <h2 className='_price'>
-                $6.39 <span>/year</span>
+                $76.70 <span>/year</span>
               </h2>
-              <span>Billed annually: $76.70</span>
+              {/* <span>Billed annually: $76.70</span> */}
+              <span className='_monthly_yearly_price'>6.39 /month</span>
             </div>
             <BrandFeaturs />
             <button>Try It for free</button>

@@ -53,31 +53,34 @@ function extractTokensFromUrl(url) {
   const idToken = params.get("id_token");
   const accessToken = params.get("access_token");
 
-  return { idToken, accessToken }; // Return both tokens as an object
+  // Return both tokens as an object to send it to the backend to request uer info from google
+  return { idToken, accessToken };
 }
-
 
 // Setting cookies to the browser
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "setCookie") {
     const { accessToken, userId, userName } = request.data;
-    
+
     // Set access token cookie
-    chrome.cookies.set({
-      url: "http://localhost:8000", // Your backend URL
-      name: "accessToken",
-      value: accessToken,
-      path: "/",
-      secure: true,
-      sameSite: "lax",
-      expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours from now
-    }, (cookie) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error setting cookie:", chrome.runtime.lastError);
-      } else {
-        console.log("Cookie set successfully:", cookie);
+    chrome.cookies.set(
+      {
+        url: "http://localhost:8000", // Your backend URL
+        name: "accessToken",
+        value: accessToken,
+        path: "/",
+        secure: true,
+        sameSite: "lax",
+        expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours from now
+      },
+      (cookie) => {
+        if (chrome.runtime.lastError) {
+          console.error("Error setting cookie:", chrome.runtime.lastError);
+        } else {
+          console.log("Cookie set successfully:", cookie);
+        }
       }
-    });
+    );
 
     // You might want to set additional cookies for user info
     chrome.cookies.set({
@@ -92,8 +95,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     sendResponse({ success: true });
   }
-  
-  return true; // Keep the message channel open for async response
+
+  //We need to return true to keep the message channel open for async response
+  return true;
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "buyMonthlySub") {
+    fetch(
+      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q67pMDuxNnSWA1y8J6HuXXy",
+      {
+        method: "GET",
+        credentials: "include", // This to include the cookies
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    //We need to return true to keep the message channel open for async response
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "buyYearlySub") {
+    fetch(
+      "http://localhost:8000/api/check_out/yearly?price_id=price_1Q67qNDuxNnSWA1yxkChsg6G",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
 });
 
 // Helper function to get cookies for API requests
@@ -115,15 +158,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 //     });
 
 //     const { cookies } = cookiesResponse;
-//     const accessToken = cookies.find(cookie => cookie.name === 'accessToken')?.value;
+//     const accessToken = cookies.find(
+//       (cookie) => cookie.name === "accessToken"
+//     )?.value;
 
 //     if (!accessToken) {
-//       throw new Error('No access token found');
+//       throw new Error("No access token found");
 //     }
 
 //     const headers = {
-//       'Authorization': `Bearer ${accessToken}`,
-//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${accessToken}`,
+//       "Content-Type": "application/json",
 //       ...options.headers,
 //     };
 
@@ -138,19 +183,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //     return await response.json();
 //   } catch (error) {
-//     console.error('API request failed:', error);
+//     console.error("API request failed:", error);
 //     throw error;
 //   }
 // };
 
-// Example usage:
-// export const fetchUserData = async () => {
-//   return makeAuthenticatedRequest('/api/user/profile');
-// };
-
 // export const updateUserProfile = async (data) => {
-//   return makeAuthenticatedRequest('/api/user/profile', {
-//     method: 'PUT',
+//   return makeAuthenticatedRequest("/api/user/profile", {
+//     method: "PUT",
 //     body: JSON.stringify(data),
 //   });
 // };
