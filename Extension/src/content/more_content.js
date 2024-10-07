@@ -1,127 +1,205 @@
+// Example of making an authenticated API request
+// import { makeAuthenticatedRequest } from "./apiUtils.js";
+
 let signUpBtn = document.createElement("button");
 signUpBtn.innerText = "Account Access";
 signUpBtn.id = "_chat_folderz_signUP_btn";
 
- let sidebar = document.createElement("div");
- sidebar.classList.add("_account_sidebar");
+let sidebar = document.createElement("div");
+sidebar.classList.add("_account_sidebar");
 
- let sidebarTitle = document.createElement("h2");
- sidebarTitle.innerText = "Hey, welcome to your ChatFolderz account panel.";
- sidebarTitle.classList.add("_sidebar_title");
+// The close Icon
+let closeIcon = document.createElement("img");
+closeIcon.src = chrome.runtime.getURL("../../images/cross.png");
+closeIcon.alt = "Close Icon";
+closeIcon.classList.add("_sidebar_close_icon");
 
- let sidebarText = document.createElement("p");
- sidebarText.innerText =
-   "Organize, search, and bookmark your AI conversations with ease.";
- sidebarText.classList.add("_sidebar_text");
+// more_content.js
+const onAccountAccess = () => {
+  sidebar.classList.add("_visible_side");
+};
 
- let sideHeaderTextSpan = document.createElement("span");
- sideHeaderTextSpan.classList.add("_sidebar_header_text_span");
+// content.js or your login handling file
+const handleLogin = () => {
+  chrome.runtime.sendMessage(
+    { action: "startGoogleAuth" },
+    async (response) => {
+      console.log("The res: ", response);
+      if (response?.success) {
+        const { accessToken } = response.data;
+        const { user_id, user_name, customer_id } = response.data.user;
 
- // The close Icon
- let closeIcon = document.createElement("img");
- closeIcon.src = chrome.runtime.getURL("../../images/cross.png");
- closeIcon.alt = "Close Icon";
- closeIcon.classList.add("_sidebar_close_icon");
+        try {
+          // Set cookie in background script
+          await chrome.runtime.sendMessage({
+            action: "setCookie",
+            data: {
+              accessToken,
+              userId: user_id,
+              userName: user_name,
+            },
+          });
 
- let trialInfoHTML = `
-      <h3>Unlock Full Access – Start Your Free 24-Hour Trial!</h3>
-      <div>
-        <p>After your trial, enjoy full access for:</p>
-        <ol>
+          // Optionally store some data in chrome.storage for easy access
+          await chrome.storage.local.set({
+            isLoggedIn: true,
+            userId: user_id,
+            userName: user_name,
+            customer_id: customer_id,
+          });
+
+          displayUI();
+        } catch (error) {
+          console.error("Error setting cookies:", error);
+        }
+      } else {
+        console.error("Google login failed:", response?.error);
+      }
+    }
+  );
+};
+
+// const fetchData = async () => {
+//   try {
+//     const data = await makeAuthenticatedRequest('/api/some-endpoint');
+//     console.log('Data received:', data);
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   }
+// };
+
+let onCollectPayment = () => {
+  let collectMoneyContainer = document.createElement("div");
+  collectMoneyContainer.classList.add("_collect_money_container");
+
+  let trialInfoHTML = `
+      <h3 class="_collect_money_title">Unlock Full Access – Start Your Free 24-Hour Trial!</h3>
+      <div class="_prices_container">
+        <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
+        <ul class="_ul_prices">
           <li>$7.99/month</li>
           <li>$6.39/month (billed annually at $76.70)</li>
-        </ol>
-        <h5>No commitment, cancel anytime during your trial if it’s not for you!</h5>
-      </div>
+        </ul>
+        </div>
+        <h5 class="_prices_last_title">No commitment, cancel anytime during your trial if it’s not for you!</h5>
   `;
 
- let monthlySub = document.createElement("button");
- monthlySub.innerText = "Monthly";
- monthlySub.classList.add("_monthly_sub_btn");
+  let monthlySub = document.createElement("button");
+  monthlySub.innerText = "Monthly";
+  monthlySub.classList.add("_monthly_sub_btn");
 
- let yearlySub = document.createElement("button");
- yearlySub.innerText = "Yearly";
- yearlySub.classList.add("_yearly_btn");
+  let yearlySub = document.createElement("button");
+  yearlySub.innerText = "Yearly";
+  yearlySub.classList.add("_yearly_btn");
 
- let cancelSub = document.createElement("button");
- cancelSub.innerText = "Cancel Subscription";
- cancelSub.classList.add("_cancel_sub_btn");
+  let btnsSpan = document.createElement("span");
+  btnsSpan.classList.add("_payment_btns_span");
 
- let onCreateGoogleLoginBtn = () => {
-   let loginDiv = document.createElement("div");
-   loginDiv.classList.add("_login_div");
+  btnsSpan.appendChild(monthlySub);
+  btnsSpan.appendChild(yearlySub);
+  collectMoneyContainer.innerHTML = trialInfoHTML;
+  collectMoneyContainer.appendChild(btnsSpan);
 
-   closeIcon.addEventListener("click", () => {
-     sidebar.classList.remove("_visible_side");
-   });
+  return collectMoneyContainer;
+};
 
-   let googleIcon = document.createElement("img");
-   googleIcon.src = chrome.runtime.getURL("../../images/google.png");
-   googleIcon.classList.add("_google_login_icon");
+let onWelcomeShowAuth = () => {
+  let welcomeContainer = document.createElement("div");
+  welcomeContainer.classList.add("_welcome_login_container");
 
-   let laBtn = document.createElement("button");
-   laBtn.innerText = "Sign Up With google";
-   laBtn.classList.add("_login_with_google_btn");
+  let welcomeTitle = `
+  <h2 class="_welcome_title">Hey, welcome to your ChatFolderz account panel.</h2>
+   <p class="_welcome_text">Organize, search, and bookmark your AI conversations with ease.</p>
+  `;
 
-   let loginText = document.createElement("p");
-   loginText.innerText = "Sign up or log in to get started!";
-   loginText.classList.add("_login_text");
+  let googleIcon = document.createElement("img");
+  googleIcon.src = chrome.runtime.getURL("../../images/google.png");
+  googleIcon.classList.add("_google_login_icon");
 
-   let loginBtn = document.createElement("span");
-   loginBtn.classList.add("_login_btn");
+  let laBtn = document.createElement("button");
+  laBtn.innerText = "Sign Up With google";
+  laBtn.classList.add("_login_with_google_btn");
 
-   loginBtn.appendChild(googleIcon);
-   loginBtn.appendChild(laBtn);
-   loginDiv.appendChild(loginText);
-   loginDiv.appendChild(loginBtn);
+  let loginText = document.createElement("p");
+  loginText.innerText = "Sign up or log in to get started!";
+  loginText.classList.add("_login_text");
 
-   loginBtn.addEventListener("click", () => {
-     console.log("Requesting Google login via background");
-     chrome.runtime.sendMessage({ action: "startGoogleAuth" }, (response) => {
-       console.log("The res: ", response);
-       if (response?.success) {
-         console.log("Google login success:", response?.data);
+  let loginBtn = document.createElement("span");
+  loginBtn.classList.add("_login_btn");
 
-         // Extract tokens from the response data
-         const { idToken, accessToken } = response.data;
+  loginBtn.appendChild(googleIcon);
+  loginBtn.appendChild(laBtn);
 
-         // Set the cookies
-         document.cookie = `idToken=${idToken}; path=/; secure; SameSite=Lax`;
-         document.cookie = `accessToken=${accessToken}; path=/; secure; SameSite=Lax`;
+  // onClick login the user
+  loginBtn.addEventListener("click", () => {
+    handleLogin();
+  });
 
-         console.log("Cookies set successfully");
-       } else {
-         console.error("Google login failed:", response?.error);
-       }
-     });
-   });
+  welcomeContainer.innerHTML = welcomeTitle;
+  welcomeContainer.appendChild(loginText);
+  welcomeContainer.appendChild(loginBtn);
 
-   // Create a container div and set its innerHTML
-   let trialInfoDiv = document.createElement("div");
-   trialInfoDiv.innerHTML = trialInfoHTML;
+  return welcomeContainer;
+};
 
-   return loginDiv;
- };
+let onManageAccount = () => {
+  let manageAccountContainer = document.createElement("div");
+  manageAccountContainer.classList.add("_manage_account_container");
 
- sidebar.appendChild(closeIcon);
- sideHeaderTextSpan.appendChild(sidebarTitle);
- sideHeaderTextSpan.appendChild(sidebarText);
- sidebar.appendChild(sideHeaderTextSpan);
- sidebar.appendChild(onCreateGoogleLoginBtn());
+  let cancelSub = document.createElement("button");
+  cancelSub.innerText = "Cancel Subscription";
+  cancelSub.classList.add("_cancel_sub_btn");
 
- // more_content.js
- const onAccountAccess = () => {
-   sidebar.classList.add("_visible_side");
- };
+  manageAccountContainer.appendChild(cancelSub);
 
- const onInitAccountAccess = () => {
-   document.body.appendChild(sidebar);
-   document.body.appendChild(signUpBtn);
+  return manageAccountContainer;
+};
 
-   signUpBtn.addEventListener("click", () => {
-     onAccountAccess();
-   });
- };
+const displayUI = () => {
+  // Retrieve and log data
+  chrome.storage.local.get(
+    ["isLoggedIn", "userId", "userName", "customer_id"],
+    (result) => {
+      console.log("Stored data:", result);
+      const { isLoggedIn, userId, customer_id } = result;
 
- onInitAccountAccess();
-setInterval(onInitAccountAccess, 2000);
+      if (isLoggedIn && userId && !customer_id) {
+        onWelcomeShowAuth().remove();
+
+        sidebar.appendChild(onCollectPayment());
+      } else if (!isLoggedIn && !userId && !customer_id) {
+        onCollectPayment().remove();
+
+        sidebar.appendChild(onWelcomeShowAuth());
+      } else if (isLoggedIn && userId && customer_id) {
+        onCollectPayment().remove();
+        onWelcomeShowAuth().remove();
+        
+        sidebar.appendChild(onManageAccount());
+      }
+    }
+  );
+};
+
+const onInitAccountAccess = () => {
+  document.body.appendChild(sidebar);
+  document.body.appendChild(signUpBtn);
+
+  // Open the module
+  signUpBtn.addEventListener("click", () => {
+    onAccountAccess();
+  });
+
+  // Close the module
+  closeIcon.addEventListener("click", () => {
+    sidebar.classList.remove("_visible_side");
+  });
+};
+
+window.addEventListener("load", () => {
+  sidebar.appendChild(closeIcon);
+  displayUI();
+
+  onInitAccountAccess();
+  setInterval(onInitAccountAccess, 2000);
+});

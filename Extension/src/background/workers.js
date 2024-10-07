@@ -55,3 +55,102 @@ function extractTokensFromUrl(url) {
 
   return { idToken, accessToken }; // Return both tokens as an object
 }
+
+
+// Setting cookies to the browser
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "setCookie") {
+    const { accessToken, userId, userName } = request.data;
+    
+    // Set access token cookie
+    chrome.cookies.set({
+      url: "http://localhost:8000", // Your backend URL
+      name: "accessToken",
+      value: accessToken,
+      path: "/",
+      secure: true,
+      sameSite: "lax",
+      expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours from now
+    }, (cookie) => {
+      if (chrome.runtime.lastError) {
+        console.error("Error setting cookie:", chrome.runtime.lastError);
+      } else {
+        console.log("Cookie set successfully:", cookie);
+      }
+    });
+
+    // You might want to set additional cookies for user info
+    chrome.cookies.set({
+      url: "http://localhost:8000",
+      name: "userId",
+      value: userId,
+      path: "/",
+      secure: true,
+      sameSite: "lax",
+      expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+    });
+
+    sendResponse({ success: true });
+  }
+  
+  return true; // Keep the message channel open for async response
+});
+
+// Helper function to get cookies for API requests
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getCookies") {
+    chrome.cookies.getAll({ url: "http://localhost:8000" }, (cookies) => {
+      sendResponse({ cookies });
+    });
+    return true;
+  }
+});
+
+// apiUtils.js
+// export const makeAuthenticatedRequest = async (endpoint, options = {}) => {
+//   try {
+//     // Get cookies from background script
+//     const cookiesResponse = await new Promise((resolve) => {
+//       chrome.runtime.sendMessage({ action: "getCookies" }, resolve);
+//     });
+
+//     const { cookies } = cookiesResponse;
+//     const accessToken = cookies.find(cookie => cookie.name === 'accessToken')?.value;
+
+//     if (!accessToken) {
+//       throw new Error('No access token found');
+//     }
+
+//     const headers = {
+//       'Authorization': `Bearer ${accessToken}`,
+//       'Content-Type': 'application/json',
+//       ...options.headers,
+//     };
+
+//     const response = await fetch(`http://localhost:8000${endpoint}`, {
+//       ...options,
+//       headers,
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     console.error('API request failed:', error);
+//     throw error;
+//   }
+// };
+
+// Example usage:
+// export const fetchUserData = async () => {
+//   return makeAuthenticatedRequest('/api/user/profile');
+// };
+
+// export const updateUserProfile = async (data) => {
+//   return makeAuthenticatedRequest('/api/user/profile', {
+//     method: 'PUT',
+//     body: JSON.stringify(data),
+//   });
+// };
