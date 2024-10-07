@@ -17,6 +17,7 @@ CREATE TABLE user_subscription (
     customer_id TEXT PRIMARY KEY, -- STRIPE customer id.
     subscription_duration VARCHAR(10) NOT NULL, -- Whether the subscription is 'yearly' or 'monthly'.
     has_access BOOLEAN DEFAULT FALSE, -- Whether the subscription is active or canceled.
+    subscription_type VARCHAR(50),
     customer_email VARCHAR(256) NOT NULL, -- The email of the user.
     user_id TEXT, -- Reference to the user profile
     customer_country VARCHAR(50),
@@ -24,6 +25,6 @@ CREATE TABLE user_subscription (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was created
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was last updated
     expires_at TIMESTAMP, -- The time the subscription expires
-    subscription_state: VARCHAR(256); -- This will the state of the subscription whether it's active or canceled!
+    subscription_state VARCHAR(256) -- This will the state of the subscription whether it's active or canceled!
 );
 

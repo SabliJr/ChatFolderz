@@ -23,8 +23,9 @@ const corsOptions = {
   credentials: true,
   origin: [
     "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // Allow your extension to make requests
-    // 'localhost:3000', // Uncomment for local development
-    // 'http://localhost:3000', // Uncomment for local development
+    "localhost:3000", // Uncomment for local development
+    "http://localhost:3000", // Uncomment for local development
+    "https://www.api.chatfolderz.com/api",
   ],
   optionsSuccessStatus: 204,
   exposedHeaders: ["Set-Cookie", "ajax_redirect"],

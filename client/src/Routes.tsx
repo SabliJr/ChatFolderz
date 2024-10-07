@@ -6,6 +6,7 @@ import NotFound from "./Pages/NotFound";
 import Contact from "./Pages/Contact";
 import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsOfService from "./Pages/TermsOfService";
+import SubscriptionSuccess from "./Pages/paymentSuccess";
 // import AccountSettings from "./Pages/AccountSettings";
 
 const RoutesFile = () => {
@@ -16,6 +17,7 @@ const RoutesFile = () => {
         <Route path='/contact' element={<Contact />} />
         <Route path='/terms-of-service' element={<TermsOfService />} />
         <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+        <Route path='/success' element={<SubscriptionSuccess />} />
 
         {/* <Route path='/account-settings' element={<AccountSettings />} /> */}
 

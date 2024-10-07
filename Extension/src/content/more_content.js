@@ -24,7 +24,6 @@ const handleLogin = () => {
   chrome.runtime.sendMessage(
     { action: "startGoogleAuth" },
     async (response) => {
-      console.log("The res: ", response);
       if (response?.success) {
         const { accessToken } = response.data;
         const { user_id, user_name, customer_id } = response.data.user;
@@ -57,6 +56,30 @@ const handleLogin = () => {
       }
     }
   );
+};
+
+const onSubForYear = () => {
+  chrome.runtime.sendMessage({ action: "buyYearlySub" }, async (response) => {
+    if (response?.success) {
+      let { id, url } = response.data;
+
+      window.open(url, "_blank");
+    } else {
+      console.log("Getting a payment link has failed: ", response?.error);
+    }
+  });
+};
+
+const onSubForMonth = () => {
+  chrome.runtime.sendMessage({ action: "buyMonthlySub" }, async (response) => {
+    if (response?.success) {
+      let { id, url } = response.data;
+
+      window.open(url, "_blank");
+    } else {
+      console.log("Getting a payment link has failed: ", response?.error);
+    }
+  });
 };
 
 // const fetchData = async () => {
@@ -99,6 +122,17 @@ let onCollectPayment = () => {
   btnsSpan.appendChild(yearlySub);
   collectMoneyContainer.innerHTML = trialInfoHTML;
   collectMoneyContainer.appendChild(btnsSpan);
+
+  yearlySub.addEventListener("click", () => {
+    console.log("You are clicking the yearly one");
+    onSubForYear();
+  });
+
+  monthlySub.addEventListener("click", () => {
+    console.log("You are clicking the monthly one");
+
+    onSubForMonth();
+  });
 
   return collectMoneyContainer;
 };
@@ -174,7 +208,7 @@ const displayUI = () => {
       } else if (isLoggedIn && userId && customer_id) {
         onCollectPayment().remove();
         onWelcomeShowAuth().remove();
-        
+
         sidebar.appendChild(onManageAccount());
       }
     }

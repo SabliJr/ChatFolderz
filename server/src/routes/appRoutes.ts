@@ -1,17 +1,12 @@
 import { Router } from "express";
-import bodyParser from "body-parser";
 
 // Controllers
 import { userLogout, onAuthWithGoogle } from "../controllers/gAuth";
 import {
-  onPaymentSetup,
-  onStripeReturn,
-  onPaymentSetupRefresh,
-  onPurchase,
-  onPaymentComplete,
+  onCheckOut,
+  onSubscriptionSuccess,
 } from "../controllers/paymentController";
 
-import { authenticateCreator } from "../validators/authValidation";
 import { handleRefreshToken } from "../controllers/refreshTokenController";
 
 const router = Router();
@@ -21,16 +16,9 @@ router.get("/logout", userLogout); // logout creator
 router.get("/refresh-token", handleRefreshToken); // refresh token
 router.post("/auth/google", onAuthWithGoogle); // google sign in
 
-router.post("/reset-password"); // reset password
-
 // PAYMENT ROUTES
-router.post("/stripe/reauth", authenticateCreator, onPaymentSetupRefresh); // Stripe connect initial route
-router.get("/stripe/return?:creator_id", onStripeReturn); // Stripe connect return route
-router.post("/create-checkout-session", onPurchase);
-router.post(
-  "/payment-completed/webhook",
-  bodyParser.raw({ type: "application/json" }),
-  onPaymentComplete
-); // Stripe webhook route;
+router.get("/check_out/monthly", onCheckOut);
+router.get("/check_out/yearly", onCheckOut);
+router.get("/checkout_success", onSubscriptionSuccess);
 
 export default router;
