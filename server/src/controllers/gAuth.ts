@@ -106,7 +106,6 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         message: "The login was successful!",
         user: {
           user_id,
-          user_name,
           customer_id,
           has_access,
         },
@@ -132,7 +131,6 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         message: "The registration was successful.",
         user: {
           user_id,
-          user_name,
           customer_id,
           has_access,
         },
@@ -153,16 +151,22 @@ const onGetCredentials = async (req: Request, res: Response) => {
   const userId = cookies.userId;
 
   try {
-    let user_has_payed = checkUserAccess(userId);
+    let user_has_payed = await checkUserAccess(userId);
+    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+      userId,
+    ]);
+    let { user_id, customer_id, has_access } = userInfo.rows[0];
 
     res.status(200).json({
       message: "Everything is fine, the user has payed!",
       user: {
+        customer_id: customer_id,
         user_has_payed: user_has_payed,
+        user_id: user_id,
+        has_access: has_access,
       },
     });
   } catch (error) {
-    console.error("There was an err getting user's credentials: ", error);
     res.status(500).json({
       error:
         "Something went wrong getting user's credentials, please refresh the page!",

@@ -26,8 +26,7 @@ const handleLogin = () => {
     async (response) => {
       if (response?.success) {
         const { accessToken } = response.data;
-        const { user_id, user_name, customer_id, has_access } =
-          response.data.user;
+        const { user_id, customer_id, has_access } = response.data.user;
 
         try {
           // Set cookie in background script
@@ -36,18 +35,14 @@ const handleLogin = () => {
             data: {
               accessToken,
               userId: user_id,
-              userName: user_name,
-              has_access: has_access,
             },
           });
 
-          // Optionally store some data in chrome.storage for easy access
           await chrome.storage.local.set({
             isLoggedIn: true,
             userId: user_id,
-            userName: user_name,
-            customer_id: customer_id,
-            has_access: has_access,
+            customerId: customer_id,
+            hasAccess: has_access,
           });
 
           displayUI();
@@ -184,37 +179,33 @@ let onManageAccount = () => {
 const displayUI = () => {
   // Retrieve and log data asynchronously
   chrome.storage.local.get(
-    [
-      "isLoggedIn",
-      "userId",
-      "userName",
-      "customer_id",
-      "has_access",
-      "user_has_access",
-    ],
+    ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
     (result) => {
-      const { isLoggedIn, userId, customer_id, has_access, user_has_access } =
+      const { isLoggedIn, userId, customerId, hasAccess, userHasPayed } =
         result;
+
+      console.log("The res: ", result);
 
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
 
-      if (isLoggedIn && userId && !customer_id && !has_access) {
+      if (isLoggedIn && userId && !customerId && !hasAccess && !userHasPayed) {
         // User is logged in but has not made payment
         sidebar.appendChild(onCollectPayment());
-      } else if (!isLoggedIn && !userId && !customer_id && !has_access) {
+      } else if (!isLoggedIn && !userId && !customerId && !hasAccess) {
         // User is not logged in
         sidebar.appendChild(onWelcomeShowAuth());
       } else if (
         isLoggedIn &&
         userId &&
-        customer_id &&
-        has_access &&
-        user_has_access
+        customerId &&
+        hasAccess &&
+        userHasPayed
       ) {
+        console.log("We are in manage account: ", userHasPayed);
         // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
-      } else if (isLoggedIn && userId && customer_id && !has_access) {
+      } else if (isLoggedIn && userId && customerId && !hasAccess) {
         sidebar.appendChild(onCollectPayment());
       }
     }
@@ -225,7 +216,7 @@ const displayUI = () => {
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local") {
     // Check if any of the keys you're interested in have changed
-    if (changes.isLoggedIn || changes.userId || changes.customer_id) {
+    if (changes.isLoggedIn || changes.userId || changes.customerId) {
       // Update the UI based on the new values
       displayUI();
     }
@@ -235,18 +226,17 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 function onGetCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     if (response?.success) {
-      let { user_has_payed } = response.data.user;
+      let { user_has_payed, has_access, customer_id, user_id } =
+        response.data.user;
 
-      // Retrieve current storage values
-      chrome.storage.local.get(null, async (items) => {
-        items.user_has_payed = user_has_payed; // Add the new value to the existing storage
-
-        // Update the storage with the new value
-        await chrome.storage.local.set(items);
+      // Update the storage with the new user_data object
+      await chrome.storage.local.set({
+        customerId: customer_id,
+        hasAccess: has_access,
+        userHasPayed: user_has_payed,
+        isLoggedIn: true,
+        userId: user_id,
       });
-
-      console.log("The has payed: ", user_has_payed);
-      console.log("We have got the credentials successfully");
     } else {
       console.error("There was an error getting credentials");
     }
@@ -254,6 +244,8 @@ function onGetCredentials() {
 }
 
 const onInitAccountAccess = () => {
+  sidebar.appendChild(closeIcon);
+
   document.body.appendChild(sidebar);
   document.body.appendChild(signUpBtn);
 
@@ -269,7 +261,6 @@ const onInitAccountAccess = () => {
 };
 
 window.addEventListener("load", () => {
-  sidebar.appendChild(closeIcon);
   displayUI(); // Call UI update on load
   onInitAccountAccess();
   onGetCredentials();
