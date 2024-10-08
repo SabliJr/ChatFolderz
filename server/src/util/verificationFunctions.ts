@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { REFRESH_TOKEN_SECRET, CLIENT_URL } from "../Constants";
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
+import { query } from "../config/dbConfig";
 
 const generateVerificationToken = (username: string, creator_id: string) => {
   // Generate a hash of the username
@@ -25,4 +26,22 @@ const isValidAuthToken = (authToken: string) => {
   }
 };
 
-export { generateVerificationToken, isValidAuthToken };
+const checkUserAccess = async (userId: string) => {
+  const result = await query(
+    "SELECT has_access, expires_at FROM user_profile WHERE user_id=$1",
+    [userId]
+  );
+
+  if (result.rows.length > 0) {
+    const { has_access, expires_at } = result.rows[0];
+    const now = new Date();
+
+    if (has_access && expires_at > now) {
+      return true; // User has access
+    }
+  }
+
+  return false; // User does not have access
+};
+
+export { generateVerificationToken, isValidAuthToken, checkUserAccess };

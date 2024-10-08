@@ -7,6 +7,7 @@ import {
   GOOGLE_OAUTH_CLIENT_SECRET,
 } from "../Constants";
 import jwt from "jsonwebtoken";
+import { checkUserAccess } from "../util/verificationFunctions";
 
 import { OAuth2Client } from "google-auth-library";
 
@@ -92,12 +93,8 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
 
     if (userExists.rows.length > 0) {
       // If they do, log them in
-      const { user_id, user_name, customer_id } = userExists?.rows[0];
-      // const accessToken = await jwt.sign(
-      //   { user_id, user_name },
-      //   ACCESS_SECRET_KEY as string,
-      //   { expiresIn: "30m" }
-      // );
+      const { user_id, user_name, customer_id, has_access } =
+        userExists?.rows[0];
 
       const refreshToken = await jwt.sign(
         { user_id, user_name },
@@ -112,6 +109,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
           user_id,
           user_name,
           customer_id,
+          has_access,
         },
         accessToken: refreshToken,
       });
@@ -122,13 +120,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         [user_id, user_name, email, email_verified, picture]
       );
 
-      const { customer_id } = user_registration.rows[0];
-
-      // const accessToken = await jwt.sign(
-      //   { user_id, user_name },
-      //   ACCESS_SECRET_KEY as string,
-      //   { expiresIn: "30m" }
-      // );
+      const { customer_id, has_access } = user_registration.rows[0];
 
       const refreshToken = await jwt.sign(
         { user_id, user_name },
@@ -143,6 +135,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
           user_id,
           user_name,
           customer_id,
+          has_access,
         },
         accessToken: refreshToken,
       });
@@ -157,32 +150,25 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
 
 const onGetCredentials = async (req: Request, res: Response) => {
   const cookies = req.cookies;
-  if (!cookies?.refreshToken) return res.sendStatus(401);
-  const refreshToken = cookies.refreshToken;
+  if (!cookies?.refreshToken || !cookies.userId) return res.sendStatus(401);
   const userId = cookies.userId;
 
-  console.log("Refresh Token: ", refreshToken);
-  console.log("userId: ", userId);
-
   try {
-    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
-      userId,
-    ]);
-    let { user_id, user_name, customer_id } = userInfo.rows[0];
-    console.log(user_id, user_name, customer_id);
+    let user_has_payed = checkUserAccess(userId);
 
-    let customerInfo = await query(
-      "SELECT * FROM user_subscription WHERE customer_id=$1",
-      [customer_id]
-    );
-    let {
-      subscription_state,
-      has_access,
-      subscription_duration,
-      created_at,
-      expires_at,
-    } = customerInfo.rows[0];
-  } catch (error) {}
+    res.status(200).json({
+      message: "Everything is fine, the user has payed!",
+      user: {
+        user_has_payed: user_has_payed,
+      },
+    });
+  } catch (error) {
+    console.error("There was an err getting user's credentials: ", error);
+    res.status(500).json({
+      error:
+        "Something went wrong getting user's credentials, please refresh the page!",
+    });
+  }
 };
 
 export { onAuthWithGoogle, userLogout, onGetCredentials };

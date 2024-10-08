@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyMonthlySub") {
     fetch(
-      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q67pMDuxNnSWA1y8J6HuXXy",
+      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q7YkdDuxNnSWA1yHJJdd7ih",
       {
         method: "GET",
         credentials: "include", // This to include the cookies

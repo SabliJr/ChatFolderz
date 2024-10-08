@@ -20,8 +20,8 @@ const SubscriptionSuccess = () => {
         console.log("res: ", res);
 
         if (res.status === 200) {
-          let { customer_id } = res.data.user;
-          if (customer_id) setIsEverythingOkay(true);
+          let { user_has_payed } = res.data.user;
+          if (user_has_payed) setIsEverythingOkay(user_has_payed);
         }
       } catch (error) {
         alert(

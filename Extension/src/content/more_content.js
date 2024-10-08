@@ -26,7 +26,8 @@ const handleLogin = () => {
     async (response) => {
       if (response?.success) {
         const { accessToken } = response.data;
-        const { user_id, user_name, customer_id } = response.data.user;
+        const { user_id, user_name, customer_id, has_access } =
+          response.data.user;
 
         try {
           // Set cookie in background script
@@ -36,6 +37,7 @@ const handleLogin = () => {
               accessToken,
               userId: user_id,
               userName: user_name,
+              has_access: has_access,
             },
           });
 
@@ -45,6 +47,7 @@ const handleLogin = () => {
             userId: user_id,
             userName: user_name,
             customer_id: customer_id,
+            has_access: has_access,
           });
 
           displayUI();
@@ -65,7 +68,7 @@ const onSubForYear = () => {
 
       window.open(url, "_blank");
     } else {
-      console.log("Getting a payment link has failed: ", response?.error);
+      console.error("Getting a payment link has failed: ", response?.error);
     }
   });
 };
@@ -77,7 +80,7 @@ const onSubForMonth = () => {
 
       window.open(url, "_blank");
     } else {
-      console.log("Getting a payment link has failed: ", response?.error);
+      console.error("Getting a payment link has failed: ", response?.error);
     }
   });
 };
@@ -96,6 +99,7 @@ let onCollectPayment = () => {
         </ul>
         </div>
         <h5 class="_prices_last_title">No commitment, cancel anytime during your trial if it’s not for you!</h5>
+        <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
   `;
 
   let monthlySub = document.createElement("button");
@@ -115,13 +119,10 @@ let onCollectPayment = () => {
   collectMoneyContainer.appendChild(btnsSpan);
 
   yearlySub.addEventListener("click", () => {
-    console.log("You are clicking the yearly one");
     onSubForYear();
   });
 
   monthlySub.addEventListener("click", () => {
-    console.log("You are clicking the monthly one");
-
     onSubForMonth();
   });
 
@@ -183,22 +184,38 @@ let onManageAccount = () => {
 const displayUI = () => {
   // Retrieve and log data asynchronously
   chrome.storage.local.get(
-    ["isLoggedIn", "userId", "userName", "customer_id"],
+    [
+      "isLoggedIn",
+      "userId",
+      "userName",
+      "customer_id",
+      "has_access",
+      "user_has_access",
+    ],
     (result) => {
-      const { isLoggedIn, userId, customer_id } = result;
+      const { isLoggedIn, userId, customer_id, has_access, user_has_access } =
+        result;
 
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
 
-      if (isLoggedIn && userId && !customer_id) {
+      if (isLoggedIn && userId && !customer_id && !has_access) {
         // User is logged in but has not made payment
         sidebar.appendChild(onCollectPayment());
-      } else if (!isLoggedIn && !userId && !customer_id) {
+      } else if (!isLoggedIn && !userId && !customer_id && !has_access) {
         // User is not logged in
         sidebar.appendChild(onWelcomeShowAuth());
-      } else if (isLoggedIn && userId && customer_id) {
+      } else if (
+        isLoggedIn &&
+        userId &&
+        customer_id &&
+        has_access &&
+        user_has_access
+      ) {
         // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
+      } else if (isLoggedIn && userId && customer_id && !has_access) {
+        sidebar.appendChild(onCollectPayment());
       }
     }
   );
@@ -209,8 +226,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local") {
     // Check if any of the keys you're interested in have changed
     if (changes.isLoggedIn || changes.userId || changes.customer_id) {
-      console.log("Storage data has changed:", changes);
-
       // Update the UI based on the new values
       displayUI();
     }
@@ -220,9 +235,20 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 function onGetCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     if (response?.success) {
+      let { user_has_payed } = response.data.user;
+
+      // Retrieve current storage values
+      chrome.storage.local.get(null, async (items) => {
+        items.user_has_payed = user_has_payed; // Add the new value to the existing storage
+
+        // Update the storage with the new value
+        await chrome.storage.local.set(items);
+      });
+
+      console.log("The has payed: ", user_has_payed);
       console.log("We have got the credentials successfully");
     } else {
-      console.log("There was an error getting credentials");
+      console.error("There was an error getting credentials");
     }
   });
 }
@@ -249,7 +275,7 @@ window.addEventListener("load", () => {
   onGetCredentials();
 
   setInterval(onInitAccountAccess, 2000); // Calling this every 2s because the openAI's website is an SPA.
-  setInterval(onGetCredentials, 10 * 60 * 1000); // Call this function every 10ms to go get the user credentials
+  setInterval(onGetCredentials, 3 * 60 * 1000); // Call this function every 3ms to go get the user credentials
 });
 
 // const fetchData = async () => {
