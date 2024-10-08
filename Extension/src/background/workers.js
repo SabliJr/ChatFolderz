@@ -149,6 +149,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getCredentials") {
+    fetch("http://localhost:8000/api/get_credentials", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
 // apiUtils.js
 // export const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 //   try {

@@ -10,16 +10,16 @@ CREATE TABLE user_profile (
     created_at TIMESTAMP DEFAULT NOW(), -- user's account creation date
     is_verified BOOLEAN DEFAULT FALSE, -- user's verification status
     customer_id TEXT UNIQUE -- STRIPE customer id, must be unique
+    has_access BOOLEAN DEFAULT FALSE, -- Whether the user's subscription is still active or canceled.
 );
 
 -- User subscription table
 CREATE TABLE user_subscription (
     customer_id TEXT PRIMARY KEY, -- STRIPE customer id.
     subscription_duration VARCHAR(10) NOT NULL, -- Whether the subscription is 'yearly' or 'monthly'.
-    has_access BOOLEAN DEFAULT FALSE, -- Whether the subscription is active or canceled.
     subscription_type VARCHAR(50),
     customer_email VARCHAR(256) NOT NULL, -- The email of the user.
-    user_id TEXT, -- Reference to the user profile
+    user_id TEXT REFERENCES user_profile(user_id) ON DELETE CASCADE, -- Reference to the user profile
     customer_country VARCHAR(50),
     customer_name VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was created

@@ -4,8 +4,6 @@ import "./pricing.css";
 import BrandFeaturs from "./BrandFeaturs";
 
 const Index = () => {
-  // const [active, setActive] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
   const [whoIsThis, setWhoIsThis] = useState("Yearly");
   let checkRef = useRef<HTMLInputElement | null>(null);
 
@@ -17,24 +15,6 @@ const Index = () => {
       setWhoIsThis("Monthly");
     }
   };
-
-  // const handleCheckOut = async (price: string) => {
-  //   setIsLoading(true);
-
-  //   try {
-  //     let res = await onCheckingOut(price);
-  //     if (res.status === 200) window.location = res.data.url;
-  //   } catch (error) {
-  //     alert("Something went wrong please try again!");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // let path = window.location.pathname.split("/")[1];
-  // if (isLoading && path !== "chose-plan") {
-  //   return <Loader />;
-  // }
 
   const handleSpanClick = () => {
     if (checkRef?.current) {
@@ -96,7 +76,6 @@ const Index = () => {
               <h2 className='_price'>
                 $76.70 <span>/year</span>
               </h2>
-              {/* <span>Billed annually: $76.70</span> */}
               <span className='_monthly_yearly_price'>6.39 /month</span>
             </div>
             <BrandFeaturs />

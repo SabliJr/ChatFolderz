@@ -14,7 +14,7 @@ closeIcon.src = chrome.runtime.getURL("../../images/cross.png");
 closeIcon.alt = "Close Icon";
 closeIcon.classList.add("_sidebar_close_icon");
 
-// more_content.js
+// more_content.js;
 const onAccountAccess = () => {
   sidebar.classList.add("_visible_side");
 };
@@ -81,15 +81,6 @@ const onSubForMonth = () => {
     }
   });
 };
-
-// const fetchData = async () => {
-//   try {
-//     const data = await makeAuthenticatedRequest('/api/some-endpoint');
-//     console.log('Data received:', data);
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// };
 
 let onCollectPayment = () => {
   let collectMoneyContainer = document.createElement("div");
@@ -190,41 +181,62 @@ let onManageAccount = () => {
 };
 
 const displayUI = () => {
-  // Retrieve and log data
+  // Retrieve and log data asynchronously
   chrome.storage.local.get(
     ["isLoggedIn", "userId", "userName", "customer_id"],
     (result) => {
-      console.log("Stored data:", result);
       const { isLoggedIn, userId, customer_id } = result;
 
-      if (isLoggedIn && userId && !customer_id) {
-        onWelcomeShowAuth().remove();
+      // Clear the sidebar content before updating UI
+      sidebar.innerHTML = "";
 
+      if (isLoggedIn && userId && !customer_id) {
+        // User is logged in but has not made payment
         sidebar.appendChild(onCollectPayment());
       } else if (!isLoggedIn && !userId && !customer_id) {
-        onCollectPayment().remove();
-
+        // User is not logged in
         sidebar.appendChild(onWelcomeShowAuth());
       } else if (isLoggedIn && userId && customer_id) {
-        onCollectPayment().remove();
-        onWelcomeShowAuth().remove();
-
+        // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
       }
     }
   );
 };
 
+// Listen for changes in chrome.storage.local
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "local") {
+    // Check if any of the keys you're interested in have changed
+    if (changes.isLoggedIn || changes.userId || changes.customer_id) {
+      console.log("Storage data has changed:", changes);
+
+      // Update the UI based on the new values
+      displayUI();
+    }
+  }
+});
+
+function onGetCredentials() {
+  chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
+    if (response?.success) {
+      console.log("We have got the credentials successfully");
+    } else {
+      console.log("There was an error getting credentials");
+    }
+  });
+}
+
 const onInitAccountAccess = () => {
   document.body.appendChild(sidebar);
   document.body.appendChild(signUpBtn);
 
-  // Open the module
+  // Open the sidebar module
   signUpBtn.addEventListener("click", () => {
     onAccountAccess();
   });
 
-  // Close the module
+  // Close the sidebar module
   closeIcon.addEventListener("click", () => {
     sidebar.classList.remove("_visible_side");
   });
@@ -232,8 +244,21 @@ const onInitAccountAccess = () => {
 
 window.addEventListener("load", () => {
   sidebar.appendChild(closeIcon);
-  displayUI();
-
+  displayUI(); // Call UI update on load
   onInitAccountAccess();
-  setInterval(onInitAccountAccess, 2000);
+  onGetCredentials();
+
+  setInterval(onInitAccountAccess, 2000); // Calling this every 2s because the openAI's website is an SPA.
+  setInterval(onGetCredentials, 10 * 60 * 1000); // Call this function every 10ms to go get the user credentials
 });
+
+// const fetchData = async () => {
+//   try {
+//     const data = await makeAuthenticatedRequest('/api/some-endpoint');
+//     console.log('Data received:', data);
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   }
+// };
+
+// ---------------------------------------------------------------------------------------------
