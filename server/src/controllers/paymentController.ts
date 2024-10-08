@@ -49,35 +49,75 @@ const onSubscriptionSuccess = async (req: Request, res: Response) => {
     req.query.session_id as string
   );
 
-  try {
-    let customer_id;
-    let customer_email;
-    if (session.payment_status === "paid") {
-      customer_email = session.customer_details?.email;
-      customer_id = session.customer;
-    }
+  if (session.payment_status === "paid") {
+    let customer_id = session.customer;
+    let customer_email = session.customer_details?.email;
+    let customer_country = session.customer_details?.address?.country;
+    let customer_name = session.customer_details?.name;
+    let created_at = new Date(session.created * 1000);
+    let expiry_date = new Date(session.expires_at * 1000);
+    let subscription_state = session.status;
+    let subscription_duration;
+    let subscription_type;
+    plans
+      .filter(
+        (plan) => plan.price === Number((session.amount_total as number) / 100)
+      )
+      .forEach((plan) => {
+        subscription_duration = plan.duration;
+        subscription_type = plan.subscription_type;
+      });
 
-    let userInfo;
-    if (customer_id && customer_email) {
-      userInfo = await query(
-        "SELECT * FROM user_profile WHERE customer_id=$1 AND email=$2",
-        [customer_id, customer_email]
-      );
-    }
-
-    let { user_id } = userInfo?.rows[0];
-    let user_has_payed = user_id ? checkUserAccess(user_id) : null;
-
-    res.status(200).json({
-      message: "All good, give them access!",
-      user_has_payed: user_has_payed,
-    });
-  } catch (err: any) {
-    console.error(
-      "There was an error during payment verification from the landing page: ",
-      err
+    // Use INSERT ... ON CONFLICT to handle duplicate customer_id
+    await query(
+      `INSERT INTO user_subscription (customer_id, subscription_type, subscription_duration, customer_email, customer_country, customer_name, created_at)
+       VALUES($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (customer_id)
+       DO UPDATE SET
+         subscription_type = EXCLUDED.subscription_type,
+         subscription_duration = EXCLUDED.subscription_duration,
+         customer_email = EXCLUDED.customer_email,
+         customer_country = EXCLUDED.customer_country,
+         customer_name = EXCLUDED.customer_name,
+         updated_at = CURRENT_TIMESTAMP
+         `,
+      [
+        customer_id,
+        subscription_type,
+        subscription_duration,
+        customer_email,
+        customer_country,
+        customer_name,
+        created_at,
+      ]
     );
-    res.status(400).json({ message: "Payment wasn't successful" });
+
+    let isCustomerHasAccount = await query(
+      "SELECT * FROM user_profile WHERE email=$1",
+      [customer_email]
+    );
+
+    let { user_id } = isCustomerHasAccount.rows[0];
+    await query(
+      "UPDATE user_subscription SET user_id=$1 WHERE customer_id=$2",
+      [user_id, customer_id]
+    );
+
+    await query(
+      "UPDATE user_profile SET customer_id=$1, has_access=$2, expires_at=$3, subscription_state=$4 WHERE user_id=$5",
+      [customer_id, true, expiry_date, subscription_state, user_id]
+    );
+
+    let user_has_payed = await checkUserAccess(user_id);
+    res.status(200).json({
+      message: "Subscription successful, thanks!",
+      user: {
+        user_has_payed: user_has_payed,
+      },
+    });
+  } else {
+    console.error("There was a problem inserting user's infos");
+    res.status(400).json({ message: "Payment not successful" });
   }
 };
 
@@ -97,71 +137,6 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
 
     // Handle the event
     switch (event.type) {
-      case "payment_intent.succeeded":
-        const paymentIntentSucceeded = event.data.object;
-        const session = await stripe.checkout.sessions.retrieve(
-          paymentIntentSucceeded.id
-        );
-
-        let customer_id = session.customer;
-        let customer_email = session.customer_details?.email;
-        let customer_country = session.customer_details?.address?.country;
-        let customer_name = session.customer_details?.name;
-        let created_at = new Date(session.created * 1000);
-        let expiry_date = new Date(session.expires_at * 1000);
-        let subscription_state = session.status;
-        let subscription_duration;
-        let subscription_type;
-        plans
-          .filter(
-            (plan) =>
-              plan.price === Number((session.amount_total as number) / 100)
-          )
-          .forEach((plan) => {
-            subscription_duration = plan.duration;
-            subscription_type = plan.subscription_type;
-          });
-
-        // Use INSERT ... ON CONFLICT to handle duplicate customer_id
-        await query(
-          `INSERT INTO user_subscription (customer_id, subscription_type, subscription_duration, customer_email, customer_country, customer_name, created_at)
-     VALUES($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (customer_id)
-     DO UPDATE SET
-       subscription_type = EXCLUDED.subscription_type,
-       subscription_duration = EXCLUDED.subscription_duration,
-       customer_email = EXCLUDED.customer_email,
-       customer_country = EXCLUDED.customer_country,
-       customer_name = EXCLUDED.customer_name,
-       updated_at = CURRENT_TIMESTAMP`,
-          [
-            customer_id,
-            subscription_type,
-            subscription_duration,
-            customer_email,
-            customer_country,
-            customer_name,
-            created_at,
-          ]
-        );
-
-        let isCustomerHasAccount = await query(
-          "SELECT * FROM user_profile WHERE email=$1",
-          [customer_email]
-        );
-
-        let { user_id } = isCustomerHasAccount.rows[0];
-        await query(
-          "UPDATE user_subscription SET user_id=$1 WHERE customer_id=$2",
-          [user_id, customer_id]
-        );
-
-        await query(
-          "UPDATE user_profile SET customer_id=$1, has_access=$2, expires_at=$3, subscription_state=$4 WHERE user_id=$5",
-          [customer_id, true, expiry_date, subscription_state, user_id]
-        );
-
-        break;
       case "customer.subscription.deleted": // When a subscription ends
         {
           const customerSubscriptionDeleted = event.data.object;
