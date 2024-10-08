@@ -1,7 +1,6 @@
 import { query } from "../config/dbConfig";
 import { Request, Response } from "express";
 import {
-  ACCESS_SECRET_KEY,
   REFRESH_TOKEN_SECRET,
   GOOGLE_OAUTH_CLIENT_ID,
   GOOGLE_OAUTH_CLIENT_SECRET,

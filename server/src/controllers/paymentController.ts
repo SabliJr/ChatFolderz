@@ -57,6 +57,7 @@ const onSubscriptionSuccess = async (req: Request, res: Response) => {
       customer_id = session.customer;
     }
 
+    console.log(`email: ${customer_email}, customer ID: ${customer_id}`);
     let userInfo;
     if (customer_id && customer_email) {
       userInfo = await query(
@@ -65,6 +66,7 @@ const onSubscriptionSuccess = async (req: Request, res: Response) => {
       );
     }
 
+    console.log("The userInfo: ", userInfo?.rows[0]);
     let { user_id } = userInfo?.rows[0];
     let user_has_payed = user_id ? checkUserAccess(user_id) : null;
 
@@ -99,9 +101,13 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
     switch (event.type) {
       case "payment_intent.succeeded":
         const paymentIntentSucceeded = event.data.object;
-        const session = await stripe.checkout.sessions.retrieve(
+        const paymentIntent = await stripe.paymentIntents.retrieve(
           paymentIntentSucceeded.id
         );
+
+        // Assuming you have stored the checkout session ID in the metadata of the payment intent
+        const sessionId = paymentIntent.metadata.checkout_session_id;
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
 
         let customer_id = session.customer;
         let customer_email = session.customer_details?.email;
@@ -160,7 +166,7 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
           "UPDATE user_profile SET customer_id=$1, has_access=$2, expires_at=$3, subscription_state=$4 WHERE user_id=$5",
           [customer_id, true, expiry_date, subscription_state, user_id]
         );
-
+        console.log("The success: ", paymentIntentSucceeded);
         break;
       case "customer.subscription.deleted": // When a subscription ends
         {

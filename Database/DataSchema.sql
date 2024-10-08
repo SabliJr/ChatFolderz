@@ -10,7 +10,7 @@ CREATE TABLE user_profile (
     created_at TIMESTAMP DEFAULT NOW(), -- user's account creation date
     is_verified BOOLEAN DEFAULT FALSE, -- user's verification status
     customer_id TEXT UNIQUE, -- STRIPE customer id, must be unique
-    has_access BOOLEAN DEFAULT FALSE -- Whether the user's subscription is still active or canceled.
+    has_access BOOLEAN DEFAULT FALSE, -- Whether the user's subscription is still active or canceled.
     expires_at TIMESTAMP, -- The time the subscription expires
     subscription_state VARCHAR(256) -- This will the state of the subscription whether it's active or canceled!
 );
@@ -28,6 +28,6 @@ CREATE TABLE user_subscription (
     customer_country VARCHAR(50),
     customer_name VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was created
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was last updated
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- When the subscription was last updated
 );
 
