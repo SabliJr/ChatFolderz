@@ -1,4 +1,5 @@
 import { Router } from "express";
+import bodyParser from "body-parser";
 
 // Controllers
 import {
@@ -9,6 +10,7 @@ import {
 import {
   onCheckOut,
   onSubscriptionSuccess,
+  onStripeWebhooks,
 } from "../controllers/paymentController";
 
 import { handleRefreshToken } from "../controllers/refreshTokenController";
@@ -25,5 +27,10 @@ router.get("/get_credentials", onGetCredentials);
 router.get("/check_out/monthly", onCheckOut);
 router.get("/check_out/yearly", onCheckOut);
 router.get("/checkout_success", onSubscriptionSuccess);
+router.post(
+  "/stripe/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  onStripeWebhooks
+);
 
 export default router;

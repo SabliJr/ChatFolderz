@@ -9,9 +9,14 @@ CREATE TABLE user_profile (
     profile_image TEXT, -- user's profile image
     created_at TIMESTAMP DEFAULT NOW(), -- user's account creation date
     is_verified BOOLEAN DEFAULT FALSE, -- user's verification status
-    customer_id TEXT UNIQUE -- STRIPE customer id, must be unique
-    has_access BOOLEAN DEFAULT FALSE, -- Whether the user's subscription is still active or canceled.
+    customer_id TEXT UNIQUE, -- STRIPE customer id, must be unique
+    has_access BOOLEAN DEFAULT FALSE -- Whether the user's subscription is still active or canceled.
+    expires_at TIMESTAMP, -- The time the subscription expires
+    subscription_state VARCHAR(256) -- This will the state of the subscription whether it's active or canceled!
 );
+
+CREATE INDEX idx_customer_id ON user_profile(customer_id);
+CREATE INDEX idx_email ON user_profile(email);
 
 -- User subscription table
 CREATE TABLE user_subscription (
@@ -24,7 +29,5 @@ CREATE TABLE user_subscription (
     customer_name VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was created
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was last updated
-    expires_at TIMESTAMP, -- The time the subscription expires
-    subscription_state VARCHAR(256) -- This will the state of the subscription whether it's active or canceled!
 );
 
