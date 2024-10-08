@@ -93,11 +93,11 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
     if (userExists.rows.length > 0) {
       // If they do, log them in
       const { user_id, user_name, customer_id } = userExists?.rows[0];
-      const accessToken = await jwt.sign(
-        { user_id, user_name },
-        ACCESS_SECRET_KEY as string,
-        { expiresIn: "30m" }
-      );
+      // const accessToken = await jwt.sign(
+      //   { user_id, user_name },
+      //   ACCESS_SECRET_KEY as string,
+      //   { expiresIn: "30m" }
+      // );
 
       const refreshToken = await jwt.sign(
         { user_id, user_name },
@@ -118,17 +118,17 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
     } else {
       // If they don't, store their info in the database and log them in
       let user_registration = await query(
-        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
+        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5) RETURNING *",
         [user_id, user_name, email, email_verified, picture]
       );
 
       const { customer_id } = user_registration.rows[0];
 
-      const accessToken = await jwt.sign(
-        { user_id, user_name },
-        ACCESS_SECRET_KEY as string,
-        { expiresIn: "30m" }
-      );
+      // const accessToken = await jwt.sign(
+      //   { user_id, user_name },
+      //   ACCESS_SECRET_KEY as string,
+      //   { expiresIn: "30m" }
+      // );
 
       const refreshToken = await jwt.sign(
         { user_id, user_name },
@@ -155,4 +155,34 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
   }
 };
 
-export { onAuthWithGoogle, userLogout };
+const onGetCredentials = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+  if (!cookies?.refreshToken) return res.sendStatus(401);
+  const refreshToken = cookies.refreshToken;
+  const userId = cookies.userId;
+
+  console.log("Refresh Token: ", refreshToken);
+  console.log("userId: ", userId);
+
+  try {
+    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+      userId,
+    ]);
+    let { user_id, user_name, customer_id } = userInfo.rows[0];
+    console.log(user_id, user_name, customer_id);
+
+    let customerInfo = await query(
+      "SELECT * FROM user_subscription WHERE customer_id=$1",
+      [customer_id]
+    );
+    let {
+      subscription_state,
+      has_access,
+      subscription_duration,
+      created_at,
+      expires_at,
+    } = customerInfo.rows[0];
+  } catch (error) {}
+};
+
+export { onAuthWithGoogle, userLogout, onGetCredentials };
