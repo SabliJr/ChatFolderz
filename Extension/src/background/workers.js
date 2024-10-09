@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyMonthlySub") {
     fetch(
-      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q7YkdDuxNnSWA1yHJJdd7ih",
+      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q7umiDuxNnSWA1yOR9XCzOz",
       {
         method: "GET",
         credentials: "include", // This to include the cookies
@@ -123,7 +123,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyYearlySub") {
     fetch(
-      "http://localhost:8000/api/check_out/yearly?price_id=price_1Q67qNDuxNnSWA1yxkChsg6G",
+      "http://localhost:8000/api/check_out/yearly?price_id=price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
       {
         method: "GET",
         credentials: "include",
@@ -151,7 +151,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getCredentials") {
-    fetch("http://localhost:8000/api/get_credentials", {
+    fetch(`http://localhost:8000/api/get_credentials`, {
       method: "GET",
       credentials: "include",
     })
@@ -162,6 +162,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch((error) => sendResponse({ success: false, error: error.message }));
 
     return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "cancelSubscription") {
+    chrome.storage.local.get(["customerId"], (result) => {
+      const { customerId } = result;
+
+      fetch(
+        `http://localhost:8000/api/cancel_subscription?customer_id=${customerId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          sendResponse({ success: true, data });
+        })
+        .catch((error) =>
+          sendResponse({ success: false, error: error.message })
+        );
+
+      return true;
+    });
   }
 });
 

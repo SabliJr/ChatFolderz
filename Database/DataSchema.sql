@@ -21,13 +21,13 @@ CREATE INDEX idx_email ON user_profile(email);
 -- User subscription table
 CREATE TABLE user_subscription (
     customer_id TEXT PRIMARY KEY, -- STRIPE customer id.
-    subscription_duration VARCHAR(10) NOT NULL, -- Whether the subscription is 'yearly' or 'monthly'.
-    subscription_type VARCHAR(50),
+    subscription_duration VARCHAR(50),
     customer_email VARCHAR(256) NOT NULL, -- The email of the user.
     user_id TEXT REFERENCES user_profile(user_id) ON DELETE CASCADE, -- Reference to the user profile
     customer_country VARCHAR(50),
     customer_name VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was created
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- When the subscription was last updated
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the subscription was last updated
+    last_subscription_start_date VARCHAR(256)
 );
 
