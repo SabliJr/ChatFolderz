@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { onSuccessCheckingOut } from "../API/endpoints";
 
 import "./Pages.css";
@@ -11,6 +11,7 @@ const SubscriptionSuccess = () => {
   const [isEverythingOkay, setIsEverythingOkay] = useState(false);
 
   const location = useLocation();
+  let navigate = useNavigate();
   const sessionId = new URLSearchParams(location.search).get("session_id");
 
   useEffect(() => {
@@ -39,7 +40,12 @@ const SubscriptionSuccess = () => {
         <>
           <main>
             <div className='_payment_success_container'>
-              <img src={Logo} alt='' className='_payment_success_logo' />
+              <img
+                src={Logo}
+                alt=''
+                className='_payment_success_logo'
+                onClick={() => navigate("/")}
+              />
               <div className='_payment_success_text'>
                 <h3>You’re All Set! 🎉 </h3>
                 <p>
