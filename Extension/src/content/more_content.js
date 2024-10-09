@@ -167,11 +167,39 @@ let onManageAccount = () => {
   let manageAccountContainer = document.createElement("div");
   manageAccountContainer.classList.add("_manage_account_container");
 
-  let cancelSub = document.createElement("button");
-  cancelSub.innerText = "Cancel Subscription";
-  cancelSub.classList.add("_cancel_sub_btn");
+  let manageUi = `
+    <div class="_manage_ui_container">
+     <div class="_manage_text_container">
+        <h2 class="_manage_title">Welcome Aboard! 🎉</h2>
+        <p class="_manage_text">
+          Your subscription is active, and your AI chat manager is ready to go!
+          Start organizing, bookmarking, and searching through your
+          conversations effortlessly.
+        </p>
+      </div>
+      <div class="_manage_list">
+        <p>- Organize Chats into Folders</p>
+        <p>- Bookmark Key Conversations</p>
+        <p>- Search Your Conversations Easily</p>
+      </div>
+      <div class="_manage_user_ask">
+        <p class="_manage_ask_text">
+          Got ideas? We’d love to hear your thoughts! Suggest new features and
+          help shape the future of this extension.
+        </p>
+        <p class="_manage_suggest_btn">
+          <span class="_manage_suggest_span">Submit</span> a Feature Suggestion, Your Feedback Is Valuable!
+        </p>
+        <span class="_cancel_sub_btn_span">
+          <button class="_cancel_sub_btn">Cancel Subscription</button>
+          <p class="_cancel_sub_btn_span_text">– No commitment, cancel anytime.</p>
+        </span>
+      </div>
+      <p class="_manage_thank_text">Thanks for joining us—exciting updates are on the way!</p>
+    </div>
+  `;
 
-  manageAccountContainer.appendChild(cancelSub);
+  manageAccountContainer.innerHTML = manageUi;
 
   return manageAccountContainer;
 };
