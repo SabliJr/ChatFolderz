@@ -203,7 +203,6 @@ let onManageAccount = () => {
 
   chrome.storage.local.get(["subscriptionState"], (result) => {
     const { subscriptionState } = result;
-    console.log("Canceled: ", subscriptionState);
 
     if (subscriptionState === "Canceled") {
       let removeCancelBtn = manageAccountContainer.querySelector(

@@ -18,7 +18,7 @@ h3Element.classList.add("_folderz_title");
 
 // Create the search container div
 const searchContainer = document.createElement("div");
-searchContainer.classList.add("search-container");
+searchContainer.classList.add("search-container", "_cF_GNewDTGpqsqNfG");
 
 // Create the search container div
 const folderz = document.createElement("div");
@@ -40,7 +40,10 @@ searchContainer.appendChild(searchIcon);
 
 // Create the create folder container div
 const createFolderContainer = document.createElement("div");
-createFolderContainer.classList.add("_create_folder_container");
+createFolderContainer.classList.add(
+  "_create_folder_container",
+  "_cF_GNewDTGpqsqNfG"
+);
 
 // Create the add folder icon image
 const addFolderIcon = document.createElement("img");
@@ -74,7 +77,7 @@ let createBookmarks = () => {
 
   // Bookmarked div
   let bookmarkedFolder = document.createElement("div");
-  bookmarkedFolder.classList.add("_bookmarked_folder");
+  bookmarkedFolder.classList.add("_bookmarked_folder", "_cF_GNewDTGpqsqNfG");
 
   // The bookmarked title
   let bookmarkedTitle = document.createElement("p");
@@ -93,7 +96,10 @@ let createBookmarks = () => {
 
   // Bookmarked chats container
   let bookmarkChatsContainer = document.createElement("div");
-  bookmarkChatsContainer.classList.add("_bookmarked_chats_container");
+  bookmarkChatsContainer.classList.add(
+    "_bookmarked_chats_container",
+    "_cF_GNewDTGpqsqNfG"
+  );
   bookmarkChatsContainer.style.display = "none";
 
   // Appending everything
@@ -137,7 +143,10 @@ function updateOriginalChatIcon(bookmarkedChat) {
         "./images/bookmark_outline.png"
       );
       unbookmarkedIcon.alt = "Unbookmarked Icon";
-      unbookmarkedIcon.classList.add("_unbookmarked_icon");
+      unbookmarkedIcon.classList.add(
+        "_unbookmarked_icon",
+        "_cF_GNewDTGpqsqNfG"
+      );
 
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
       addToggleListener(
@@ -218,14 +227,14 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
     let bookmarkedIcon = document.createElement("img");
     bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
     bookmarkedIcon.alt = "Bookmarked Icon";
-    bookmarkedIcon.classList.add("_bookmarked_icon");
+    bookmarkedIcon.classList.add("_bookmarked_icon", "_cF_GNewDTGpqsqNfG");
 
     let unbookmarkedIcon = document.createElement("img");
     unbookmarkedIcon.src = chrome.runtime.getURL(
       "./images/bookmark_outline.png"
     );
     unbookmarkedIcon.alt = "Unbookmarked Icon";
-    unbookmarkedIcon.classList.add("_unbookmarked_icon");
+    unbookmarkedIcon.classList.add("_unbookmarked_icon", "_cF_GNewDTGpqsqNfG");
 
     // Add the bookmarked icon to the cloned chat
     bookmarkAdd.appendChild(bookmarkedIcon);
@@ -410,7 +419,7 @@ let addIconsToChat = () => {
       let bookmarkedIcon = document.createElement("img");
       bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
       bookmarkedIcon.alt = "Bookmarked Icon";
-      bookmarkedIcon.classList.add("_bookmarked_icon");
+      bookmarkedIcon.classList.add("_bookmarked_icon", "_cF_GNewDTGpqsqNfG");
 
       // The unbookmarked Icon
       let unbookmarkedIcon = document.createElement("img");
@@ -418,13 +427,19 @@ let addIconsToChat = () => {
         "./images/bookmark_outline.png"
       );
       unbookmarkedIcon.alt = "Unbookmarked Icon";
-      unbookmarkedIcon.classList.add("_unbookmarked_icon");
+      unbookmarkedIcon.classList.add(
+        "_unbookmarked_icon",
+        "_cF_GNewDTGpqsqNfG"
+      );
 
       // The close Icon
       let addToFolderIcon = document.createElement("img");
       addToFolderIcon.src = chrome.runtime.getURL("./images/new-folder.png");
       addToFolderIcon.alt = "Close Icon";
-      addToFolderIcon.classList.add("_add_to_folder_icon");
+      addToFolderIcon.classList.add(
+        "_add_to_folder_icon",
+        "_cF_GNewDTGpqsqNfG"
+      );
 
       // Check if an icon is already added (either bookmarked or unbookmarked)
       let existingBookmarkIcon = bookmarkAdd.querySelector(
@@ -725,7 +740,7 @@ function handleDrop(e) {
   let folderMinusIcon = document.createElement("img");
   folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
   folderMinusIcon.alt = "Folder minus icon";
-  folderMinusIcon.classList.add("_folder_minus_icon");
+  folderMinusIcon.classList.add("_folder_minus_icon", "_cF_GNewDTGpqsqNfG");
 
   // Remove the option btns on the copy chats because they don't work
   let r = -1;
@@ -817,7 +832,7 @@ let createNewFolder = (
   let folderMenu = document.createElement("img");
   folderMenu.src = chrome.runtime.getURL("./images/menu-bar2.png");
   folderMenu.alt = "Folder edit icon";
-  folderMenu.classList.add("_folder_edit_icon");
+  folderMenu.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
   // Create a span to put the folder name and the edit icon
   let folderTitleSpan = document.createElement("span");
@@ -857,19 +872,19 @@ let createNewFolder = (
   let deleteFolder = document.createElement("img");
   deleteFolder.src = chrome.runtime.getURL("./images/trash-bin.png");
   deleteFolder.alt = "Folder delete icon";
-  deleteFolder.classList.add("_folder_edit_icon");
+  deleteFolder.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
   // Creating the folder edit icon
   let editIcon = document.createElement("img");
   editIcon.src = chrome.runtime.getURL("./images/edit-file.png");
   editIcon.alt = "Folder edit icon";
-  editIcon.classList.add("_folder_edit_icon");
+  editIcon.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
   // Creating the folder edit icon
   let addChatIcon = document.createElement("img");
   addChatIcon.src = chrome.runtime.getURL("./images/chat1.png");
   addChatIcon.alt = "Chat icon";
-  addChatIcon.classList.add("_folder_menu_chat_icon");
+  addChatIcon.classList.add("_folder_menu_chat_icon", "_cF_GNewDTGpqsqNfG");
 
   // Titles
   let deleteTitle = createTitles("Delete Folder");
@@ -1231,6 +1246,7 @@ function addElements() {
   addDragAndDropFunctionality();
   createBookmarks();
   addIconsToChat();
+  disableFunctionalities(); // Call the function to disable functionalities
 }
 
 // Search bar handling
@@ -1295,19 +1311,6 @@ function setupSearchInput(inputEle) {
     }
   });
 }
-
-// Appending element to the main container
-mainElement.appendChild(searchContainer); // The search
-mainElement.appendChild(createBookmarks()); // The Bookmarks
-folderz.appendChild(h3Element);
-folderz.appendChild(createFolderContainer);
-mainElement.appendChild(folderz); // The folderz title
-
-// Initial run
-addElements();
-
-// Periodically check for new code blocks (as a fallback)
-setInterval(addElements, 2000);
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 let isLoading = false;
@@ -1574,12 +1577,6 @@ function ft_delete_folder(folderId) {
   });
 }
 
-// Call these functions when the extension and the dom loads
-window.addEventListener("load", () => {
-  loadBookmarksFromStorage();
-  loadFoldersFromStorage();
-});
-
 function updateFoldersInStorage(foldersToUpdate) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(["folders"], (result) => {
@@ -1706,3 +1703,145 @@ const saveChatsToFolders = async (
     console.error("Error updating folders:", error);
   }
 };
+
+const getCredentials = () => {
+  chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
+    try {
+      if (response?.success) {
+        let { user_has_payed, has_access, customer_id, user_id } =
+          response.data.user;
+
+        // Update the storage with the new user_data object
+        await chrome.storage.local.set({
+          customerId: customer_id,
+          hasAccess: has_access,
+          userHasPayed: user_has_payed,
+          isLoggedIn: true,
+          userId: user_id,
+        });
+      } else {
+        await chrome.storage.local.remove([
+          "customerId",
+          "hasAccess",
+          "userHasPayed",
+          "isLoggedIn",
+          "userId",
+        ]);
+      }
+    } catch (error) {
+      await chrome.storage.local.remove([
+        "customerId",
+        "hasAccess",
+        "userHasPayed",
+        "isLoggedIn",
+        "userId",
+      ]);
+    }
+  });
+};
+
+const disableFunctionalities = () => {
+  chrome.storage.local.get(
+    ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
+    (result) => {
+      if (
+        !result.hasAccess ||
+        !result.userId ||
+        !result.customerId ||
+        !result.hasAccess ||
+        !result.userHasPayed
+      ) {
+        // Select the elements you want to disable
+        const elementsToDisable = document.querySelectorAll(
+          "._cF_GNewDTGpqsqNfG"
+        );
+
+        elementsToDisable.forEach((element) => {
+          // Disable the element
+          element.style.opacity = "0.5";
+          element.style.pointerEvents = "none";
+
+          // Add hover event listener to display "Sign Up" message
+          element.addEventListener("mouseenter", () => {
+            element.style.pointerEvents = "auto";
+
+            const signUpMessage = document.createElement("p");
+            signUpMessage.innerText = "Complete your account setup!";
+            signUpMessage.style.position = "absolute";
+            signUpMessage.style.backgroundColor = "yellow";
+            signUpMessage.style.padding = "5px";
+            signUpMessage.style.border = "1px solid black";
+            signUpMessage.style.zIndex = "2000";
+            signUpMessage.classList.add("cf_sign-up-message");
+
+            console.log("sM: ", signUpMessage);
+
+            element.appendChild(signUpMessage);
+            // document.body.appendChild(signUpMessage);
+
+            // Calculate position based on element's bounding rectangle
+            const rect = element.getBoundingClientRect();
+            signUpMessage.style.top = `${rect.top + window.scrollY}px`;
+            signUpMessage.style.left = `${rect.left + window.scrollX}px`;
+
+            // Handle mouseleave to remove the message
+            // element.addEventListener("mouseleave", () => {
+            //   if (signUpMessage) {
+            //     signUpMessage.remove();
+            //   }
+            // });
+
+            element.addEventListener("mouseleave", () => {
+              const signUpMessage = document.querySelector(
+                ".cf_sign-up-message"
+              );
+              if (signUpMessage) {
+                signUpMessage.remove();
+              }
+            });
+          });
+        });
+      }
+    }
+  );
+};
+
+// Listen for changes in chrome.storage.local
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "local") {
+    // Check if any of the keys you're interested in have changed
+    if (
+      changes.isLoggedIn ||
+      changes.userId ||
+      changes.customerId ||
+      changes.hasAccess ||
+      changes.userHasPayed ||
+      changes.subscriptionState
+    ) {
+      // Update the UI based on the new values
+      disableFunctionalities();
+    }
+  }
+});
+
+// Call these functions when the extension and the dom loads
+window.addEventListener("load", () => {
+  // Appending element to the main container
+  mainElement.appendChild(searchContainer); // The search
+  mainElement.appendChild(createBookmarks()); // The Bookmarks
+  folderz.appendChild(h3Element);
+  folderz.appendChild(createFolderContainer);
+  mainElement.appendChild(folderz); // The folderz title
+
+  loadBookmarksFromStorage();
+  loadFoldersFromStorage();
+
+  // Initial run
+  addElements();
+  getCredentials();
+
+  // Periodically check for new code blocks (as a fallback)
+  setInterval(addElements, 2000);
+  setInterval(getCredentials, 2000);
+  setInterval(disableFunctionalities, 2000);
+});
