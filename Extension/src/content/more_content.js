@@ -85,16 +85,16 @@ let onCollectPayment = () => {
   collectMoneyContainer.classList.add("_collect_money_container");
 
   let trialInfoHTML = `
-      <h3 class="_collect_money_title">Unlock Full Access – Start Your Free 24-Hour Trial!</h3>
-      <div class="_prices_container">
-        <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
-        <ul class="_ul_prices">
-          <li>$7.99/month</li>
-          <li>$6.39/month (billed annually at $76.70)</li>
-        </ul>
-        </div>
-        <h5 class="_prices_last_title">No commitment, cancel anytime during your trial if it’s not for you!</h5>
-        <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
+    <h3 class="_collect_money_title">Unlock Full Access – Start Your Free 24-Hour Trial!</h3>
+    <div class="_prices_container">
+      <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
+      <ul class="_ul_prices">
+        <li>$7.99/month</li>
+        <li>$6.39/month (billed annually at $76.70)</li>
+      </ul>
+    </div>
+    <h5 class="_prices_last_title">No commitment, cancel anytime during your trial if it’s not for you!</h5>
+    <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
   `;
 
   let monthlySub = document.createElement("button");
@@ -201,7 +201,48 @@ let onManageAccount = () => {
 
   manageAccountContainer.innerHTML = manageUi;
 
+  chrome.storage.local.get(["subscriptionState"], (result) => {
+    const { subscriptionState } = result;
+    console.log("Canceled: ", subscriptionState);
+
+    if (subscriptionState === "Canceled") {
+      let removeCancelBtn = manageAccountContainer.querySelector(
+        "._cancel_sub_btn_span"
+      );
+
+      removeCancelBtn.remove();
+    } else {
+      let cancelSubBtn =
+        manageAccountContainer.querySelector("._cancel_sub_btn");
+      cancelSubBtn.addEventListener("click", () => {
+        onCancelSubscription();
+      });
+    }
+  });
+
   return manageAccountContainer;
+};
+
+const onCancelSubscription = () => {
+  chrome.runtime.sendMessage(
+    { action: "cancelSubscription" },
+    async (response) => {
+      if (response?.success) {
+        let { subscription_state, accessTime } = response.data;
+
+        // Update the storage and remove the
+        await chrome.storage.local.set({
+          subscriptionState: subscription_state,
+        });
+
+        alert(
+          `Your subscription was canceled successfully, you have access till ${accessTime}`
+        );
+      } else {
+        alert(`${response.error.message}`);
+      }
+    }
+  );
 };
 
 const displayUI = () => {
@@ -212,8 +253,6 @@ const displayUI = () => {
       const { isLoggedIn, userId, customerId, hasAccess, userHasPayed } =
         result;
 
-      console.log("The res: ", result);
-
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
 
@@ -223,14 +262,7 @@ const displayUI = () => {
       } else if (!isLoggedIn && !userId && !customerId && !hasAccess) {
         // User is not logged in
         sidebar.appendChild(onWelcomeShowAuth());
-      } else if (
-        isLoggedIn &&
-        userId &&
-        customerId &&
-        hasAccess &&
-        userHasPayed
-      ) {
-        console.log("We are in manage account: ", userHasPayed);
+      } else if (isLoggedIn && userId && customerId && hasAccess && userHasPayed) {
         // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
       } else if (isLoggedIn && userId && customerId && !hasAccess) {
@@ -244,7 +276,14 @@ const displayUI = () => {
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local") {
     // Check if any of the keys you're interested in have changed
-    if (changes.isLoggedIn || changes.userId || changes.customerId) {
+    if (
+      changes.isLoggedIn ||
+      changes.userId ||
+      changes.customerId ||
+      changes.hasAccess ||
+      changes.userHasPayed ||
+      changes.subscriptionState
+    ) {
       // Update the UI based on the new values
       displayUI();
     }
@@ -253,20 +292,42 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 function onGetCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
-    if (response?.success) {
-      let { user_has_payed, has_access, customer_id, user_id } =
-        response.data.user;
+    try {
+      if (response?.success) {
+        let {
+          user_has_payed,
+          has_access,
+          customer_id,
+          user_id,
+          subscription_state,
+        } = response.data.user;
 
-      // Update the storage with the new user_data object
-      await chrome.storage.local.set({
-        customerId: customer_id,
-        hasAccess: has_access,
-        userHasPayed: user_has_payed,
-        isLoggedIn: true,
-        userId: user_id,
-      });
-    } else {
-      console.error("There was an error getting credentials");
+        // Update the storage with the new user_data object
+        await chrome.storage.local.set({
+          customerId: customer_id,
+          hasAccess: has_access,
+          userHasPayed: user_has_payed,
+          isLoggedIn: true,
+          userId: user_id,
+          subscriptionState: subscription_state,
+        });
+      } else {
+        await chrome.storage.local.remove([
+          "customerId",
+          "hasAccess",
+          "userHasPayed",
+          "isLoggedIn",
+          "userId",
+        ]);
+      }
+    } catch (error) {
+      await chrome.storage.local.remove([
+        "customerId",
+        "hasAccess",
+        "userHasPayed",
+        "isLoggedIn",
+        "userId",
+      ]);
     }
   });
 }
@@ -294,7 +355,7 @@ window.addEventListener("load", () => {
   onGetCredentials();
 
   setInterval(onInitAccountAccess, 2000); // Calling this every 2s because the openAI's website is an SPA.
-  setInterval(onGetCredentials, 3 * 60 * 1000); // Call this function every 3ms to go get the user credentials
+  setInterval(onGetCredentials, 2000); // Call this function every 3ms to go get the user credentials
 });
 
 // const fetchData = async () => {
