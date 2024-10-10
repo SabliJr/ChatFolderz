@@ -27,7 +27,7 @@ const Contact = () => {
               <span>
                 <MdEmail />
               </span>
-              info.chatfolderz@gmail.com
+              chatfolderz@gmail.com
             </a>
           </li>{" "}
           <li>
