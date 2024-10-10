@@ -1,7 +1,7 @@
 import React from "react";
 import "./Features.css";
 
-import UseChatFolderz from "../../Assets/Cf.jpg";
+import UseChatFolderz from "../../Assets/CF5.jpg";
 
 const Index = () => {
   return (
@@ -24,7 +24,7 @@ const Index = () => {
             Effortlessly navigate through your chat history with intuitive
             tools.
           </li>
-          <li>Tag and categorize conversations for better organization.</li>
+          {/* <li>Tag and categorize conversations for better organization.</li> */}
           <li>
             Create and manage a personalized prompt library for quick use.{" "}
             <span className='_features_coming_soon'>coming soon</span>
