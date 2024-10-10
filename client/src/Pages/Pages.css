@@ -79,24 +79,72 @@
 /* ----------------------------------------------------------------------------------------------------------- */
 /* Policy Page */
 
-._policy_container,
-._terms_of_use_container {
-  text-align: center;
+/* ._terms_of_use_container */
+._policy_container {
+  /* text-align: center; */
   min-height: 42vh;
-  margin: 6rem auto;
+  max-width: 1280px;
+  margin: 0rem auto;
 }
 
-._terms_title,
+
+._Policy_text_container {
+  width: 80%;
+  margin: 3rem auto;
+  display: flex;
+  gap: 3rem;
+  flex-direction: column;
+}
+
+._policy_text_div {
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+}
+
+._policy_first_section {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+/* ._terms_title,
 ._policy_title {
+  color: #272b31;
+} */
+
+._p_num {
+  font-size: 1.2rem;
   color: #272b31;
 }
 
-._policy_container p,
+._policy_text_div ul {
+  margin: .6rem 0;
+}
+
+._policy_text_div ul li {
+  font-size: 1rem;
+  color: rgb(87, 87, 87);
+  list-style: none;
+  margin-top: .42rem;
+}
+
+._p_l {
+  color: #182C61;
+}
+
+._spans_div {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ._policy_container p,
 ._terms_of_use_container p {
   margin: 1rem;
   color:  rgb(87, 87, 87);
   font-size: 1.2rem;
-}
+} */
 
 ._payment_success_container {
   max-width: 1280px;
@@ -132,96 +180,26 @@
   margin: 1.3rem auto;
 }
 
-/* ----------------------------------------------------------------------------------------------------------- */
-/* Account settings page */
-
-._account_settings_container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem auto;
-  gap: 1.5rem;
-  min-height: 60vh;
-  width: 60%;
-  max-width: 1200px;
-}
-
-._account_setting_title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #182C61;
-}
-
-._setting_items {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 1.3rem;
-  background-color: #FBFFFE;
-  padding: 1.8rem;
-  border-radius: .6rem;
-  width: 100%;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
-}
-
-._setting_items>p {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #000;
-  line-height: 1.5;
-  letter-spacing: .42px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #d4145a;
-  width: 100%;
-}
-
-._setting_arrow {
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-._coming_soon {
-  font-size: .8rem;
-  color: rgb(70, 69, 69);
-  font-style: italic;
-  padding: .1rem .2rem;
-  border-radius: .3rem;
-  margin: .2rem 0;
-}
-
-._auto_tweet {
-  background-color: #151515;
-  color: #fff;
-  padding: .2rem .5rem;
-  border-radius: .3rem;
-  font-size: .8rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: .3rem;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 1024px) {
-  ._policy_container,
-  ._terms_of_use_container {
-    gap: 1rem;
-    width: 90%;
-  }
-
-  ._policy_container span {
+ ._policy_container span {
     margin-left: 1.5rem;
   }
 
-  ._policy_title,
+@media screen and (max-width: 1024px) {
+  /* ._policy_container,
+  ._terms_of_use_container {
+    gap: 1rem;
+    width: 90%;
+  } */
+
+  ._Policy_text_container {
+    width: 90%;
+  }
+
+  /* ._policy_title,
   ._terms_title {
     font-size: 1.8rem;
     margin: 0;
-  }
+  } */
 
   ._la_logo {
     width: 8.5rem;
@@ -232,8 +210,12 @@
     }
 
   @media screen and (max-width: 800px) {
-    ._account_settings_container {
+    /* ._account_settings_container {
       width: 80%;
+    } */
+
+    ._Policy_text_container {
+      width: 95%;
     }
 
     ._payment_success_text {
@@ -245,10 +227,14 @@
     }
 
     @media screen and (max-width: 600px) {
-      ._help_container {
+      ._Policy_text_container {
+        width: 100%;
+      }
+
+      /* ._help_container {
         margin: 5rem auto 0;
         width: 95%;
-      }
+      } */
 
       ._help_container h3 {
         font-size: 1.1rem;
@@ -259,44 +245,44 @@
         font-size: .8rem;
       }
 
-      ._policy_container,
+      /* ._policy_container,
       ._terms_of_use_container {
         gap: 1rem;
         width: 95%;
         margin: 1.8rem auto;
         gap: .3rem;
-      }
+      } */
 
-      ._policy_title,
+      /* ._policy_title,
       ._terms_title {
         font-size: 1.6rem;
         margin: 0;
-      }
+      } */
 
-      ._policy_container span {
+      /* ._policy_container span {
         font-weight: 600;
         margin-left: 1rem;
-      }
+      } */
 
-      ._policy_container div>h4,
+      /* ._policy_container div>h4,
       ._terms_of_use_container div>h4 {
         font-size: 1.3rem;
         font-weight: 500;
         margin: .5rem 0;
-      }
+      } */
 
-      ._policy_polit_points,
+      /* ._policy_polit_points,
       ._terms_polit_points {
         margin: 1.2rem 0 1.2rem 1.6rem;
-      }
+      } */
 
-      ._account_settings_container {
+      /* ._account_settings_container {
         width: 98%;
         margin: 2rem auto;
         gap: 0.6rem;
-      }
+      } */
 
-      ._account_setting_title {
+      /* ._account_setting_title {
         font-size: 1.6rem;
       }
 
@@ -306,16 +292,16 @@
 
       ._setting_items>p {
         font-size: .8rem;
-      }
+      } */
 
-      ._coming_soon,
+      /* ._coming_soon,
       ._auto_tweet {
         font-size: .7rem;
-      }
+      } */
 
-      ._terms_text_container div>p {
+      /* ._terms_text_container div>p {
         margin: .6rem 0;
-      }
+      } */
 
        ._la_logo {
         width: 5.8rem;
@@ -327,6 +313,10 @@
 
       ._payment_success_text h3 {
         font-size: 1.3rem;
+      }
+
+      ._p_num {
+        font-size: 1rem;
       }
     }
   }
