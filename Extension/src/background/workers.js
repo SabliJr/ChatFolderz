@@ -1,9 +1,25 @@
+const config = {
+  development: {
+    fetchUrl: "http://localhost:8000",
+  },
+  production: {
+    fetchUrl: "https://www.api.chatfolderz.com",
+  },
+};
+
 /// Frontend: Update the scope to include the required fields
 const SCOPE = encodeURIComponent("profile email openid"); //openid
 let CLIENT_ID =
   "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
 let REDIRECT_URI = "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org";
 let RESPONSE_TYPE = "token id_token";
+
+const manifest = chrome.runtime.getManifest();
+const isDevelopment = !("update_url" in manifest);
+
+const fetchUrl = isDevelopment
+  ? config.development.fetchUrl
+  : config.production.fetchUrl;
 
 // Background script handling Google login and sending the response back to content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -27,7 +43,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           const tokens = extractTokensFromUrl(responseUrl);
 
           // Send the tokens to your backend for verification
-          fetch("http://localhost:8000/api/auth/google", {
+          fetch(`${fetchUrl}/auth/google`, {
             method: "POST",
             body: JSON.stringify(tokens), // Send both tokens
             headers: { "Content-Type": "application/json" },
@@ -43,7 +59,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     );
 
-    return true; // Ensure the message port stays open for async response
+    return true;
   }
 });
 
@@ -65,7 +81,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Set access token cookie
     chrome.cookies.set(
       {
-        url: "http://localhost:8000", // Your backend URL
+        url: `${fetchUrl}`, // Your backend URL
         name: "accessToken",
         value: accessToken,
         path: "/",
@@ -84,7 +100,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     // You might want to set additional cookies for user info
     chrome.cookies.set({
-      url: "http://localhost:8000",
+      url: `${fetchUrl}`,
       name: "userId",
       value: userId,
       path: "/",
@@ -103,7 +119,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyMonthlySub") {
     fetch(
-      "http://localhost:8000/api/check_out/monthly?price_id=price_1Q7umiDuxNnSWA1yOR9XCzOz",
+      `${fetchUrl}/check_out/monthly?price_id=price_1Q7umiDuxNnSWA1yOR9XCzOz`,
       {
         method: "GET",
         credentials: "include", // This to include the cookies
@@ -123,7 +139,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyYearlySub") {
     fetch(
-      "http://localhost:8000/api/check_out/yearly?price_id=price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
+      `${fetchUrl}/check_out/yearly?price_id=price_1Q7unWDuxNnSWA1yxvQ2N4Rv`,
       {
         method: "GET",
         credentials: "include",
@@ -142,7 +158,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Helper function to get cookies for API requests
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getCookies") {
-    chrome.cookies.getAll({ url: "http://localhost:8000" }, (cookies) => {
+    chrome.cookies.getAll({ url: `${fetchUrl}` }, (cookies) => {
       sendResponse({ cookies });
     });
     return true;
@@ -151,7 +167,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getCredentials") {
-    fetch(`http://localhost:8000/api/get_credentials`, {
+    fetch(`${fetchUrl}/get_credentials`, {
       method: "GET",
       credentials: "include",
     })
@@ -170,13 +186,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.local.get(["customerId"], (result) => {
       const { customerId } = result;
 
-      fetch(
-        `http://localhost:8000/api/cancel_subscription?customer_id=${customerId}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      )
+      fetch(`${fetchUrl}/cancel_subscription?customer_id=${customerId}`, {
+        method: "GET",
+        credentials: "include",
+      })
         .then((response) => response.json())
         .then((data) => {
           sendResponse({ success: true, data });
@@ -191,7 +204,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  fetch(`http://localhost:8000/api/get_credentials`, {
+  fetch(`${fetchUrl}/get_credentials`, {
     method: "GET",
     credentials: "include",
   })

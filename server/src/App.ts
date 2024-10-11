@@ -25,7 +25,8 @@ const corsOptions = {
     "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // Allow your extension to make requests
     "localhost:3000", // Uncomment for local development
     "http://localhost:3000", // Uncomment for local development
-    "https://www.api.chatfolderz.com/api",
+    "https://www.api.chatfolderz.com/",
+    "www.api.chatfolderz.com/",
   ],
   optionsSuccessStatus: 204,
   exposedHeaders: ["Set-Cookie", "ajax_redirect"],
@@ -51,10 +52,9 @@ app.use(
 app.use(express.json());
 
 app.use(cors(corsOptions));
-app.options("/api/verify-email/", cors()); // Respond to preflight requests
 
 // Routes
-app.use("/api", router);
+app.use(router);
 
 app.listen(PORT, () => {
   console.log(`Server is Fire at http://localhost:${PORT}`);
