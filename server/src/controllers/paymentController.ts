@@ -263,9 +263,16 @@ const onCancelSubscription = async (req: Request, res: Response) => {
         }
       );
 
+      let updateUserProfile = await query(
+        "UPDATE user_profile SET is_canceled=$1 WHERE user_id=$2 AND customer_id=$3 RETURNING *",
+        [true, userId, customer_id]
+      );
+
+      let { is_canceled } = updateUserProfile.rows[0];
+
       res.status(200).json({
         message: "Subscription canceled successfully",
-        subscription_state: "Canceled",
+        is_canceled: is_canceled,
         accessTime: expires_at,
       });
     } else {

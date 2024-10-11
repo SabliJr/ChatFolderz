@@ -1246,6 +1246,7 @@ function addElements() {
   addDragAndDropFunctionality();
   createBookmarks();
   addIconsToChat();
+  disableFunctionalities();
 }
 
 // Search bar handling
@@ -1707,7 +1708,7 @@ const getCredentials = () => {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     try {
       if (response?.success) {
-        let { user_has_payed, has_access, customer_id, user_id } =
+        let { user_has_payed, has_access, customer_id, user_id, is_canceled } =
           response.data.user;
 
         // Update the storage with the new user_data object
@@ -1717,23 +1718,30 @@ const getCredentials = () => {
           userHasPayed: user_has_payed,
           isLoggedIn: true,
           userId: user_id,
+          isCanceled: is_canceled,
         });
-      } else {
-        await chrome.storage.local.remove([
-          "customerId",
-          "hasAccess",
-          "userHasPayed",
-          "isLoggedIn",
-          "userId",
-        ]);
       }
+      // else
+      // {
+      // await chrome.storage.local.remove([
+      //   "customerId",
+      //   "hasAccess",
+      //   "userHasPayed",
+      //   "isLoggedIn",
+      //   "userId",
+      //   "isCanceled",
+      // ]);
+      // }
     } catch (error) {
+      console.log("The error is: ", error);
+
       await chrome.storage.local.remove([
         "customerId",
         "hasAccess",
         "userHasPayed",
         "isLoggedIn",
         "userId",
+        "isCanceled",
       ]);
     }
   });
@@ -1808,7 +1816,8 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       changes.userId ||
       changes.customerId ||
       changes.hasAccess ||
-      changes.userHasPayed
+      changes.userHasPayed ||
+      changes.isCanceled
     ) {
       // Update the UI based on the new values
       disableFunctionalities();
