@@ -40,7 +40,7 @@ const Index = () => {
         </div>
         <div className='_questions_div'>
           <div className='_q_div'>
-            <h4>What’s included in the monthly and yearly plans?</h4>
+            <h4>Is my data safe?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(1)} />
           </div>
           <p
@@ -49,10 +49,28 @@ const Index = () => {
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
+            Yes, your data is secure. We only collect basic info like your name
+            and email for authentication, and all chats and folders are stored
+            locally on your device. Payments are handled securely through
+            Stripe, and we prioritize your privacy and data protection at all
+            times.
+          </p>
+        </div>
+        <div className='_questions_div'>
+          <div className='_q_div'>
+            <h4>What’s included in the monthly and yearly plans?</h4>
+            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(1)} />
+          </div>
+          <p
+            className={
+              revealQuestion[2]
+                ? "_questions_div_reveal"
+                : "_questions_div_none"
+            }>
             Both plans give you full access to the extension's features,
             including creating folders, bookmarking chats, advanced search, and
             tagging conversations. The yearly plan offers a discounted rate at
-            $7.99/month (billed annually).
+            $6.39/month instead of $7.99 (billed annually $76.70).
           </p>
         </div>
         <div className='_questions_div'>
@@ -62,7 +80,7 @@ const Index = () => {
           </div>
           <p
             className={
-              revealQuestion[2]
+              revealQuestion[3]
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
@@ -78,27 +96,13 @@ const Index = () => {
           </div>
           <p
             className={
-              revealQuestion[3]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Our extension supports conversations with GPT, Claude, allowing you
-            to organize and manage all your AI chats seamlessly.
-          </p>
-        </div>
-        <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>Is the prompt library available now?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(4)} />
-          </div>
-          <p
-            className={
               revealQuestion[4]
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
-            The general prompt library is currently in development and will be
-            available soon. Stay tuned for updates!
+            Our extension supports GPT as teh moment allowing you to organize
+            and manage all your AI chats seamlessly. However, a Claude version
+            is coming soon!
           </p>
         </div>
       </div>
