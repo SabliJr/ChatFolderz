@@ -1246,7 +1246,6 @@ function addElements() {
   addDragAndDropFunctionality();
   createBookmarks();
   addIconsToChat();
-  disableFunctionalities(); // Call the function to disable functionalities
 }
 
 // Search bar handling
@@ -1744,13 +1743,9 @@ const disableFunctionalities = () => {
   chrome.storage.local.get(
     ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
     (result) => {
-      if (
-        !result.hasAccess ||
-        !result.userId ||
-        !result.customerId ||
-        !result.hasAccess ||
-        !result.userHasPayed
-      ) {
+      let { hasAccess, userId, customerId, userHasPayed } = result;
+
+      if (!userId || !customerId || !hasAccess || !userHasPayed) {
         // Select the elements you want to disable
         const elementsToDisable = document.querySelectorAll(
           "._cF_GNewDTGpqsqNfG"
@@ -1774,10 +1769,7 @@ const disableFunctionalities = () => {
             signUpMessage.style.zIndex = "2000";
             signUpMessage.classList.add("cf_sign-up-message");
 
-            console.log("sM: ", signUpMessage);
-
             element.appendChild(signUpMessage);
-            // document.body.appendChild(signUpMessage);
 
             // Calculate position based on element's bounding rectangle
             const rect = element.getBoundingClientRect();
@@ -1785,12 +1777,6 @@ const disableFunctionalities = () => {
             signUpMessage.style.left = `${rect.left + window.scrollX}px`;
 
             // Handle mouseleave to remove the message
-            // element.addEventListener("mouseleave", () => {
-            //   if (signUpMessage) {
-            //     signUpMessage.remove();
-            //   }
-            // });
-
             element.addEventListener("mouseleave", () => {
               const signUpMessage = document.querySelector(
                 ".cf_sign-up-message"
@@ -1806,6 +1792,13 @@ const disableFunctionalities = () => {
   );
 };
 
+// Listen for the message from the background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "dataSet") {
+    disableFunctionalities();
+  }
+});
+
 // Listen for changes in chrome.storage.local
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "local") {
@@ -1815,8 +1808,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       changes.userId ||
       changes.customerId ||
       changes.hasAccess ||
-      changes.userHasPayed ||
-      changes.subscriptionState
+      changes.userHasPayed
     ) {
       // Update the UI based on the new values
       disableFunctionalities();
@@ -1835,6 +1827,7 @@ window.addEventListener("load", () => {
 
   loadBookmarksFromStorage();
   loadFoldersFromStorage();
+  disableFunctionalities();
 
   // Initial run
   addElements();
@@ -1843,5 +1836,5 @@ window.addEventListener("load", () => {
   // Periodically check for new code blocks (as a fallback)
   setInterval(addElements, 2000);
   setInterval(getCredentials, 2000);
-  setInterval(disableFunctionalities, 2000);
+  // setInterval(disableFunctionalities, 2000);
 });

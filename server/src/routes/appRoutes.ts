@@ -2,11 +2,7 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 
 // Controllers
-import {
-  userLogout,
-  onAuthWithGoogle,
-  onGetCredentials,
-} from "../controllers/gAuth";
+import { userLogout, onAuthWithGoogle } from "../controllers/gAuth";
 import {
   onCheckOut,
   onSubscriptionSuccess,
@@ -14,13 +10,12 @@ import {
   onCancelSubscription,
 } from "../controllers/paymentController";
 
-import { handleRefreshToken } from "../controllers/refreshTokenController";
+import { onGetCredentials } from "../controllers/refreshTokenController";
 
 const router = Router();
 
 // Authentication routes
-router.get("/logout", userLogout); // logout creator
-router.get("/refresh-token", handleRefreshToken); // refresh token
+// router.get("/logout", userLogout); // logout creator
 router.post("/auth/google", onAuthWithGoogle); // google sign in
 router.get("/get_credentials", onGetCredentials);
 

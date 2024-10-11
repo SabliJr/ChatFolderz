@@ -69,8 +69,8 @@ const Index = () => {
             }>
             Both plans give you full access to the extension's features,
             including creating folders, bookmarking chats, advanced search, and
-            tagging conversations. The yearly plan offers a discounted rate at
-            $6.39/month instead of $7.99 (billed annually $76.70).
+            more... The only difference, the yearly plan offers a discounted
+            rate at $6.39/month instead of $7.99 (billed annually $76.70).
           </p>
         </div>
         <div className='_questions_div'>

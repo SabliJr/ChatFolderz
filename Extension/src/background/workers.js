@@ -190,6 +190,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+chrome.runtime.onInstalled.addListener(() => {
+  fetch(`http://localhost:8000/api/get_credentials`, {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      let { customer_id, user_has_payed, user_id, has_access } = data.user;
+      chrome.storage.local.set(
+        {
+          isLoggedIn: true,
+          userId: user_id,
+          customerId: customer_id,
+          hasAccess: has_access,
+          userHasPayed: user_has_payed,
+        },
+        () => {
+          // Send a message to the content script indicating that the data is set
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, { action: "dataSet" });
+          });
+        }
+      );
+    })
+    .catch((error) => console.error("Error fetching credentials:", error));
+});
+
 // apiUtils.js
 // export const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 //   try {
