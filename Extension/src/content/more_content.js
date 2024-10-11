@@ -201,10 +201,10 @@ let onManageAccount = () => {
 
   manageAccountContainer.innerHTML = manageUi;
 
-  chrome.storage.local.get(["subscriptionState"], (result) => {
-    const { subscriptionState } = result;
+  chrome.storage.local.get(["isCanceled"], (result) => {
+    const { isCanceled } = result;
 
-    if (subscriptionState === "Canceled") {
+    if (isCanceled) {
       let removeCancelBtn = manageAccountContainer.querySelector(
         "._cancel_sub_btn_span"
       );
@@ -227,11 +227,11 @@ const onCancelSubscription = () => {
     { action: "cancelSubscription" },
     async (response) => {
       if (response?.success) {
-        let { subscription_state, accessTime } = response.data;
+        let { is_canceled, accessTime } = response.data;
 
         // Update the storage and remove the
         await chrome.storage.local.set({
-          subscriptionState: subscription_state,
+          isCanceled: is_canceled,
         });
 
         alert(
@@ -261,7 +261,13 @@ const displayUI = () => {
       } else if (!isLoggedIn && !userId && !customerId && !hasAccess) {
         // User is not logged in
         sidebar.appendChild(onWelcomeShowAuth());
-      } else if (isLoggedIn && userId && customerId && hasAccess && userHasPayed) {
+      } else if (
+        isLoggedIn &&
+        userId &&
+        customerId &&
+        hasAccess &&
+        userHasPayed
+      ) {
         // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
       } else if (isLoggedIn && userId && customerId && !hasAccess) {
@@ -281,7 +287,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       changes.customerId ||
       changes.hasAccess ||
       changes.userHasPayed ||
-      changes.subscriptionState
+      changes.isCanceled
     ) {
       // Update the UI based on the new values
       displayUI();
@@ -293,13 +299,8 @@ function onGetCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     try {
       if (response?.success) {
-        let {
-          user_has_payed,
-          has_access,
-          customer_id,
-          user_id,
-          subscription_state,
-        } = response.data.user;
+        let { user_has_payed, has_access, customer_id, user_id, is_canceled } =
+          response.data.user;
 
         // Update the storage with the new user_data object
         await chrome.storage.local.set({
@@ -308,24 +309,30 @@ function onGetCredentials() {
           userHasPayed: user_has_payed,
           isLoggedIn: true,
           userId: user_id,
-          subscriptionState: subscription_state,
+          isCanceled: is_canceled,
         });
-      } else {
-        await chrome.storage.local.remove([
-          "customerId",
-          "hasAccess",
-          "userHasPayed",
-          "isLoggedIn",
-          "userId",
-        ]);
       }
+      // else
+      // {
+      //   await chrome.storage.local.remove([
+      //     "customerId",
+      //     "hasAccess",
+      //     "userHasPayed",
+      //     "isLoggedIn",
+      //     "userId",
+      //     "isCanceled",
+      //   ]);
+      // }
     } catch (error) {
+      console.log("The error is: ", error);
+
       await chrome.storage.local.remove([
         "customerId",
         "hasAccess",
         "userHasPayed",
         "isLoggedIn",
         "userId",
+        "isCanceled",
       ]);
     }
   });
