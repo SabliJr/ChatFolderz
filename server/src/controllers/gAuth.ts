@@ -6,9 +6,16 @@ import {
   GOOGLE_OAUTH_CLIENT_SECRET,
 } from "../Constants";
 import jwt from "jsonwebtoken";
-import { checkUserAccess } from "../util/verificationFunctions";
-
 import { OAuth2Client } from "google-auth-library";
+
+async function createRefreshToken(user_id: string, user_name: string) {
+  const refreshToken = await jwt.sign(
+    { user_id, user_name },
+    REFRESH_TOKEN_SECRET as string,
+    { expiresIn: "10d" }
+  );
+  return refreshToken;
+}
 
 // Logout creator
 const userLogout = async (req: Request, res: Response) => {
@@ -95,12 +102,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
       const { user_id, user_name, customer_id, has_access } =
         userExists?.rows[0];
 
-      const refreshToken = await jwt.sign(
-        { user_id, user_name },
-        REFRESH_TOKEN_SECRET as string,
-        { expiresIn: "20d" }
-      );
-
+      const refreshToken = await createRefreshToken(user_id, user_name);
       res.status(202).json({
         success: true,
         message: "The login was successful!",
@@ -119,12 +121,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
       );
 
       const { customer_id, has_access } = user_registration.rows[0];
-
-      const refreshToken = await jwt.sign(
-        { user_id, user_name },
-        REFRESH_TOKEN_SECRET as string,
-        { expiresIn: "10d" }
-      );
+      const refreshToken = await createRefreshToken(user_id, user_name);
 
       res.status(201).json({
         success: true,
@@ -145,33 +142,4 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
   }
 };
 
-const onGetCredentials = async (req: Request, res: Response) => {
-  const cookies = req.cookies;
-  if (!cookies?.refreshToken || !cookies.userId) return res.sendStatus(401);
-  const userId = cookies.userId;
-
-  try {
-    let user_has_payed = await checkUserAccess(userId);
-    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
-      userId,
-    ]);
-    let { user_id, customer_id, has_access } = userInfo.rows[0];
-
-    res.status(200).json({
-      message: "Everything is fine, the user has payed!",
-      user: {
-        customer_id: customer_id,
-        user_has_payed: user_has_payed,
-        user_id: user_id,
-        has_access: has_access,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      error:
-        "Something went wrong getting user's credentials, please refresh the page!",
-    });
-  }
-};
-
-export { onAuthWithGoogle, userLogout, onGetCredentials };
+export { onAuthWithGoogle, userLogout };

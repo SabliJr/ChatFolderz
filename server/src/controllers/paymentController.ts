@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import stripe from "../config/payment";
+import Stripe from "stripe";
 import { WEBHOOK_SIGNING_SECRET } from "../Constants/index";
 import { query } from "../config/dbConfig";
-import { checkUserAccess } from "../util/verificationFunctions";
 
 const onCheckOut = async (req: Request, res: Response) => {
   const { price_id } = req.query;
@@ -38,50 +38,11 @@ const onSubscriptionSuccess = async (req: Request, res: Response) => {
     req.query.session_id as string
   );
 
-  if (session.payment_status === "paid") {
-    let customer_id = session.customer;
-    let customer_email = session.customer_details?.email;
-    let customer_country = session.customer_details?.address?.country;
-    let customer_name = session.customer_details?.name;
-    let created_at = new Date(session.created * 1000);
-    let expiry_date = new Date(session.expires_at * 1000);
-    let subscription_state = session.status;
-
-    // Use INSERT ... ON CONFLICT to handle duplicate customer_id
-    await query(
-      `INSERT INTO user_subscription (customer_id, customer_email, customer_country, customer_name, created_at)
-       VALUES($1, $2, $3, $4, $5)
-       ON CONFLICT (customer_id)
-       DO UPDATE SET
-         customer_email = EXCLUDED.customer_email,
-         customer_country = EXCLUDED.customer_country,
-         customer_name = EXCLUDED.customer_name,
-         updated_at = CURRENT_TIMESTAMP
-         `,
-      [customer_id, customer_email, customer_country, customer_name, created_at]
-    );
-
-    let isCustomerHasAccount = await query(
-      "SELECT * FROM user_profile WHERE email=$1",
-      [customer_email]
-    );
-
-    let { user_id } = isCustomerHasAccount.rows[0];
-    await query(
-      "UPDATE user_subscription SET user_id=$1 WHERE customer_id=$2",
-      [user_id, customer_id]
-    );
-
-    await query(
-      "UPDATE user_profile SET customer_id=$1, has_access=$2, expires_at=$3, subscription_state=$4 WHERE user_id=$5",
-      [customer_id, true, expiry_date, subscription_state, user_id]
-    );
-
-    let user_has_payed = await checkUserAccess(user_id);
+  if (session.payment_status === "paid" && session.status === "complete") {
     res.status(200).json({
       message: "Subscription successful, thanks!",
       user: {
-        user_has_payed: user_has_payed,
+        user_has_payed: true,
       },
     });
   } else {
@@ -106,60 +67,131 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
 
     // Handle the event
     switch (event.type) {
-      case "payment_intent.succeeded":
-        const paymentIntentSucceeded = event.data.object;
-        // Then define and call a function to handle the event payment_intent.succeeded
-
-        console.log("The payment success: ", paymentIntentSucceeded);
-        break;
-      case "customer.subscription.deleted": // When a subscription ends
+      case "invoice.payment_succeeded":
         {
-          const customerSubscriptionDeleted = event.data.object;
-          const customerId = customerSubscriptionDeleted.customer;
-          const expiresAt = new Date(
-            customerSubscriptionDeleted.current_period_end * 1000 // This is the subscription end date
+          const invoicePaymentSucceeded = event.data.object;
+          const customerId = invoicePaymentSucceeded.customer;
+          const subscriptionId = invoicePaymentSucceeded.subscription;
+
+          // Fetch the subscription details using the subscription ID
+          const subscription = await stripe.subscriptions.retrieve(
+            subscriptionId as string
           );
 
-          console.log("subscriptionDeleted: ", customerSubscriptionDeleted);
-          // Update the database to reflect the subscription cancellation
-          await query(
-            "UPDATE user_profile SET subscription_state=$1, expires_at=$2, has_access=$3 WHERE customer_id=$4",
-            ["Canceled", expiresAt, true, customerId]
-          );
-
-          // Update the subscription state to 'canceled' and set updated_at to the current time
-          await query(
-            "UPDATE user_subscription SET updated_at=CURRENT_TIMESTAMP WHERE customer_id=$1",
-            [customerId]
-          );
-        }
-        break;
-      case "customer.subscription.created":
-        {
-          const subscriptionCreated = event.data.object;
-          const customerId = subscriptionCreated.customer;
-          const subscriptionStatus = subscriptionCreated.status; // e.g., 'trialing', 'active'
-          const expiresAt = new Date(
-            subscriptionCreated.current_period_end * 1000
-          ); // Subscription end date
-          const startDate = new Date(subscriptionCreated.start_date * 1000); // Subscription start date
-          const plan = subscriptionCreated.items.data[0].plan; // Get the plan details
+          const subscriptionStatus = subscription.status; // e.g., 'active'
+          const expiresAt = new Date(subscription.current_period_end * 1000); // Subscription end date
+          const startDate = new Date(subscription.start_date * 1000); // Subscription start date
+          const plan = subscription.items.data[0].plan;
           const subscription_duration = plan.interval;
 
-          console.log("subscriptionCreated: ", subscriptionCreated);
-
-          // Update the database to reflect the new subscription
+          // Update the user profile with the new subscription state
           await query(
             "UPDATE user_profile SET subscription_state=$1, expires_at=$2, has_access=$3 WHERE customer_id=$4",
             [subscriptionStatus, expiresAt, true, customerId]
           );
 
-          // Update the subscription information in the user_subscription table
+          // Update subscription information in user_subscription table
           await query(
             `UPDATE user_subscription 
-            SET subscription_duration=$1, updated_at=CURRENT_TIMESTAMP, last_subscription_start_date=$2
+            SET subscription_duration=$1, updated_at=CURRENT_TIMESTAMP, last_subscription_start_date=$2 
             WHERE customer_id=$3`,
             [subscription_duration, startDate, customerId]
+          );
+        }
+        break;
+      case "customer.subscription.deleted": // When a subscription ends
+        {
+          const customerSubscriptionDeleted = event.data
+            .object as Stripe.Subscription;
+          const customerId = customerSubscriptionDeleted.customer;
+          const expiresAt = new Date(
+            customerSubscriptionDeleted.current_period_end * 1000 // This is the subscription end date
+          );
+          const subscriptionState = customerSubscriptionDeleted.status;
+          const currentPeriodStartDate = new Date(
+            customerSubscriptionDeleted.start_date * 1000 // This is the current subscription period start date
+          );
+
+          // Update the database to reflect the subscription cancellation
+          await query(
+            "UPDATE user_profile SET subscription_state=$1, expires_at=$2, has_access=$3 WHERE customer_id=$4",
+            [subscriptionState, expiresAt, false, customerId]
+          );
+
+          // Update the subscription state to 'canceled' and set updated_at to the current time
+          await query(
+            "UPDATE user_subscription SET updated_at=CURRENT_TIMESTAMP, last_subscription_start_date=$2 WHERE customer_id=$1",
+            [customerId, currentPeriodStartDate]
+          );
+        }
+        break;
+      case "customer.subscription.created":
+        {
+          const subscriptionCreated = event.data.object as Stripe.Subscription;
+          const customer_id = subscriptionCreated.customer;
+          const subscriptionStatus = subscriptionCreated.status; // e.g., 'trialing', 'active'
+          const expiresAt = new Date(
+            subscriptionCreated.current_period_end * 1000
+          ); // Subscription end date
+          const created_at = new Date(subscriptionCreated.created * 1000); // Subscription creation date
+          const startDate = new Date(subscriptionCreated.start_date * 1000); // Subscription start date
+          const plan = subscriptionCreated.items.data[0].plan; // Get the plan details
+          const subscription_duration = plan.interval;
+
+          // Retrieve customer details
+          const customer = await stripe.customers.retrieve(
+            customer_id as string
+          );
+          const customer_email = (customer as Stripe.Customer).email as string;
+          let customer_name = (customer as Stripe.Customer).name;
+          let customer_country = (customer as Stripe.Customer).address?.country;
+
+          let isCustomerHasAccount = await query(
+            "SELECT * FROM user_profile WHERE email=$1",
+            [customer_email]
+          );
+          let { user_id } = isCustomerHasAccount?.rows[0];
+
+          // Use INSERT ... ON CONFLICT to handle duplicate customer_id
+          await query(
+            `INSERT INTO user_subscription (
+            customer_id, 
+            customer_email, 
+            user_id, 
+            customer_country, 
+            customer_name, 
+            created_at, 
+            subscription_duration, 
+            updated_at, 
+            last_subscription_start_date
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, $8)
+            ON CONFLICT (customer_id)
+            DO UPDATE SET
+            customer_email = EXCLUDED.customer_email,
+            user_id = EXCLUDED.user_id,
+            customer_country = EXCLUDED.customer_country,
+            customer_name = EXCLUDED.customer_name,
+            updated_at = CURRENT_TIMESTAMP,
+            created_at = EXCLUDED.created_at,
+            subscription_duration = EXCLUDED.subscription_duration,
+            last_subscription_start_date = EXCLUDED.last_subscription_start_date
+            `,
+            [
+              customer_id,
+              customer_email,
+              user_id,
+              customer_country,
+              customer_name,
+              created_at,
+              subscription_duration,
+              startDate,
+            ]
+          );
+
+          await query(
+            "UPDATE user_profile SET subscription_state=$1, expires_at=$2, has_access=$3, customer_id=$4 WHERE user_id=$5",
+            [subscriptionStatus, expiresAt, true, customer_id, user_id]
           );
         }
         break;
@@ -170,8 +202,6 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
         const expiresAt = new Date(
           customerSubscriptionUpdated.current_period_end * 1000
         );
-
-        console.log("subscriptionUpdated: ", customerSubscriptionUpdated);
 
         // Update the subscription state and expires_at based on the new status
         const now = new Date();
