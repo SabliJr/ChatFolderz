@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 
-import { PORT } from "./Constants";
+import { PORT } from "./constants";
 import router from "./routes/appRoutes";
 import { IncomingMessage, ServerResponse } from "http";
 
@@ -22,7 +22,8 @@ declare module "http" {
 const corsOptions = {
   credentials: true,
   origin: [
-    "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // Allow your extension to make requests
+    // "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // The local extension for dev to make requests
+    "chrome-extension://ibelppoiheipgceppgklepmjcafbdcdm", // The production extension for dev to make requests
     "localhost:3000", // Uncomment for local development
     "http://localhost:3000", // Uncomment for local development
     "https://www.api.chatfolderz.com/",

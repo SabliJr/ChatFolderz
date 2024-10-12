@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { REFRESH_TOKEN_SECRET } from "../Constants";
+import { REFRESH_TOKEN_SECRET } from "../constants";
 import { query } from "../config/dbConfig";
 import { checkUserAccess } from "../util/verificationFunctions";
 
@@ -10,8 +10,6 @@ const onGetCredentials = async (req: Request, res: Response) => {
 
   const userId = cookies.userId;
   const refreshToken = cookies.refreshToken;
-
-  // console.log(userId);
 
   try {
     const decoded = await jwt.verify(
