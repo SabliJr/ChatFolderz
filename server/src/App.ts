@@ -28,6 +28,9 @@ const corsOptions = {
     "http://localhost:3000", // Uncomment for local development
     "https://www.api.chatfolderz.com/",
     "www.api.chatfolderz.com/",
+    "www.chatfolderz.com",
+    "https://chatfolderz.com/",
+    "https://www.chatfolderz.com/",
   ],
   optionsSuccessStatus: 204,
   exposedHeaders: ["Set-Cookie", "ajax_redirect"],
