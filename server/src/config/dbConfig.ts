@@ -4,7 +4,7 @@ import {
   DATABASE_PASSWORD,
   DATABASE_USER,
   DATABASE_HOST,
-} from "../Constants/index";
+} from "../constants/index";
 
 interface iDatabase {
   user: string;

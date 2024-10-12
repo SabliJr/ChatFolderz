@@ -4,7 +4,7 @@ import {
   REFRESH_TOKEN_SECRET,
   GOOGLE_OAUTH_CLIENT_ID,
   GOOGLE_OAUTH_CLIENT_SECRET,
-} from "../Constants";
+} from "../constants";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 

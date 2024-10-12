@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import stripe from "../config/payment";
 import Stripe from "stripe";
-import { WEBHOOK_SIGNING_SECRET } from "../Constants/index";
+import { WEBHOOK_SIGNING_SECRET, CLIENT_URL } from "../constants/index";
 import { query } from "../config/dbConfig";
 
 const onCheckOut = async (req: Request, res: Response) => {
@@ -20,8 +20,8 @@ const onCheckOut = async (req: Request, res: Response) => {
       subscription_data: {
         trial_period_days: 1, // This will give the user a 1-day free trial
       },
-      success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:3000/`,
+      success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${CLIENT_URL}`,
     });
 
     res.status(200).json({ id: session.id, url: session.url });
