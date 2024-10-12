@@ -11,7 +11,7 @@ const config = {
 const SCOPE = encodeURIComponent("profile email openid"); //openid
 let CLIENT_ID =
   "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
-let REDIRECT_URI = "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org";
+let REDIRECT_URI = "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org";
 let RESPONSE_TYPE = "token id_token";
 
 const manifest = chrome.runtime.getManifest();
