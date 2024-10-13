@@ -24,28 +24,12 @@ const Index = () => {
       <div className='_questions'>
         <div className='_questions_div'>
           <div className='_q_div'>
-            <h4>How does the free 24-hour trial work?</h4>
+            <h4>Is my data safe?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(0)} />
           </div>
           <p
             className={
               revealQuestion[0]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Once you sign up, you get full access to all features for 24 hours.
-            If you’re not satisfied, you can cancel anytime before the trial
-            ends with no charge.
-          </p>
-        </div>
-        <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>Is my data safe?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(1)} />
-          </div>
-          <p
-            className={
-              revealQuestion[1]
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
@@ -58,12 +42,44 @@ const Index = () => {
         </div>
         <div className='_questions_div'>
           <div className='_q_div'>
-            <h4>What’s included in the monthly and yearly plans?</h4>
+            <h4>Which AI platforms does this extension support?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(1)} />
           </div>
           <p
             className={
+              revealQuestion[1]
+                ? "_questions_div_reveal"
+                : "_questions_div_none"
+            }>
+            Our extension supports GPT as teh moment allowing you to organize
+            and manage all your AI chats seamlessly. However, a Claude version
+            is coming soon!
+          </p>
+        </div>
+        <div className='_questions_div'>
+          <div className='_q_div'>
+            <h4>How does the free 24-hour trial work?</h4>
+            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(2)} />
+          </div>
+          <p
+            className={
               revealQuestion[2]
+                ? "_questions_div_reveal"
+                : "_questions_div_none"
+            }>
+            Once you sign up, you get full access to all features for 24 hours.
+            If you’re not satisfied, you can cancel anytime before the trial
+            ends with no charge.
+          </p>
+        </div>
+        <div className='_questions_div'>
+          <div className='_q_div'>
+            <h4>What’s included in the monthly and yearly plans?</h4>
+            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(3)} />
+          </div>
+          <p
+            className={
+              revealQuestion[3]
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
@@ -76,23 +92,7 @@ const Index = () => {
         <div className='_questions_div'>
           <div className='_q_div'>
             <h4>Can I cancel my subscription anytime?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(2)} />
-          </div>
-          <p
-            className={
-              revealQuestion[3]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Yes! You can cancel your subscription anytime from your account
-            settings. Once canceled, you'll continue to have access until the
-            end of your billing period.
-          </p>
-        </div>
-        <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>Which AI platforms does this extension support?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(3)} />
+            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(4)} />
           </div>
           <p
             className={
@@ -100,9 +100,9 @@ const Index = () => {
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
-            Our extension supports GPT as teh moment allowing you to organize
-            and manage all your AI chats seamlessly. However, a Claude version
-            is coming soon!
+            Yes! You can cancel your subscription anytime from your account
+            settings. Once canceled, you'll continue to have access until the
+            end of your billing period.
           </p>
         </div>
       </div>
