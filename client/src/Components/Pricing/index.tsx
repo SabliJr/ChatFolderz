@@ -15,8 +15,15 @@ const Index = () => {
   const [displayNotice, setDisplayNotice] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
 
-  let monthlyPriceId = "price_1Q7umiDuxNnSWA1yOR9XCzOz";
-  let yearlyPriceId = "price_1Q7unWDuxNnSWA1yxvQ2N4Rv";
+  let monthlyPriceId =
+    process.env?.NODE_ENV === "production"
+      ? "price_1Q8i7yDuxNnSWA1yhv1Vn8UN"
+      : "price_1Q7umiDuxNnSWA1yOR9XCzOz";
+
+  let yearlyPriceId =
+    process.env?.NODE_ENV === "production"
+      ? "price_1Q8i7tDuxNnSWA1yrIYPqFbl"
+      : "price_1Q7unWDuxNnSWA1yxvQ2N4Rv";
   // let lifeTimeDeal = "price_1QACaODuxNnSWA1yy7ssX7uL";
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
