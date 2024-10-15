@@ -30,7 +30,13 @@ const Index = () => {
             <span className='_features_coming_soon'>coming soon</span>
           </li>
         </ul>
-        <button className='_features_btn'>Try It For Free</button>
+        <button className='_features_btn'>
+          <a
+            href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+            target='#blank'>
+            Try It For Free
+          </a>
+        </button>
       </div>
     </main>
   );

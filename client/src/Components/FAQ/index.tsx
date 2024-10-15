@@ -115,7 +115,13 @@ const Index = () => {
           send us an email on <span>chatfolderz@gmail.com</span> and we will get
           back to you on no time! Otherwise...
         </p>
-        <button className='_get_started_btn'>Add To Browser</button>
+        <button className='_get_started_btn'>
+          <a
+            href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+            target='#blank'>
+            Add To Browser
+          </a>
+        </button>
       </div>
     </main>
   );

@@ -28,7 +28,13 @@ const Index = () => {
         history effortlessly.
       </p>
       <div className='emailDiv'>
-        <button>Add To Browser</button>
+        <button>
+          <a
+            href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+            target='#blank'>
+            Add To Browser
+          </a>
+        </button>
       </div>
       <div className='_i_img_container'>
         <span className='_best_i'>Best Integrated With:</span>

@@ -65,7 +65,13 @@ const Index = () => {
           </ScrollLink>
         </li>
 
-        {scrolled && <button className='_header_btn'>Download</button>}
+        {scrolled && (
+          <button className='_header_btn'>
+            <a href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'>
+              Download
+            </a>
+          </button>
+        )}
       </nav>
     </header>
   );
