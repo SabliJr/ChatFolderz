@@ -10,7 +10,10 @@ import {
   onCancelSubscription,
 } from "../controllers/paymentController";
 
-import { onGetCredentials } from "../controllers/refreshTokenController";
+import {
+  onGetCredentials,
+  onGetTest,
+} from "../controllers/refreshTokenController";
 
 const router = Router();
 
@@ -18,6 +21,8 @@ const router = Router();
 // router.get("/logout", userLogout); // logout creator
 router.post("/auth/google", onAuthWithGoogle); // google sign in
 router.get("/get_credentials", onGetCredentials);
+
+router.get("/get_test", onGetTest);
 
 // PAYMENT ROUTES
 router.get("/check_out/monthly", onCheckOut);
