@@ -22,7 +22,7 @@ declare module "http" {
 const corsOptions = {
   credentials: true,
   origin: [
-    // "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // The local extension for dev to make requests
+    "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // The local extension for dev to make requests
     "chrome-extension://ibelppoiheipgceppgklepmjcafbdcdm", // The production extension for dev to make requests
     "localhost:3000", // Uncomment for local development
     "http://localhost:3000", // Uncomment for local development
