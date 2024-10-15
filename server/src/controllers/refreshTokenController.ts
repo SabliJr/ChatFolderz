@@ -53,4 +53,9 @@ const onGetCredentials = async (req: Request, res: Response) => {
   }
 };
 
-export { onGetCredentials };
+const onGetTest = async (req: Request, res: Response) => {
+  console.log("You hit on get test route");
+  res.send("indeed this app is live");
+};
+
+export { onGetCredentials, onGetTest };
