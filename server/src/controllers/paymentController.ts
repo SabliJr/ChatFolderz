@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import stripe from "../config/payment";
 import Stripe from "stripe";
-import { WEBHOOK_SIGNING_SECRET, CLIENT_URL } from "../constants/index";
+import { WEBHOOK_SIGNING_SECRET } from "../constants/index";
 import { query } from "../config/dbConfig";
+
+const CLIENT_URL =
+  process.env?.NODE_ENV === "production"
+    ? "https://chatfolderz.com"
+    : "http://localhost:3000";
 
 const onCheckOut = async (req: Request, res: Response) => {
   const { price_id } = req.query;
@@ -29,6 +34,32 @@ const onCheckOut = async (req: Request, res: Response) => {
     res.status(500).send({
       error: error.message,
       message: "There was an error creating the subscription",
+    });
+  }
+};
+
+const onCheckOutOneTime = async (req: Request, res: Response) => {
+  const { price_id } = req.query;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: price_id as string, // Price ID for the one-time purchase
+          quantity: 1,
+        },
+      ],
+      mode: "payment", // Change mode to 'payment' for one-time purchase
+      success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${CLIENT_URL}`,
+    });
+
+    res.status(200).json({ id: session.id, url: session.url });
+  } catch (error: any) {
+    res.status(500).send({
+      error: error.message,
+      message: "There was an error creating the one-time purchase",
     });
   }
 };
@@ -292,4 +323,5 @@ export {
   onSubscriptionSuccess,
   onStripeWebhooks,
   onCancelSubscription,
+  onCheckOutOneTime,
 };

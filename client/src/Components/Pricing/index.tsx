@@ -1,13 +1,23 @@
 import React, { useState, useRef } from "react";
 import "./pricing.css";
 
-import BrandFeaturs from "./BrandFeaturs";
-import { IoCloseOutline } from "react-icons/io5";
 import { PiSealCheckLight } from "react-icons/pi";
+import { IoMdClose } from "react-icons/io";
+
+import BrandFeaturs from "./BrandFeaturs";
+import { onCheckingOut } from "../../API/endpoints";
+import Loader from "../../utils/Loader";
 
 const Index = () => {
   const [whoIsThis, setWhoIsThis] = useState("Yearly");
   let checkRef = useRef<HTMLInputElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [displayNotice, setDisplayNotice] = useState(false);
+  const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
+
+  let monthlyPriceId = "price_1Q7umiDuxNnSWA1yOR9XCzOz";
+  let yearlyPriceId = "price_1Q7unWDuxNnSWA1yxvQ2N4Rv";
+  // let lifeTimeDeal = "price_1QACaODuxNnSWA1yy7ssX7uL";
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("Checkbox state:", e.target.checked);
@@ -24,8 +34,56 @@ const Index = () => {
     }
   };
 
+  let onCheckOut = async (price_id: string) => {
+    setIsLoading(true);
+
+    try {
+      // let res =
+      //   price_id === monthlyPriceId || price_id === yearlyPriceId
+      //     ? await onCheckingOut(price_id)
+      //     : await onCheckOutOneTime(price_id);
+
+      let res = await onCheckingOut(price_id);
+      console.log(res);
+      if (res.status === 200) window.location = res.data.url;
+    } catch (error) {
+      alert("Something went wrong please try again!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  const handleCloseNotice = () => {
+    setDisplayNotice(false);
+    if (selectedPriceId) {
+      onCheckOut(selectedPriceId);
+      setSelectedPriceId(null); // Reset the selected price ID
+    }
+  };
+
   return (
     <main className='pricing' id='pricing_scroll'>
+      {displayNotice && (
+        <div className='_notice_container'>
+          <div className='_notice_text_div'>
+            <IoMdClose onClick={handleCloseNotice} className='_notice_close' />
+            <h2 className='_notice_title'>Important Notice...</h2>
+            <p className='_notice_text'>
+              To ensure a seamless experience, please use the same email address
+              that you used to create your account when making your payment on
+              Stripe or when creating your account if you already didn't!
+              <br />
+              <br />
+              This will help us link your payment to your account, giving you
+              uninterrupted access to our services.
+            </p>
+          </div>
+        </div>
+      )}
       <div className='_pricing_title'>
         <h1>Pricing</h1>
         <p>
@@ -45,149 +103,156 @@ const Index = () => {
       </div>
       <div className='_prices_container'>
         {/* <div className='pricing_item0'>
-          <div>
+          <div className='_p_sub_title'>
             <h4>Super Plan</h4>
-            <h2>$349.99</h2>
           </div>
-          <ul>
+          <h2 className='_price'>
+            $349.99 <span>/One time</span>
+          </h2>
+          <ul className='_pricing_list'>
             <li>
               <span>
                 <PiSealCheckLight />
               </span>
-              Lorem ipsum dolor sit amet.
-            </li>
-            <li>
-              <span>
-                <PiSealCheckLight />
-              </span>
-              Lorem ipsum dolor sit amet.
+              <p>Create folders</p>
             </li>
             <li>
               <span>
                 <PiSealCheckLight />
               </span>
-              Lorem ipsum dolor sit amet.
+              <p>Bookmark important chats</p>
             </li>
             <li>
               <span>
                 <PiSealCheckLight />
               </span>
-              Lorem ipsum dolor sit amet.
+              <p>Search via all your conversations</p>
             </li>
             <li>
               <span>
-                <IoCloseOutline />
+                <PiSealCheckLight />
               </span>
-              Lorem ipsum dolor sit amet.
+              <p>Best for teams & organizations</p>
             </li>
             <li>
               <span>
-                <IoCloseOutline />
+                <PiSealCheckLight />
               </span>
-              Lorem ipsum dolor sit amet.
+              <p>Priority 1 to 1 Support</p>
+            </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
+              <p>
+                General prompt library <span>coming soon</span>
+              </p>
+            </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
+              <p>
+                Link up to 15 ChatGPT accounts <span>coming soon</span>
+              </p>
+            </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
+              <p>
+                Sync folders across unlimited devices <span>coming soon</span>
+              </p>
             </li>
           </ul>
-          <button>Try It for free</button>
+          <button onClick={() => onCheckOut(lifeTimeDeal)}>
+            Try It for free
+          </button>
         </div> */}
         {whoIsThis === "Monthly" ? (
-          <div className='_pricing_divs'>
-            <div className='pricing_item2'>
-              <div className='_p_sub_title'>
-                <h4>Monthly Plan</h4>
-                {/* <p>
-                  Upgrade your AI chat experience. Organize, and optimize your
-                  workflow seamlessly.
-                </p> */}
-              </div>
-              <h2 className='_price'>
-                $7.99 <span>/month</span>
-              </h2>
-              <BrandFeaturs />
-              <button>
-                <a
-                  href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-                  target='#blank'>
-                  Try It for free
-                </a>
-              </button>
+          // <div className='_pricing_divs'>
+          <div className='pricing_item1'>
+            <div className='_p_sub_title'>
+              <h4>Monthly Plan</h4>
             </div>
+            <h2 className='_price'>
+              $7.99 <span>/month</span>
+            </h2>
+            <BrandFeaturs />
+            <button
+              onClick={() => {
+                setDisplayNotice(true);
+                setSelectedPriceId(monthlyPriceId);
+              }}>
+              Try It for free
+            </button>
           </div>
         ) : (
-          <div className='_pricing_divs'>
-            <div className='pricing_item2'>
-              <div className='_p_sub_title'>
-                <h4>Yearly Plan</h4>
-                {/* <p>
-                  Upgrade your AI chat experience. Organize, and optimize your
-                  workflow seamlessly.
-                </p> */}
-              </div>
-              <div className='_price_div'>
-                <p>
-                  <span id='original_price'>$95.88</span>{" "}
-                  <span className='dis_price'> save 20%</span>
-                  <br />
-                </p>
-                <h2 className='_price'>
-                  $76.70 <span>/year</span>
-                </h2>
-                <span className='_monthly_yearly_price'>6.39 /month</span>
-              </div>
-              <BrandFeaturs />
-              <button>
-                <a
-                  href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-                  target='#blank'>
-                  Try It for free
-                </a>
-              </button>
+          // </div>
+          // <div className='_pricing_divs'>
+          <div className='pricing_item1'>
+            <div className='_p_sub_title'>
+              <h4>Yearly Plan</h4>
             </div>
+            <div className='_price_div'>
+              <p>
+                <span id='original_price'>$95.88</span>{" "}
+                <span className='dis_price'> save 20%</span>
+                <br />
+              </p>
+              <h2 className='_price'>
+                $76.70 <span>/year</span>
+              </h2>
+              <span className='_monthly_yearly_price'>6.39 /month</span>
+            </div>
+            <BrandFeaturs />
+            <button
+              onClick={() => {
+                setDisplayNotice(true);
+                setSelectedPriceId(yearlyPriceId);
+              }}>
+              Try It for free
+            </button>
           </div>
+          // </div>
         )}
-        {/* <div className='pricing_item3'>
-          <div>
+        <div className='pricing_item2'>
+          <div className='_p_sub_title'>
             <h4>Free</h4>
+            <ul className='_pricing_list'>
+              <li>
+                <span>
+                  <PiSealCheckLight />
+                </span>
+                <p>One Folder</p>
+              </li>
+              <li>
+                <span>
+                  <PiSealCheckLight />
+                </span>
+                <p>Three Key chats bookmarked</p>
+              </li>
+              <li>
+                <span>
+                  <PiSealCheckLight />
+                </span>
+                <p>
+                  Sync the folder across unlimited devices{" "}
+                  <span>coming soon</span>
+                </p>
+              </li>
+            </ul>
           </div>
-          <ul>
-            <li>
-              <span>
-                <PiSealCheckLight />
-              </span>
-              1 Folder
-            </li>
-            <li>
-              <span>
-                <PiSealCheckLight />
-              </span>
-              3 Key chats bookmarked
-            </li>
-            <li>
-              <span>
-                <PiSealCheckLight />
-              </span>
-              Sync folders across unlimited devices
-            </li>
-            <li>
-              <span>
-                <IoCloseOutline />
-              </span>
-              Lorem ipsum dolor sit amet.
-            </li>
-            <li>
-              <span>
-                <IoCloseOutline />
-              </span>
-              Lorem ipsum dolor sit amet.
-            </li>
-            <li>
-              <span>
-                <IoCloseOutline />
-              </span>
-              Lorem ipsum dolor sit amet.
-            </li>
-          </ul>
-          <button>Add To Browser</button>
-        </div> */}
+
+          <button>
+            <a
+              className='_free_link'
+              href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+              target='#blank'>
+              Add To Browser
+            </a>
+          </button>
+        </div>
       </div>
     </main>
   );

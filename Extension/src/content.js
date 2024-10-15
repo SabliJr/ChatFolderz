@@ -1720,18 +1720,16 @@ const getCredentials = () => {
           userId: user_id,
           isCanceled: is_canceled,
         });
+      } else {
+        await chrome.storage.local.remove([
+          "customerId",
+          "hasAccess",
+          "userHasPayed",
+          "isLoggedIn",
+          "userId",
+          "isCanceled",
+        ]);
       }
-      // else
-      // {
-      // await chrome.storage.local.remove([
-      //   "customerId",
-      //   "hasAccess",
-      //   "userHasPayed",
-      //   "isLoggedIn",
-      //   "userId",
-      //   "isCanceled",
-      // ]);
-      // }
     } catch (error) {
       console.log("The error is: ", error);
 

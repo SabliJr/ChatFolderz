@@ -67,7 +67,9 @@ const Index = () => {
 
         {scrolled && (
           <button className='_header_btn'>
-            <a href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'>
+            <a
+              href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+              target='#blank'>
               Download
             </a>
           </button>

@@ -8,12 +8,10 @@ import {
   onSubscriptionSuccess,
   onStripeWebhooks,
   onCancelSubscription,
+  onCheckOutOneTime,
 } from "../controllers/paymentController";
 
-import {
-  onGetCredentials,
-  onGetTest,
-} from "../controllers/refreshTokenController";
+import { onGetCredentials } from "../controllers/refreshTokenController";
 
 const router = Router();
 
@@ -22,11 +20,11 @@ const router = Router();
 router.post("/auth/google", onAuthWithGoogle); // google sign in
 router.get("/get_credentials", onGetCredentials);
 
-router.get("/get_test", onGetTest);
-
 // PAYMENT ROUTES
 router.get("/check_out/monthly", onCheckOut);
 router.get("/check_out/yearly", onCheckOut);
+router.get("/check_out", onCheckOut);
+router.get("/check_out_lifetime", onCheckOutOneTime);
 router.get("/checkout_success", onSubscriptionSuccess);
 router.get("/cancel_subscription", onCancelSubscription);
 router.post(

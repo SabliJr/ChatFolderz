@@ -137,11 +137,11 @@
 
 @media screen and (max-width: 1042px) {
   .hero h2 {
-    width: 90%;
+    width: 80%;
   }
 
   .hero h2 {
-    font-size: 3.3rem;
+    font-size: 3rem;
   }
 
   .hero p {
