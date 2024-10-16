@@ -18,7 +18,7 @@ h3Element.classList.add("_folderz_title");
 
 // Create the search container div
 const searchContainer = document.createElement("div");
-searchContainer.classList.add("search-container", "_cF_GNewDTGpqsqNfG");
+searchContainer.classList.add("search-container", "_cF_K752tsMs7nXG7r-s");
 
 // Create the search container div
 const folderz = document.createElement("div");
@@ -42,7 +42,8 @@ searchContainer.appendChild(searchIcon);
 const createFolderContainer = document.createElement("div");
 createFolderContainer.classList.add(
   "_create_folder_container",
-  "_cF_GNewDTGpqsqNfG"
+  "_cF_GNewDTGpqsqNfG",
+  "_cF_K752tsMs7nXG7r-f"
 );
 
 // Create the add folder icon image
@@ -145,7 +146,8 @@ function updateOriginalChatIcon(bookmarkedChat) {
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       unbookmarkedIcon.classList.add(
         "_unbookmarked_icon",
-        "_cF_GNewDTGpqsqNfG"
+        "_cF_GNewDTGpqsqNfG",
+        "_cF_K752tsMs7nXG7r-b"
       );
 
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
@@ -1720,19 +1722,21 @@ const getCredentials = () => {
           userId: user_id,
           isCanceled: is_canceled,
         });
-      } else {
-        await chrome.storage.local.remove([
-          "customerId",
-          "hasAccess",
-          "userHasPayed",
-          "isLoggedIn",
-          "userId",
-          "isCanceled",
-        ]);
       }
+      // else
+      // {
+      //   console.log("It is inside else: ", response);
+      //   await chrome.storage.local.remove([
+      //     "customerId",
+      //     "hasAccess",
+      //     "userHasPayed",
+      //     "isLoggedIn",
+      //     "userId",
+      //     "isCanceled",
+      //   ]);
+      // }
     } catch (error) {
       console.log("The error is: ", error);
-
       await chrome.storage.local.remove([
         "customerId",
         "hasAccess",
@@ -1745,13 +1749,61 @@ const getCredentials = () => {
   });
 };
 
+function disableAllFunctionalities() {
+  chrome.storage.local.get(
+    ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
+    (result) => {
+      let { hasAccess, userId, customerId, userHasPayed, isLoggedIn } = result;
+
+      let folderDivs = document.querySelectorAll("._la_folder");
+      let bookmarksContainer = document.querySelector(
+        "._bookmarked_chats_container"
+      );
+      let user_bookmarks = bookmarksContainer.querySelectorAll("li");
+      console.log("Folderz length: ", folderDivs);
+
+      if (!hasAccess || !userId || !customerId || !userHasPayed || isLoggedIn) {
+        const disableSearch = document.querySelector("._cF_K752tsMs7nXG7r-s");
+
+        // Disable the search
+        disableSearch.style.opacity = "0.6";
+        disableSearch.style.pointerEvents = "none";
+
+        // To disable folder creation
+        if (folderDivs.length > 1) {
+          const disableFolderCreation = document.querySelector(
+            "._cF_K752tsMs7nXG7r-f"
+          );
+
+          //Disable create folderz
+          //Disable any new folder creation
+          disableFolderCreation.style.opacity = "0.6";
+          disableFolderCreation.style.pointerEvents = "none";
+        }
+
+        // To disable bookmarking
+        if (user_bookmarks.length > 3) {
+          const disableBookmarking = document.querySelectorAll(
+            "._cF_K752tsMs7nXG7r-b"
+          );
+          //Disable add to bookmarks
+          disableBookmarking.forEach((element) => {
+            element.style.opacity = "0.6";
+            element.style.pointerEvents = "none";
+          });
+        }
+      }
+    }
+  );
+}
+
 const disableFunctionalities = () => {
   chrome.storage.local.get(
     ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
     (result) => {
-      let { hasAccess, userId, customerId, userHasPayed } = result;
+      let { userId, isLoggedIn } = result;
 
-      if (!userId || !customerId || !hasAccess || !userHasPayed) {
+      if (!userId || !isLoggedIn) {
         // Select the elements you want to disable
         const elementsToDisable = document.querySelectorAll(
           "._cF_GNewDTGpqsqNfG"
@@ -1759,7 +1811,7 @@ const disableFunctionalities = () => {
 
         elementsToDisable.forEach((element) => {
           // Disable the element
-          element.style.opacity = "0.5";
+          element.style.opacity = "0.6";
           element.style.pointerEvents = "none";
 
           // Add hover event listener to display "Sign Up" message
@@ -1802,6 +1854,7 @@ const disableFunctionalities = () => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "dataSet") {
     disableFunctionalities();
+    disableAllFunctionalities();
   }
 });
 
@@ -1819,6 +1872,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     ) {
       // Update the UI based on the new values
       disableFunctionalities();
+      disableAllFunctionalities();
     }
   }
 });
@@ -1835,6 +1889,7 @@ window.addEventListener("load", () => {
   loadBookmarksFromStorage();
   loadFoldersFromStorage();
   disableFunctionalities();
+  disableAllFunctionalities();
 
   // Initial run
   addElements();

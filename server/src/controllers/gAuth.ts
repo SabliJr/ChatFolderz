@@ -29,7 +29,7 @@ const userLogout = async (req: Request, res: Response) => {
       secure: true,
       sameSite: "strict",
       httpOnly: true,
-      domain: ".wishties.com",
+      // domain: ".wishties.com",
       path: "/",
     });
 
@@ -99,8 +99,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
 
     if (userExists.rows.length > 0) {
       // If they do, log them in
-      const { user_id, user_name, customer_id, has_access } =
-        userExists?.rows[0];
+      const { user_id } = userExists?.rows[0];
 
       const refreshToken = await createRefreshToken(user_id, user_name);
       res.status(202).json({
@@ -108,28 +107,22 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         message: "The login was successful!",
         user: {
           user_id,
-          customer_id,
-          has_access,
         },
         accessToken: refreshToken,
       });
     } else {
       // If they don't, store their info in the database and log them in
-      let user_registration = await query(
-        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      await query(
+        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
         [user_id, user_name, email, email_verified, picture]
       );
 
-      const { customer_id, has_access } = user_registration.rows[0];
       const refreshToken = await createRefreshToken(user_id, user_name);
-
       res.status(201).json({
         success: true,
         message: "The registration was successful.",
         user: {
           user_id,
-          customer_id,
-          has_access,
         },
         accessToken: refreshToken,
       });

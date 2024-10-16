@@ -1,18 +1,23 @@
 const config = {
   development: {
     fetchUrl: "http://localhost:8000",
+    MonthlyPriceId: "price_1Q7umiDuxNnSWA1yOR9XCzOz",
+    YearlyPriceId: "price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
+    REDIRECT_URI: "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org",
   },
   production: {
     fetchUrl: "https://www.api.chatfolderz.com",
+    MonthlyPriceId: "price_1Q8i7yDuxNnSWA1yhv1Vn8UN",
+    YearlyPriceId: "price_1Q8i7tDuxNnSWA1yrIYPqFbl",
+    REDIRECT_URI: "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org",
   },
 };
 
 /// Frontend: Update the scope to include the required fields
-const SCOPE = encodeURIComponent("profile email openid"); //openid
+const SCOPE = encodeURIComponent("profile email openid");
+let RESPONSE_TYPE = "token id_token";
 let CLIENT_ID =
   "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
-let REDIRECT_URI = "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org";
-let RESPONSE_TYPE = "token id_token";
 
 const manifest = chrome.runtime.getManifest();
 const isDevelopment = !("update_url" in manifest);
@@ -20,6 +25,17 @@ const isDevelopment = !("update_url" in manifest);
 const fetchUrl = isDevelopment
   ? config.development.fetchUrl
   : config.production.fetchUrl;
+let REDIRECT_URI = isDevelopment
+  ? config.development.REDIRECT_URI
+  : config.production.YearlyPriceId;
+const yearly = isDevelopment
+  ? config.development.YearlyPriceId
+  : config.production.YearlyPriceId;
+const monthly = isDevelopment
+  ? config.development.MonthlyPriceId
+  : config.production.MonthlyPriceId;
+
+console.log(fetchUrl);
 
 // Background script handling Google login and sending the response back to content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -35,12 +51,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       },
       function (responseUrl) {
         if (chrome.runtime.lastError) {
+          console.log("We have got an error inside else of the token ");
           sendResponse({
             success: false,
             error: chrome.runtime.lastError.message,
           });
         } else {
           const tokens = extractTokensFromUrl(responseUrl);
+          console.log("The token: ", tokens);
 
           // Send the tokens to your backend for verification
           fetch(`${fetchUrl}/auth/google`, {
@@ -118,13 +136,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyMonthlySub") {
-    fetch(
-      `${fetchUrl}/check_out/monthly?price_id=price_1Q7umiDuxNnSWA1yOR9XCzOz`,
-      {
-        method: "GET",
-        credentials: "include", // This to include the cookies
-      }
-    )
+    fetch(`${fetchUrl}/check_out?price_id=${monthly}`, {
+      method: "GET",
+      credentials: "include", // This to include the cookies
+    })
       .then((response) => response.json())
       .then((data) => {
         sendResponse({ success: true, data });
@@ -138,13 +153,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "buyYearlySub") {
-    fetch(
-      `${fetchUrl}/check_out/yearly?price_id=price_1Q7unWDuxNnSWA1yxvQ2N4Rv`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
+    fetch(`${fetchUrl}/check_out?price_id=${yearly}`, {
+      method: "GET",
+      credentials: "include",
+    })
       .then((response) => response.json())
       .then((data) => {
         sendResponse({ success: true, data });

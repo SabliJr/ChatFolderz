@@ -21,8 +21,7 @@ router.post("/auth/google", onAuthWithGoogle); // google sign in
 router.get("/get_credentials", onGetCredentials);
 
 // PAYMENT ROUTES
-router.get("/check_out/monthly", onCheckOut);
-router.get("/check_out/yearly", onCheckOut);
+router.get("/check_out", onCheckOut);
 router.get("/check_out", onCheckOut);
 router.get("/check_out_lifetime", onCheckOutOneTime);
 router.get("/checkout_success", onSubscriptionSuccess);
