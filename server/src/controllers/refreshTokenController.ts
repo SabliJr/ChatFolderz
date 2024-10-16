@@ -23,7 +23,7 @@ const onGetCredentials = async (req: Request, res: Response) => {
 
     let user = await query("SELECT * FROM user_profile WHERE user_id=$1", [id]);
     if (user.rows.length === 0) {
-      console.log("We did not find the user");
+      // console.log("We did not find the user");
       return res.status(403).json({
         success: false,
         message: "User not found",

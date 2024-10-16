@@ -26,7 +26,7 @@ const handleLogin = () => {
     async (response) => {
       if (response?.success) {
         const { accessToken } = response.data;
-        const { user_id, customer_id, has_access } = response.data.user;
+        const { user_id } = response.data.user;
 
         try {
           // Set cookie in background script
@@ -41,8 +41,6 @@ const handleLogin = () => {
           await chrome.storage.local.set({
             isLoggedIn: true,
             userId: user_id,
-            customerId: customer_id,
-            hasAccess: has_access,
           });
 
           displayUI();
@@ -50,7 +48,7 @@ const handleLogin = () => {
           console.error("Error setting cookies:", error);
         }
       } else {
-        console.error("Google login failed:", response?.error);
+        console.error("Google login failed:", response);
       }
     }
   );
@@ -85,7 +83,8 @@ let onCollectPayment = () => {
   collectMoneyContainer.classList.add("_collect_money_container");
 
   let trialInfoHTML = `
-    <h3 class="_collect_money_title">Unlock Full Access – Start Your Free 24-Hour Trial!</h3>
+    <h3 class="_collect_money_title">Unlock The Full Access!</h3>
+    <p class="_prices_last_title">Try it free for 24 hours—if it’s not for you, cancel anytime. No commitment, just smarter AI chat management.</p>
     <div class="_prices_container">
       <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
       <ul class="_ul_prices">
@@ -93,7 +92,6 @@ let onCollectPayment = () => {
         <li>$6.39/month (billed annually at $76.70)</li>
       </ul>
     </div>
-    <h5 class="_prices_last_title">No commitment, cancel anytime during your trial if it’s not for you!</h5>
     <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
   `;
 
@@ -255,7 +253,7 @@ const displayUI = () => {
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
 
-      if (isLoggedIn && userId && !customerId && !hasAccess && !userHasPayed) {
+      if (isLoggedIn && userId) {
         // User is logged in but has not made payment
         sidebar.appendChild(onCollectPayment());
       } else if (!isLoggedIn && !userId && !customerId && !hasAccess) {
@@ -270,7 +268,13 @@ const displayUI = () => {
       ) {
         // User is logged in and has made payment
         sidebar.appendChild(onManageAccount());
-      } else if (isLoggedIn && userId && customerId && !hasAccess) {
+      } else if (
+        isLoggedIn &&
+        userId &&
+        customerId &&
+        !hasAccess &&
+        !userHasPayed
+      ) {
         sidebar.appendChild(onCollectPayment());
       }
     }
@@ -311,19 +315,21 @@ function onGetCredentials() {
           userId: user_id,
           isCanceled: is_canceled,
         });
-      } else {
-        await chrome.storage.local.remove([
-          "customerId",
-          "hasAccess",
-          "userHasPayed",
-          "isLoggedIn",
-          "userId",
-          "isCanceled",
-        ]);
       }
+      // else
+      // {
+      //   console.log("It was else: ", response);
+      //   await chrome.storage.local.remove([
+      //     "customerId",
+      //     "hasAccess",
+      //     "userHasPayed",
+      //     "isLoggedIn",
+      //     "userId",
+      //     "isCanceled",
+      //   ]);
+      // }
     } catch (error) {
-      console.log("The error is: ", error);
-
+      // console.log("The error is: ", error);
       await chrome.storage.local.remove([
         "customerId",
         "hasAccess",
