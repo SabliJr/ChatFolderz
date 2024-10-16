@@ -309,6 +309,11 @@ color: #ffff;
   cursor: pointer;
 }
 
+.pricing_item0 button a,
+.pricing_item1 button a {
+  color: #272b31;
+}
+
 @media screen and (max-width: 1042px) {
   /* ._pricing_divs {
     width: 80%;

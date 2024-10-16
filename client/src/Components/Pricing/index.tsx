@@ -27,7 +27,6 @@ const Index = () => {
   // let lifeTimeDeal = "price_1QACaODuxNnSWA1yy7ssX7uL";
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Checkbox state:", e.target.checked);
     if (e.target.checked) {
       setWhoIsThis("Yearly");
     } else {
@@ -52,7 +51,9 @@ const Index = () => {
 
       let res = await onCheckingOut(price_id);
       console.log(res);
-      if (res.status === 200) window.location = res.data.url;
+      if (res.status === 200) {
+        window.location.href = res.data.url;
+      }
     } catch (error) {
       alert("Something went wrong please try again!");
     } finally {
@@ -67,14 +68,14 @@ const Index = () => {
   const handleCloseNotice = () => {
     setDisplayNotice(false);
     if (selectedPriceId) {
-      onCheckOut(selectedPriceId);
+      // onCheckOut(selectedPriceId);
       setSelectedPriceId(null); // Reset the selected price ID
     }
   };
 
   return (
     <main className='pricing' id='pricing_scroll'>
-      {displayNotice && (
+      {/* {displayNotice && (
         <div className='_notice_container'>
           <div className='_notice_text_div'>
             <IoMdClose onClick={handleCloseNotice} className='_notice_close' />
@@ -90,7 +91,7 @@ const Index = () => {
             </p>
           </div>
         </div>
-      )}
+      )} */}
       <div className='_pricing_title'>
         <h1>Pricing</h1>
         <p>
@@ -186,12 +187,20 @@ const Index = () => {
               $7.99 <span>/month</span>
             </h2>
             <BrandFeaturs />
-            <button
+            {/* <button
               onClick={() => {
                 setDisplayNotice(true);
                 setSelectedPriceId(monthlyPriceId);
               }}>
               Try It for free
+            </button> */}
+            <button>
+              <a
+                className='_free_link'
+                href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+                target='#blank'>
+                Try It For Free
+              </a>
             </button>
           </div>
         ) : (
@@ -213,12 +222,20 @@ const Index = () => {
               <span className='_monthly_yearly_price'>6.39 /month</span>
             </div>
             <BrandFeaturs />
-            <button
+            {/* <button
               onClick={() => {
                 setDisplayNotice(true);
                 setSelectedPriceId(yearlyPriceId);
               }}>
               Try It for free
+            </button> */}
+            <button>
+              <a
+                className='_free_link'
+                href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+                target='#blank'>
+                Try It For Free
+              </a>
             </button>
           </div>
           // </div>
