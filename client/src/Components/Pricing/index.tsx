@@ -248,13 +248,13 @@ const Index = () => {
                 <span>
                   <PiSealCheckLight />
                 </span>
-                <p>One Folder</p>
+                <p>Create up to 2 folders</p>
               </li>
               <li>
                 <span>
                   <PiSealCheckLight />
                 </span>
-                <p>Three Key chats bookmarked</p>
+                <p>Bookmark up to 3 key chats</p>
               </li>
               <li>
                 <span>

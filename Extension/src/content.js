@@ -144,13 +144,15 @@ function updateOriginalChatIcon(bookmarkedChat) {
         "./images/bookmark_outline.png"
       );
       unbookmarkedIcon.alt = "Unbookmarked Icon";
+      // unbookmarkedIcon.id = "_cF_K752tsMs7nXG7r-b";
       unbookmarkedIcon.classList.add(
         "_unbookmarked_icon",
         "_cF_GNewDTGpqsqNfG",
-        "_cF_K752tsMs7nXG7r-b"
+        "_cF_K752tsMs7nXG7r-B"
       );
 
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+
       addToggleListener(
         bookmarkedIcon,
         unbookmarkedIcon,
@@ -174,6 +176,9 @@ let addToggleListener = (
     if (bookmarkAdd.contains(bookmarkedIcon)) {
       // Switch to unbookmarked icon
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
+
+      disableAllFunctionalities(); // Updating the disabling and enabling the bookmark icon
+      console.log("We unbookmarked");
 
       // Remove from bookmarks folder
       removeUnbookmarkedChat(chat);
@@ -236,7 +241,11 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
       "./images/bookmark_outline.png"
     );
     unbookmarkedIcon.alt = "Unbookmarked Icon";
-    unbookmarkedIcon.classList.add("_unbookmarked_icon", "_cF_GNewDTGpqsqNfG");
+    unbookmarkedIcon.classList.add(
+      "_unbookmarked_icon",
+      "_cF_GNewDTGpqsqNfG",
+      "_cF_K752tsMs7nXG7r-B"
+    );
 
     // Add the bookmarked icon to the cloned chat
     bookmarkAdd.appendChild(bookmarkedIcon);
@@ -431,7 +440,8 @@ let addIconsToChat = () => {
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       unbookmarkedIcon.classList.add(
         "_unbookmarked_icon",
-        "_cF_GNewDTGpqsqNfG"
+        "_cF_GNewDTGpqsqNfG",
+        "_cF_K752tsMs7nXG7r-B"
       );
 
       // The close Icon
@@ -943,6 +953,9 @@ let createNewFolder = (
     ft_delete_folder(folderId);
     folderDiv.remove();
     openMenu = null; // Reset openMenu when folder is deleted
+
+    console.log("We have removed a folder");
+    disableAllFunctionalities(); // Updating the disabling and enabling stuff, for more reference look the function
   });
 
   // Insert the new folder into the container
@@ -1249,6 +1262,7 @@ function addElements() {
   createBookmarks();
   addIconsToChat();
   disableFunctionalities();
+  disableAllFunctionalities();
 }
 
 // Search bar handling
@@ -1756,11 +1770,12 @@ function disableAllFunctionalities() {
       let { hasAccess, userId, customerId, userHasPayed, isLoggedIn } = result;
 
       let folderDivs = document.querySelectorAll("._la_folder");
+      let popupFolderz = document.querySelector("#_la_folderz");
+
       let bookmarksContainer = document.querySelector(
         "._bookmarked_chats_container"
       );
       let user_bookmarks = bookmarksContainer.querySelectorAll("li");
-      console.log("Folderz length: ", folderDivs);
 
       if (!hasAccess || !userId || !customerId || !userHasPayed || isLoggedIn) {
         const disableSearch = document.querySelector("._cF_K752tsMs7nXG7r-s");
@@ -1770,32 +1785,56 @@ function disableAllFunctionalities() {
         disableSearch.style.pointerEvents = "none";
 
         // To disable folder creation
-        if (folderDivs.length > 1) {
-          const disableFolderCreation = document.querySelector(
+        const disableFolderCreation = document.querySelector(
+          "._cF_K752tsMs7nXG7r-f"
+        );
+
+        let disAlso;
+        if (popupFolderz) {
+          disAlso = popupFolderz.querySelectorAll("._la_folder");
+          let disableFolderCreationPopUp = popupFolderz.querySelector(
             "._cF_K752tsMs7nXG7r-f"
           );
 
-          //Disable create folderz
-          //Disable any new folder creation
-          disableFolderCreation.style.opacity = "0.6";
-          disableFolderCreation.style.pointerEvents = "none";
+          if (disAlso.length > 1) {
+            disableStuff(disableFolderCreation);
+            disableStuff(disableFolderCreationPopUp);
+          } else enableStuff(disableFolderCreation);
         }
 
+        folderDivs.length > 1
+          ? disableStuff(disableFolderCreation)
+          : enableStuff(disableFolderCreation);
+
         // To disable bookmarking
-        if (user_bookmarks.length > 3) {
-          const disableBookmarking = document.querySelectorAll(
-            "._cF_K752tsMs7nXG7r-b"
-          );
+        const disableBookmarking = document.querySelectorAll(
+          "._cF_K752tsMs7nXG7r-B"
+        );
+
+        if (user_bookmarks.length >= 3) {
           //Disable add to bookmarks
           disableBookmarking.forEach((element) => {
-            element.style.opacity = "0.6";
-            element.style.pointerEvents = "none";
+            disableStuff(element);
+          });
+        } else {
+          disableBookmarking.forEach((element) => {
+            enableStuff(element);
           });
         }
       }
     }
   );
 }
+
+const disableStuff = (elem) => {
+  elem.style.opacity = "0.6";
+  elem.style.pointerEvents = "none";
+};
+
+const enableStuff = (elem) => {
+  elem.style.opacity = "1";
+  elem.style.pointerEvents = "auto";
+};
 
 const disableFunctionalities = () => {
   chrome.storage.local.get(
@@ -1899,4 +1938,5 @@ window.addEventListener("load", () => {
   setInterval(addElements, 2000);
   setInterval(getCredentials, 2000);
   // setInterval(disableFunctionalities, 2000);
+  // setInterval(disableAllFunctionalities, 2000);
 });
