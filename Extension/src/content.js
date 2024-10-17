@@ -178,7 +178,6 @@ let addToggleListener = (
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
 
       disableAllFunctionalities(); // Updating the disabling and enabling the bookmark icon
-      console.log("We unbookmarked");
 
       // Remove from bookmarks folder
       removeUnbookmarkedChat(chat);
@@ -542,7 +541,6 @@ const addingToStorageWhileCreatingFirstFolder = (
   };
 
   folderData.chats.push({
-    id: cloneChat.dataset.chatId,
     content: cloneChat.outerHTML,
   });
 
@@ -587,7 +585,7 @@ function doFolderCreation() {
       if (popup) onRemovePop();
 
       // Resolve the promise with the created folder_div
-      resolve(folder_div);
+      resolve({ folder_div, folderName, colorVal });
     });
   });
 }
@@ -618,7 +616,7 @@ let addToFolderGlobally = (chat) => {
   saveBtn.classList.add("_save_btn");
 
   let la_folderz = document.querySelector("._folderz");
-  let folderzClone = la_folderz.cloneNode(true); // Clone the existing folders
+  let folderzClone = la_folderz.cloneNode(true); // Clone the existing folders, these are the existing folders!
   folderzClone.id = "_la_folderz";
 
   // Create the close button
@@ -643,17 +641,29 @@ let addToFolderGlobally = (chat) => {
 
   // Handle folder creation when the create button is clicked
   let laCreateBtn = folderzClone.querySelector("._create_folder_container");
+  let fValues = {};
   laCreateBtn.addEventListener("click", () => {
     goLookUp = false;
 
-    doFolderCreation().then((folder_div) => {
+    doFolderCreation().then(({ folder_div, folderName, colorVal }) => {
       insertCheckboxIntoFolder(folder_div); // Insert checkbox into the new folder
+
+      fValues.folderName = folderName;
+      fValues.colorVal = colorVal;
+
       folderzClone.insertBefore(folder_div, saveBtn);
     });
   });
 
   saveBtn.addEventListener("click", () => {
-    saveChatsToFolders(chat, folderzClone, true, goLookUp);
+    saveChatsToFolders(
+      chat,
+      folderzClone,
+      true,
+      goLookUp,
+      fValues.folderName,
+      fValues.colorVal
+    );
   });
 
   folderzClone.appendChild(saveBtn);
@@ -954,7 +964,6 @@ let createNewFolder = (
     folderDiv.remove();
     openMenu = null; // Reset openMenu when folder is deleted
 
-    console.log("We have removed a folder");
     disableAllFunctionalities(); // Updating the disabling and enabling stuff, for more reference look the function
   });
 
@@ -1059,7 +1068,7 @@ let createNewFolder = (
     }
   });
 
-  if (!isFromStorage) {
+  if (!isFromStorage && !doNotAppend) {
     let folderData = {
       id: folderDiv.id,
       name: folderName,
@@ -1533,6 +1542,30 @@ function updateFolderInStorage(folderName, colorVal, folderId) {
   });
 }
 
+let saveFolderToStorage = (folderData) => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["folders"], (result) => {
+      let folders = result.folders || [];
+
+      // Check if folder already exists, and update it if necessary
+      let existingFolderIndex = folders.findIndex(
+        (f) => f.id === folderData.id
+      );
+      if (existingFolderIndex !== -1) {
+        // Update the existing folder
+        folders[existingFolderIndex] = folderData;
+      } else {
+        folders.push(folderData);
+      }
+
+      // Save folders back to storage
+      chrome.storage.local.set({ folders: folders }, () => {
+        resolve();
+      });
+    });
+  });
+};
+
 function saveChatAndFoldersToStorage(folderData) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
@@ -1615,7 +1648,9 @@ const saveChatsToFolders = async (
   chat,
   folderzClone,
   do_I_have_to,
-  goLookUp
+  goLookUp,
+  folderName,
+  colorVal
 ) => {
   try {
     let allFolders = folderzClone.querySelectorAll("._la_folder");
@@ -1632,7 +1667,7 @@ const saveChatsToFolders = async (
       return getChatContent(chat1) === getChatContent(chat2);
     };
 
-    allFolders.forEach((folder) => {
+    allFolders.forEach(async (folder) => {
       let folder_input = folder.querySelector("#_folder_chat_input");
       if (folder_input && folder_input.checked) {
         let folderContent;
@@ -1700,8 +1735,18 @@ const saveChatsToFolders = async (
           }
 
           if (!folderExists) {
-            const chatData = { content: cloneChat.outerHTML };
-            foldersToUpdate.push({ id: folderId, chatData });
+            let folderData = {
+              id: folderId,
+              name: folderName,
+              color: colorVal,
+              chats: [],
+            };
+
+            folderData.chats.push({
+              content: cloneChat.outerHTML,
+            });
+
+            await saveFolderToStorage(folderData);
 
             contentFolder.appendChild(cloneChat);
             folder.appendChild(contentFolder);
@@ -1716,11 +1761,11 @@ const saveChatsToFolders = async (
     if (foldersToUpdate.length > 0)
       await updateFoldersInStorage(foldersToUpdate);
   } catch (error) {
-    console.error("Error updating folders:", error);
+    console.error("Error updating folders");
   }
 };
 
-const getCredentials = () => {
+function getCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     try {
       if (response?.success) {
@@ -1736,32 +1781,21 @@ const getCredentials = () => {
           userId: user_id,
           isCanceled: is_canceled,
         });
+      } else {
+        await chrome.storage.local.remove([
+          "customerId",
+          "hasAccess",
+          "userHasPayed",
+          "isLoggedIn",
+          "userId",
+          "isCanceled",
+        ]);
       }
-      // else
-      // {
-      //   console.log("It is inside else: ", response);
-      //   await chrome.storage.local.remove([
-      //     "customerId",
-      //     "hasAccess",
-      //     "userHasPayed",
-      //     "isLoggedIn",
-      //     "userId",
-      //     "isCanceled",
-      //   ]);
-      // }
     } catch (error) {
-      console.log("The error is: ", error);
-      await chrome.storage.local.remove([
-        "customerId",
-        "hasAccess",
-        "userHasPayed",
-        "isLoggedIn",
-        "userId",
-        "isCanceled",
-      ]);
+      console.error("Error handling credentials");
     }
   });
-};
+}
 
 function disableAllFunctionalities() {
   chrome.storage.local.get(

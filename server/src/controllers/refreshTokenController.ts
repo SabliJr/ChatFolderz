@@ -6,14 +6,14 @@ import { checkUserAccess } from "../util/verificationFunctions";
 
 const onGetCredentials = async (req: Request, res: Response) => {
   const cookies = req.cookies;
-  if (!cookies?.refreshToken || !cookies.userId) return res.sendStatus(401);
+  if (!cookies?.accessToken && !cookies.userId) return res.sendStatus(401);
 
   const userId = cookies.userId;
-  const refreshToken = cookies.refreshToken;
+  const accessToken = cookies.accessToken;
 
   try {
     const decoded = await jwt.verify(
-      refreshToken as string,
+      accessToken as string,
       REFRESH_TOKEN_SECRET as string
     );
     const { user_id: id } = decoded as {

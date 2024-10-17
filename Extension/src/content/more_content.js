@@ -45,10 +45,10 @@ const handleLogin = () => {
 
           displayUI();
         } catch (error) {
-          console.error("Error setting cookies:", error);
+          console.error("Error setting cookies");
         }
       } else {
-        console.error("Google login failed:", response);
+        console.error("Google login failed");
       }
     }
   );
@@ -61,7 +61,7 @@ const onSubForYear = () => {
 
       window.open(url, "_blank");
     } else {
-      console.error("Getting a payment link has failed: ", response?.error);
+      console.error("Getting a payment link has failed");
     }
   });
 };
@@ -73,7 +73,7 @@ const onSubForMonth = () => {
 
       window.open(url, "_blank");
     } else {
-      console.error("Getting a payment link has failed: ", response?.error);
+      console.error("Getting a payment link has failed");
     }
   });
 };
@@ -315,29 +315,18 @@ function onGetCredentials() {
           userId: user_id,
           isCanceled: is_canceled,
         });
+      } else {
+        await chrome.storage.local.remove([
+          "customerId",
+          "hasAccess",
+          "userHasPayed",
+          "isLoggedIn",
+          "userId",
+          "isCanceled",
+        ]);
       }
-      // else
-      // {
-      //   console.log("It was else: ", response);
-      //   await chrome.storage.local.remove([
-      //     "customerId",
-      //     "hasAccess",
-      //     "userHasPayed",
-      //     "isLoggedIn",
-      //     "userId",
-      //     "isCanceled",
-      //   ]);
-      // }
     } catch (error) {
-      // console.log("The error is: ", error);
-      await chrome.storage.local.remove([
-        "customerId",
-        "hasAccess",
-        "userHasPayed",
-        "isLoggedIn",
-        "userId",
-        "isCanceled",
-      ]);
+      console.error("Error handling credentials");
     }
   });
 }

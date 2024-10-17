@@ -35,8 +35,6 @@ const monthly = isDevelopment
   ? config.development.MonthlyPriceId
   : config.production.MonthlyPriceId;
 
-console.log(fetchUrl);
-
 // Background script handling Google login and sending the response back to content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "startGoogleAuth") {
@@ -51,14 +49,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       },
       function (responseUrl) {
         if (chrome.runtime.lastError) {
-          console.log("We have got an error inside else of the token ");
           sendResponse({
             success: false,
             error: chrome.runtime.lastError.message,
           });
         } else {
           const tokens = extractTokensFromUrl(responseUrl);
-          console.log("The token: ", tokens);
 
           // Send the tokens to your backend for verification
           fetch(`${fetchUrl}/auth/google`, {
@@ -94,27 +90,18 @@ function extractTokensFromUrl(url) {
 // Setting cookies to the browser
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "setCookie") {
-    const { accessToken, userId, userName } = request.data;
+    const { accessToken, userId } = request.data;
 
     // Set access token cookie
-    chrome.cookies.set(
-      {
-        url: `${fetchUrl}`, // Your backend URL
-        name: "accessToken",
-        value: accessToken,
-        path: "/",
-        secure: true,
-        sameSite: "lax",
-        expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours from now
-      },
-      (cookie) => {
-        if (chrome.runtime.lastError) {
-          console.error("Error setting cookie:", chrome.runtime.lastError);
-        } else {
-          console.log("Cookie set successfully:", cookie);
-        }
-      }
-    );
+    chrome.cookies.set({
+      url: `${fetchUrl}`, // Your backend URL
+      name: "accessToken",
+      value: accessToken,
+      path: "/",
+      secure: true,
+      sameSite: "lax",
+      expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
+    });
 
     // You might want to set additional cookies for user info
     chrome.cookies.set({
@@ -124,7 +111,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       path: "/",
       secure: true,
       sameSite: "lax",
-      expirationDate: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
+      expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
     });
 
     sendResponse({ success: true });
@@ -239,7 +226,7 @@ chrome.runtime.onInstalled.addListener(() => {
         }
       );
     })
-    .catch((error) => console.error("Error fetching credentials:", error));
+    .catch((error) => console.error("Error fetching credentials"));
 });
 
 // apiUtils.js
