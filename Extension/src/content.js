@@ -1484,7 +1484,6 @@ function removeBookmarkFromStorage(chatToRemove) {
 function loadFoldersFromStorage() {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
-
     folders.forEach((folderData) => {
       let folderContainer = document.querySelector("._folderz");
 
@@ -1584,6 +1583,7 @@ function saveChatAndFoldersToStorage(folderData) {
   });
 }
 
+// To remove the chat from the storage
 function removeChatFromFolder(folderId, chatId) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
@@ -1611,6 +1611,7 @@ function removeChatFromFolder(folderId, chatId) {
   });
 }
 
+// To delete the folder from the storage
 function ft_delete_folder(folderId) {
   chrome.storage.local.get(["folders"], (result) => {
     let folders = result.folders || [];
@@ -1634,9 +1635,21 @@ function updateFoldersInStorage(foldersToUpdate) {
       foldersToUpdate.forEach((folderToUpdate) => {
         let existingFolder = folders.find((f) => f.id === folderToUpdate.id);
 
-        if (existingFolder) existingFolder.chats.push(folderToUpdate.chatData);
+        if (existingFolder) {
+          // Add chat to existing folder
+          existingFolder.chats.push(folderToUpdate.chatData);
+        } else {
+          // Add new folder with chat
+          folders.push({
+            id: folderToUpdate.id,
+            name: folderToUpdate.name,
+            color: folderToUpdate.color,
+            chats: folderToUpdate.chats,
+          });
+        }
       });
 
+      // Save updated folders back to storage
       chrome.storage.local.set({ folders: folders }, () => {
         resolve();
       });
@@ -1667,7 +1680,7 @@ const saveChatsToFolders = async (
       return getChatContent(chat1) === getChatContent(chat2);
     };
 
-    allFolders.forEach(async (folder) => {
+    allFolders.forEach((folder) => {
       let folder_input = folder.querySelector("#_folder_chat_input");
       if (folder_input && folder_input.checked) {
         let folderContent;
@@ -1746,8 +1759,7 @@ const saveChatsToFolders = async (
               content: cloneChat.outerHTML,
             });
 
-            await saveFolderToStorage(folderData);
-
+            foldersToUpdate.push(folderData);
             contentFolder.appendChild(cloneChat);
             folder.appendChild(contentFolder);
             container.appendChild(folder);
@@ -1758,8 +1770,10 @@ const saveChatsToFolders = async (
       }
     });
 
-    if (foldersToUpdate.length > 0)
+    // Call the async function
+    if (foldersToUpdate.length > 0) {
       await updateFoldersInStorage(foldersToUpdate);
+    }
   } catch (error) {
     console.error("Error updating folders");
   }
@@ -1792,11 +1806,19 @@ function getCredentials() {
         ]);
       }
     } catch (error) {
-      console.error("Error handling credentials");
+      await chrome.storage.local.remove([
+        "customerId",
+        "hasAccess",
+        "userHasPayed",
+        "isLoggedIn",
+        "userId",
+        "isCanceled",
+      ]);
     }
   });
 }
 
+// This function is to disable all the functionalities if the user exhausted the free version and didn't upgrade.
 function disableAllFunctionalities() {
   chrome.storage.local.get(
     ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
@@ -1811,12 +1833,17 @@ function disableAllFunctionalities() {
       );
       let user_bookmarks = bookmarksContainer.querySelectorAll("li");
 
-      if (!hasAccess || !userId || !customerId || !userHasPayed || isLoggedIn) {
+      if (
+        !hasAccess ||
+        !userId ||
+        !customerId ||
+        !userHasPayed ||
+        !isLoggedIn
+      ) {
         const disableSearch = document.querySelector("._cF_K752tsMs7nXG7r-s");
 
         // Disable the search
-        disableSearch.style.opacity = "0.6";
-        disableSearch.style.pointerEvents = "none";
+        disableStuff(disableSearch);
 
         // To disable folder creation
         const disableFolderCreation = document.querySelector(
@@ -1870,57 +1897,53 @@ const enableStuff = (elem) => {
   elem.style.pointerEvents = "auto";
 };
 
+// This is just to disable the functionalities if the user didn't logged in!
 const disableFunctionalities = () => {
-  chrome.storage.local.get(
-    ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
-    (result) => {
-      let { userId, isLoggedIn } = result;
+  chrome.storage.local.get(["isLoggedIn", "userId"], (result) => {
+    let { userId, isLoggedIn } = result;
 
-      if (!userId || !isLoggedIn) {
-        // Select the elements you want to disable
-        const elementsToDisable = document.querySelectorAll(
-          "._cF_GNewDTGpqsqNfG"
-        );
+    // Select the elements you want to disable
+    const elementsToDisable = document.querySelectorAll("._cF_GNewDTGpqsqNfG");
 
-        elementsToDisable.forEach((element) => {
-          // Disable the element
-          element.style.opacity = "0.6";
+    // Disable the element
+    if (!userId || !isLoggedIn) {
+      elementsToDisable.forEach((element) => {
+        element.style.opacity = "0.6";
+        element.style.pointerEvents = "none";
+
+        // Add hover event listener to display "Sign Up" message
+        element.addEventListener("mouseenter", () => {
           element.style.pointerEvents = "none";
+          element.style.opacity = "0.6";
 
-          // Add hover event listener to display "Sign Up" message
-          element.addEventListener("mouseenter", () => {
-            element.style.pointerEvents = "auto";
+          const signUpMessage = document.createElement("p");
+          signUpMessage.innerText = "Login please!";
+          signUpMessage.style.position = "absolute";
+          signUpMessage.style.backgroundColor = "orange";
+          signUpMessage.style.color = "black";
+          signUpMessage.style.padding = "5px";
+          signUpMessage.style.borderRadius = ".3rem";
+          signUpMessage.style.zIndex = "3000";
+          signUpMessage.classList.add("cf_sign-up-message");
 
-            const signUpMessage = document.createElement("p");
-            signUpMessage.innerText = "Complete your account setup!";
-            signUpMessage.style.position = "absolute";
-            signUpMessage.style.backgroundColor = "yellow";
-            signUpMessage.style.padding = "5px";
-            signUpMessage.style.border = "1px solid black";
-            signUpMessage.style.zIndex = "2000";
-            signUpMessage.classList.add("cf_sign-up-message");
+          element.appendChild(signUpMessage);
 
-            element.appendChild(signUpMessage);
+          // Calculate position based on element's bounding rectangle
+          const rect = element.getBoundingClientRect();
+          signUpMessage.style.top = `${rect.top + window.scrollY}px`;
+          signUpMessage.style.left = `${rect.left + window.scrollX}px`;
 
-            // Calculate position based on element's bounding rectangle
-            const rect = element.getBoundingClientRect();
-            signUpMessage.style.top = `${rect.top + window.scrollY}px`;
-            signUpMessage.style.left = `${rect.left + window.scrollX}px`;
-
-            // Handle mouseleave to remove the message
-            element.addEventListener("mouseleave", () => {
-              const signUpMessage = document.querySelector(
-                ".cf_sign-up-message"
-              );
-              if (signUpMessage) {
-                signUpMessage.remove();
-              }
-            });
+          // Handle mouseleave to remove the message
+          element.addEventListener("mouseleave", () => {
+            const signUpMessage = document.querySelector(".cf_sign-up-message");
+            if (signUpMessage) {
+              signUpMessage.remove();
+            }
           });
         });
-      }
+      });
     }
-  );
+  });
 };
 
 // Listen for the message from the background script
@@ -1959,8 +1982,18 @@ window.addEventListener("load", () => {
   folderz.appendChild(createFolderContainer);
   mainElement.appendChild(folderz); // The folderz title
 
-  loadBookmarksFromStorage();
-  loadFoldersFromStorage();
+  // Load the chat ann folders only if the user is loggedIn
+  chrome.storage.local.get(["isLoggedIn", "userId"], (result) => {
+    let { userId, isLoggedIn } = result;
+
+    if (userId && isLoggedIn) {
+      setInterval(getCredentials, 2000);
+
+      loadBookmarksFromStorage();
+      loadFoldersFromStorage();
+    }
+  });
+
   disableFunctionalities();
   disableAllFunctionalities();
 
@@ -1970,7 +2003,6 @@ window.addEventListener("load", () => {
 
   // Periodically check for new code blocks (as a fallback)
   setInterval(addElements, 2000);
-  setInterval(getCredentials, 2000);
   // setInterval(disableFunctionalities, 2000);
   // setInterval(disableAllFunctionalities, 2000);
 });
