@@ -325,8 +325,16 @@ function onGetCredentials() {
           "isCanceled",
         ]);
       }
-    } catch (error) {
-      console.error("Error handling credentials");
+    } catch (error)
+    {
+       await chrome.storage.local.remove([
+         "customerId",
+         "hasAccess",
+         "userHasPayed",
+         "isLoggedIn",
+         "userId",
+         "isCanceled",
+       ]);
     }
   });
 }
@@ -354,7 +362,17 @@ window.addEventListener("load", () => {
   onGetCredentials();
 
   setInterval(onInitAccountAccess, 2000); // Calling this every 2s because the openAI's website is an SPA.
-  setInterval(onGetCredentials, 2000); // Call this function every 3ms to go get the user credentials
+  // setInterval(onGetCredentials, 2000); // Call this function every 3ms to go get the user credentials
+
+  // Load the chat ann folders only if the user is loggedIn
+  chrome.storage.local.get(["isLoggedIn", "userId"], (result) => {
+    let { userId, isLoggedIn } = result;
+    console.log(`U: ${userId}, LI: ${isLoggedIn}`);
+
+    if (userId && isLoggedIn) {
+      setInterval(onGetCredentials, 2000);
+    }
+  });
 });
 
 // const fetchData = async () => {

@@ -25,12 +25,15 @@ const isDevelopment = !("update_url" in manifest);
 const fetchUrl = isDevelopment
   ? config.development.fetchUrl
   : config.production.fetchUrl;
+
 let REDIRECT_URI = isDevelopment
   ? config.development.REDIRECT_URI
-  : config.production.YearlyPriceId;
+  : config.production.REDIRECT_URI;
+
 const yearly = isDevelopment
   ? config.development.YearlyPriceId
   : config.production.YearlyPriceId;
+
 const monthly = isDevelopment
   ? config.development.MonthlyPriceId
   : config.production.MonthlyPriceId;
@@ -226,7 +229,7 @@ chrome.runtime.onInstalled.addListener(() => {
         }
       );
     })
-    .catch((error) => console.error("Error fetching credentials"));
+    .catch((error) => console.error("Err getting credentials"));
 });
 
 // apiUtils.js
