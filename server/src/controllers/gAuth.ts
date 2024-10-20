@@ -75,6 +75,8 @@ const getUserDetails = async (accessToken: string) => {
 const onAuthWithGoogle = async (req: Request, res: Response) => {
   const { accessToken, idToken: token } = req.body;
 
+  console.log("The token to exchange: ", accessToken);
+
   try {
     // Directly verify the token received from the frontend
     const ticket = await client.verifyIdToken({
@@ -118,6 +120,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
       );
 
       const refreshToken = await createRefreshToken(user_id, user_name);
+      console.log(user_id);
       res.status(201).json({
         success: true,
         message: "The registration was successful.",
