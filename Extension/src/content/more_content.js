@@ -367,7 +367,6 @@ window.addEventListener("load", () => {
   // Load the chat ann folders only if the user is loggedIn
   chrome.storage.local.get(["isLoggedIn", "userId"], (result) => {
     let { userId, isLoggedIn } = result;
-    console.log(`U: ${userId}, LI: ${isLoggedIn}`);
 
     if (userId && isLoggedIn) {
       setInterval(onGetCredentials, 2000);

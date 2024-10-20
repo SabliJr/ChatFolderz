@@ -8,9 +8,9 @@ import {
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
-async function createRefreshToken(user_id: string, user_name: string) {
+async function createRefreshToken(user_id: string) {
   const refreshToken = await jwt.sign(
-    { user_id, user_name },
+    { user_id },
     REFRESH_TOKEN_SECRET as string,
     { expiresIn: "10d" }
   );
@@ -75,8 +75,6 @@ const getUserDetails = async (accessToken: string) => {
 const onAuthWithGoogle = async (req: Request, res: Response) => {
   const { accessToken, idToken: token } = req.body;
 
-  console.log("The token to exchange: ", accessToken);
-
   try {
     // Directly verify the token received from the frontend
     const ticket = await client.verifyIdToken({
@@ -103,7 +101,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
       // If they do, log them in
       const { user_id } = userExists?.rows[0];
 
-      const refreshToken = await createRefreshToken(user_id, user_name);
+      const refreshToken = await createRefreshToken(user_id);
       res.status(202).json({
         success: true,
         message: "The login was successful!",
@@ -119,8 +117,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         [user_id, user_name, email, email_verified, picture]
       );
 
-      const refreshToken = await createRefreshToken(user_id, user_name);
-      console.log(user_id);
+      const refreshToken = await createRefreshToken(user_id);
       res.status(201).json({
         success: true,
         message: "The registration was successful.",
