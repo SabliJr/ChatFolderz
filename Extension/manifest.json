@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatFolderz: AI Chat Organizer Tool. Create Folders, Search, Bookmarks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": " Organize ChatGPT with Folders, Search, Bookmark key discussions, Prompts Library and more...",
   "permissions": [
     "cookies",
@@ -32,6 +32,8 @@
   ],
   "host_permissions": [
     "https://chat.openai.com/*",
+    "https://www.api.chatfolderz.com/*",
+    "https://api.chatfolderz.com/*",
     "http://localhost:8000/*",
     "http://localhost/*"
   ],

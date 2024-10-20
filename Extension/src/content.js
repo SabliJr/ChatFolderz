@@ -3,7 +3,7 @@ let isFinishedLoading = false;
 
 // The chat icon
 const icon = document.createElement("img");
-icon.src = chrome.runtime.getURL("./images/chat.png"); // Use chrome.runtime.getURL to get the correct path
+icon.src = chrome.runtime.getURL("../images/chat.png"); // Use chrome.runtime.getURL to get the correct path
 icon.alt = "Custom Icon";
 icon.id = "custom-icon";
 
@@ -33,7 +33,7 @@ searchContainer.appendChild(searchInput);
 
 // Create the search icon image
 const searchIcon = document.createElement("img");
-searchIcon.src = chrome.runtime.getURL("./images/search.png");
+searchIcon.src = chrome.runtime.getURL("../images/search.png");
 searchIcon.alt = "Search Icon";
 searchIcon.classList.add("_search_icon");
 searchContainer.appendChild(searchIcon);
@@ -48,7 +48,7 @@ createFolderContainer.classList.add(
 
 // Create the add folder icon image
 const addFolderIcon = document.createElement("img");
-addFolderIcon.src = chrome.runtime.getURL("./images/add-folder.png");
+addFolderIcon.src = chrome.runtime.getURL("../images/add-folder.png");
 addFolderIcon.alt = "Add Folder Icon";
 addFolderIcon.classList.add("_add_folder_icon");
 createFolderContainer.appendChild(addFolderIcon);
@@ -87,7 +87,7 @@ let createBookmarks = () => {
 
   // Bookmarked Icon
   let bookmarkedFolderIcon = document.createElement("img");
-  bookmarkedFolderIcon.src = chrome.runtime.getURL("./images/bookmark.png");
+  bookmarkedFolderIcon.src = chrome.runtime.getURL("../images/bookmark.png");
   bookmarkedFolderIcon.alt = "Folder Icon";
   bookmarkedFolderIcon.classList.add("_bookmarked_folder_icon");
 
@@ -141,7 +141,7 @@ function updateOriginalChatIcon(bookmarkedChat) {
 
       let unbookmarkedIcon = document.createElement("img");
       unbookmarkedIcon.src = chrome.runtime.getURL(
-        "./images/bookmark_outline.png"
+        "../images/bookmark_outline.png"
       );
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       // unbookmarkedIcon.id = "_cF_K752tsMs7nXG7r-b";
@@ -231,13 +231,13 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
 
     // Create new bookmark icons
     let bookmarkedIcon = document.createElement("img");
-    bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
+    bookmarkedIcon.src = chrome.runtime.getURL("../images/bookmark_fill.png");
     bookmarkedIcon.alt = "Bookmarked Icon";
     bookmarkedIcon.classList.add("_bookmarked_icon", "_cF_GNewDTGpqsqNfG");
 
     let unbookmarkedIcon = document.createElement("img");
     unbookmarkedIcon.src = chrome.runtime.getURL(
-      "./images/bookmark_outline.png"
+      "../images/bookmark_outline.png"
     );
     unbookmarkedIcon.alt = "Unbookmarked Icon";
     unbookmarkedIcon.classList.add(
@@ -427,14 +427,14 @@ let addIconsToChat = () => {
     if (bookmarkAdd) {
       // The bookmarked Icon
       let bookmarkedIcon = document.createElement("img");
-      bookmarkedIcon.src = chrome.runtime.getURL("./images/bookmark_fill.png");
+      bookmarkedIcon.src = chrome.runtime.getURL("../images/bookmark_fill.png");
       bookmarkedIcon.alt = "Bookmarked Icon";
       bookmarkedIcon.classList.add("_bookmarked_icon", "_cF_GNewDTGpqsqNfG");
 
       // The unbookmarked Icon
       let unbookmarkedIcon = document.createElement("img");
       unbookmarkedIcon.src = chrome.runtime.getURL(
-        "./images/bookmark_outline.png"
+        "../images/bookmark_outline.png"
       );
       unbookmarkedIcon.alt = "Unbookmarked Icon";
       unbookmarkedIcon.classList.add(
@@ -445,7 +445,7 @@ let addIconsToChat = () => {
 
       // The close Icon
       let addToFolderIcon = document.createElement("img");
-      addToFolderIcon.src = chrome.runtime.getURL("./images/new-folder.png");
+      addToFolderIcon.src = chrome.runtime.getURL("../images/new-folder.png");
       addToFolderIcon.alt = "Close Icon";
       addToFolderIcon.classList.add(
         "_add_to_folder_icon",
@@ -621,7 +621,7 @@ let addToFolderGlobally = (chat) => {
 
   // Create the close button
   let fermerBtn = document.createElement("img");
-  fermerBtn.src = chrome.runtime.getURL("./images/crossQ.png");
+  fermerBtn.src = chrome.runtime.getURL("../images/crossQ.png");
   fermerBtn.alt = "Close Icon";
   fermerBtn.classList.add("_fermer_btn");
   folderzClone.appendChild(fermerBtn);
@@ -760,7 +760,7 @@ function handleDrop(e) {
 
   // Creating the minus folder icon
   let folderMinusIcon = document.createElement("img");
-  folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
+  folderMinusIcon.src = chrome.runtime.getURL("../images/minus.png");
   folderMinusIcon.alt = "Folder minus icon";
   folderMinusIcon.classList.add("_folder_minus_icon", "_cF_GNewDTGpqsqNfG");
 
@@ -807,7 +807,7 @@ const doChatCleaning = (toAppendDiv, elementToRemove, folderId) => {
   if (!toAppendDiv.querySelector("img._folder_minus_icon")) {
     // Creating the minus folder icon
     let folderMinusIcon = document.createElement("img");
-    folderMinusIcon.src = chrome.runtime.getURL("./images/minus.png");
+    folderMinusIcon.src = chrome.runtime.getURL("../images/minus.png");
     folderMinusIcon.alt = "Folder minus icon";
     folderMinusIcon.classList.add("_folder_minus_icon");
 
@@ -840,19 +840,19 @@ let createNewFolder = (
 
   // Create closed folder icon
   let folderIcon = document.createElement("img");
-  folderIcon.src = chrome.runtime.getURL("./images/closed_folder.png");
+  folderIcon.src = chrome.runtime.getURL("../images/closed_folder.png");
   folderIcon.alt = "Folder Icon";
   folderIcon.classList.add("_closed_folder_icon");
 
   // Creating the open folder icon
   let openFolder = document.createElement("img");
-  openFolder.src = chrome.runtime.getURL("./images/open_folder.png");
+  openFolder.src = chrome.runtime.getURL("../images/open_folder.png");
   openFolder.alt = "Folder Icon";
   openFolder.classList.add("_opened_folders_icon");
 
   // Creating delete folder icon
   let folderMenu = document.createElement("img");
-  folderMenu.src = chrome.runtime.getURL("./images/menu-bar2.png");
+  folderMenu.src = chrome.runtime.getURL("../images/menu-bar2.png");
   folderMenu.alt = "Folder edit icon";
   folderMenu.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
@@ -892,19 +892,19 @@ let createNewFolder = (
 
   // Creating delete folder icon
   let deleteFolder = document.createElement("img");
-  deleteFolder.src = chrome.runtime.getURL("./images/trash-bin.png");
+  deleteFolder.src = chrome.runtime.getURL("../images/trash-bin.png");
   deleteFolder.alt = "Folder delete icon";
   deleteFolder.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
   // Creating the folder edit icon
   let editIcon = document.createElement("img");
-  editIcon.src = chrome.runtime.getURL("./images/edit-file.png");
+  editIcon.src = chrome.runtime.getURL("../images/edit-file.png");
   editIcon.alt = "Folder edit icon";
   editIcon.classList.add("_folder_edit_icon", "_cF_GNewDTGpqsqNfG");
 
   // Creating the folder edit icon
   let addChatIcon = document.createElement("img");
-  addChatIcon.src = chrome.runtime.getURL("./images/chat1.png");
+  addChatIcon.src = chrome.runtime.getURL("../images/chat1.png");
   addChatIcon.alt = "Chat icon";
   addChatIcon.classList.add("_folder_menu_chat_icon", "_cF_GNewDTGpqsqNfG");
 
@@ -1158,7 +1158,7 @@ let createPopup = () => {
 
   // The close Icon
   let closeIcon = document.createElement("img");
-  closeIcon.src = chrome.runtime.getURL("./images/cross.png");
+  closeIcon.src = chrome.runtime.getURL("../images/cross.png");
   closeIcon.alt = "Close Icon";
   closeIcon.classList.add("_close_icon");
 
