@@ -24,8 +24,8 @@ const corsOptions = {
   origin: [
     "chrome-extension://bmnpndlhkakekmejcnnmingbehdgjboc", // The local extension for dev to make requests
     "chrome-extension://ibelppoiheipgceppgklepmjcafbdcdm", // The production extension for dev to make requests
-    "localhost:3000", // Uncomment for local development
-    "http://localhost:3000", // Uncomment for local development
+    "localhost:3001", // Uncomment for local development
+    "http://localhost:3001", // Uncomment for local development
     "https://www.api.chatfolderz.com/",
     "www.api.chatfolderz.com/",
     "www.chatfolderz.com",
