@@ -18,7 +18,6 @@ const SubscriptionSuccess = () => {
     const fetchSession = async () => {
       try {
         const res = await onSuccessCheckingOut(sessionId as string);
-        console.log("res: ", res);
 
         if (res.status === 200) {
           let { user_has_payed } = res.data.user;

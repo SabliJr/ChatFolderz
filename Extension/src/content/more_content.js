@@ -253,7 +253,7 @@ const displayUI = () => {
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
 
-      if (isLoggedIn && userId) {
+      if (isLoggedIn && userId && !userHasPayed) {
         // User is logged in but has not made payment
         sidebar.appendChild(onCollectPayment());
       } else if (!isLoggedIn && !userId && !customerId && !hasAccess) {
@@ -325,16 +325,15 @@ function onGetCredentials() {
           "isCanceled",
         ]);
       }
-    } catch (error)
-    {
-       await chrome.storage.local.remove([
-         "customerId",
-         "hasAccess",
-         "userHasPayed",
-         "isLoggedIn",
-         "userId",
-         "isCanceled",
-       ]);
+    } catch (error) {
+      await chrome.storage.local.remove([
+        "customerId",
+        "hasAccess",
+        "userHasPayed",
+        "isLoggedIn",
+        "userId",
+        "isCanceled",
+      ]);
     }
   });
 }

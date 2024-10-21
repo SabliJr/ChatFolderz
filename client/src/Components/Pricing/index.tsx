@@ -75,7 +75,7 @@ const Index = () => {
 
   return (
     <main className='pricing' id='pricing_scroll'>
-      {/* {displayNotice && (
+      {displayNotice && (
         <div className='_notice_container'>
           <div className='_notice_text_div'>
             <IoMdClose onClick={handleCloseNotice} className='_notice_close' />
@@ -91,7 +91,7 @@ const Index = () => {
             </p>
           </div>
         </div>
-      )} */}
+      )}
       <div className='_pricing_title'>
         <h1>Pricing</h1>
         <p>
@@ -110,7 +110,7 @@ const Index = () => {
         </label>
       </div>
       <div className='_prices_container'>
-        {/* <div className='pricing_item0'>
+        <div className='pricing_item0'>
           <div className='_p_sub_title'>
             <h4>Super Plan</h4>
           </div>
@@ -173,10 +173,8 @@ const Index = () => {
               </p>
             </li>
           </ul>
-          <button onClick={() => onCheckOut(lifeTimeDeal)}>
-            Try It for free
-          </button>
-        </div> */}
+          <button>Try It for free</button>
+        </div>
         {whoIsThis === "Monthly" ? (
           // <div className='_pricing_divs'>
           <div className='pricing_item1'>
