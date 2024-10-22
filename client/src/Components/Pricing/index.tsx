@@ -10,10 +10,12 @@ import Loader from "../../utils/Loader";
 
 const Index = () => {
   const [whoIsThis, setWhoIsThis] = useState("Yearly");
-  let checkRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [displayNotice, setDisplayNotice] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  let checkRef = useRef<HTMLInputElement | null>(null);
 
   let monthlyPriceId =
     process.env?.NODE_ENV === "production"
@@ -57,16 +59,16 @@ const Index = () => {
           ? await onCheckingOut(price_id)
           : await onCheckOutOneTime(price_id);
 
-      // let res = await onCheckingOut(price_id);
-      console.log(res);
       if (res.status === 200) {
         window.location.href = res.data.url;
       }
     } catch (error) {
       alert("Something went wrong please try again!");
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
   if (isLoading) {
@@ -86,7 +88,10 @@ const Index = () => {
       {displayNotice && (
         <div className='_notice_container'>
           <div className='_notice_text_div'>
-            <IoMdClose onClick={handleCloseNotice} className='_notice_close' />
+            <IoMdClose
+              onClick={() => setDisplayNotice(false)}
+              className='_notice_close'
+            />
             <h2 className='_notice_title'>Important Notice...</h2>
             <p className='_notice_text'>
               To ensure a seamless experience, please use the same email address
@@ -97,6 +102,9 @@ const Index = () => {
               This will help us link your payment to your account, giving you
               uninterrupted access to our services.
             </p>
+            <button onClick={handleCloseNotice} className='_proceed_checkout'>
+              Proceed to Checkout
+            </button>
           </div>
         </div>
       )}
@@ -189,7 +197,6 @@ const Index = () => {
               </p>
             </li>
           </ul>
-          {/* <button>Try It for free</button> */}
           <button
             onClick={() => {
               setDisplayNotice(true);
@@ -199,7 +206,6 @@ const Index = () => {
           </button>
         </div>
         {whoIsThis === "Monthly" ? (
-          // <div className='_pricing_divs'>
           <div className='pricing_item1'>
             <div className='_p_sub_title'>
               <h4>Monthly Plan</h4>
@@ -215,54 +221,65 @@ const Index = () => {
               }}>
               Try It for free
             </button>
-            {/* <button>
-              <a
-                className='_free_link'
-                href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-                target='#blank'>
-                Try It For Free
-              </a>
-            </button> */}
           </div>
         ) : (
-          // </div>
-          // <div className='_pricing_divs'>
           <div className='pricing_item1'>
             <div className='_p_sub_title'>
               <h4>Power Plan</h4>
             </div>
             <div className='_price_div'>
-              {/* <p>
-                <span id='original_price'>$95.88</span>{" "}
-                <span className='dis_price'> save 20%</span>
-                <br />
-              </p> */}
               <h2 className='_price'>
                 $129.99 <span>/One time</span>
               </h2>
               <h2 className='_price'>
                 $76.70 <span>/year</span>
               </h2>
-              {/* <span className='_monthly_yearly_price'>6.39 /month</span> */}
             </div>
             <BrandFeaturs />
-            <button
-              onClick={() => {
-                setDisplayNotice(true);
-                setSelectedPriceId(yearlyPriceId);
-              }}>
-              Try It for free
-            </button>
-            {/* <button>
-              <a
-                className='_free_link'
-                href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-                target='#blank'>
-                Try It For Free
-              </a>
-            </button> */}
+            <button onClick={handleOpenModal}>Try It for free</button>
+
+            {isModalOpen && (
+              <div className='_payment_modal'>
+                <div className='modal-content'>
+                  <IoMdClose
+                    onClick={() => setIsModalOpen(false)}
+                    className='_notice_close'
+                  />
+
+                  <div>
+                    <h2 className='_notice_title'>Important Notice...</h2>
+                    <p>
+                      To ensure a seamless experience, please use the same email
+                      address that you used to create your account when making
+                      your payment on Stripe or when creating your account if
+                      you already didn't!
+                      <br />
+                      <br />
+                      This will help us link your payment to your account,
+                      giving you uninterrupted access to our services.
+                    </p>
+                  </div>
+                  <div>
+                    <h4>Select a Payment Option</h4>
+                    <button
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        onCheckOut(powerPlan);
+                      }}>
+                      One-time Payment
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        onCheckOut(yearlyPriceId);
+                      }}>
+                      Yearly Subscription
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          // </div>
         )}
         <div className='pricing_item2'>
           <div className='_p_sub_title'>

@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           // Send the tokens to your backend for verification
           fetch(`${fetchUrl}/auth/google`, {
             method: "POST",
-            body: JSON.stringify(tokens), // Send both tokens
+            body: JSON.stringify(tokens),
             headers: { "Content-Type": "application/json" },
           })
             .then((response) => response.json())
@@ -230,6 +230,105 @@ chrome.runtime.onInstalled.addListener(() => {
       );
     })
     .catch((error) => console.error("Err getting credentials"));
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onStoreFolder") {
+    fetch(`${fetchUrl}/store_folder`, {
+      method: "POST",
+      body: JSON.stringify(tokens),
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onGetUserFolderz") {
+    fetch(`${fetchUrl}/get_user_folders`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onDeleteFolder") {
+    fetch(`${fetchUrl}/delete_folder`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onEditFolder") {
+    fetch(`${fetchUrl}/edit_folder`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onAddChat") {
+    fetch(`${fetchUrl}/add_chat`, {
+      method: "POST",
+      body: JSON.stringify(tokens),
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onRemoveChat") {
+    fetch(`${fetchUrl}/remove_chat`, {
+      method: "POST",
+      body: JSON.stringify(tokens),
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
 });
 
 // apiUtils.js

@@ -72,15 +72,6 @@
   line-height: 1.3;
 }
 
-/* ._pricing_divs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  width: 70%;
-  margin: 1rem auto;
-} */
-
 #original_price {
   font-size: 1.5rem;
   text-decoration: line-through;
@@ -139,7 +130,8 @@
 
 .pricing_item1 button,
 .pricing_item2 button,
-.pricing_item0 button {
+.pricing_item0 button,
+._proceed_checkout {
   color: #272b31;
   background-color: #cdf449;
   border: transparent;
@@ -150,6 +142,12 @@
   font-weight: 500;
   cursor: pointer;
   font-family: "Inter Tight", sans-serif;
+}
+
+._proceed_checkout {
+  padding: .3rem .5rem;
+  font-weight: 500;
+  margin-top: 3rem;
 }
 
 .pricing_item2 button {
@@ -185,13 +183,6 @@ color: #ffff;
   font-family: "Inter Tight", sans-serif;
 }
 
-/* .pricing_item1 p {
-  color: #e4e4e4;
-  font-family: "Inter Tight", sans-serif;
-  font-size: 1.12rem;
-  font-weight: 400;
-} */
-
 ._free_link {
   color: #efeef0;
 }
@@ -202,16 +193,11 @@ color: #ffff;
   font-family: "Inter Tight", sans-serif;
 }
 
-/* ._p_sub_title p {
-  width: 70%;
-} */
-
 ._pricing_list p span,
 ._p_sub_title p span {
   font-style: italic;
   font-size: .8rem;
   color: #747475;
-  /* font-family: "Yanone Kaffeesatz", sans-serif; */
 }
 
 .pricing_btns_div {
@@ -245,19 +231,6 @@ color: #ffff;
   color: #fcad05;
 }
 
-/* .pricing_item3 {
-  background-color: #efeef0;
-      background-color: #ffff;
-    border-radius: .8rem;
-    padding: 1rem;
-    display: flex;
-    gap: 1.2rem;
-    flex-direction: column;
-    justify-content: space-between;
-      width: 22rem;
-    min-height: 29rem;
-} */
-
 .pricing_item0 {
   background-color: #272b31;
   color: #ffffff;
@@ -265,7 +238,8 @@ color: #ffff;
 
 ._notice_title {
   color: #8e48f4;
-  font-size: 2.8rem;
+  font-size: 3.2rem;
+  letter-spacing: .2px;
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
 
@@ -277,7 +251,8 @@ color: #ffff;
 
 }
 
-._notice_container {
+._notice_container,
+._payment_modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -290,14 +265,41 @@ color: #ffff;
   align-items: center;
   z-index: 10000;
   border-radius: 1rem;
+  text-align: center;
 }
 
-._notice_text_div {
+._notice_text_div,
+.modal-content {
   background-color: #272b31;
   width: 60%;
   border-radius: 1rem;
   padding: 2rem 1rem;
   position: relative;
+}
+
+.modal-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-direction: column;
+}
+
+.modal-content div h4 {
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 2.3rem;
+}
+
+.modal-content div p {
+  width: 90%;
+  margin: .3rem auto;
+  font-size: 1.2rem;
+}
+
+.modal-content div button {
+  margin: 0 1rem;
+  padding: .3rem .8rem;
+  font-weight: 600;
 }
 
 ._notice_close {
@@ -315,10 +317,6 @@ color: #ffff;
 }
 
 @media screen and (max-width: 1042px) {
-  /* ._pricing_divs {
-    width: 80%;
-  } */
-
   ._pricing_title h1 {
     font-size: 3.2rem;
   }
