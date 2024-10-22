@@ -5,7 +5,7 @@ import { PiSealCheckLight } from "react-icons/pi";
 import { IoMdClose } from "react-icons/io";
 
 import BrandFeaturs from "./BrandFeaturs";
-import { onCheckingOut } from "../../API/endpoints";
+import { onCheckingOut, onCheckOutOneTime } from "../../API/endpoints";
 import Loader from "../../utils/Loader";
 
 const Index = () => {
@@ -24,7 +24,15 @@ const Index = () => {
     process.env?.NODE_ENV === "production"
       ? "price_1Q8i7tDuxNnSWA1yrIYPqFbl"
       : "price_1Q7unWDuxNnSWA1yxvQ2N4Rv";
-  // let lifeTimeDeal = "price_1QACaODuxNnSWA1yy7ssX7uL";
+
+  let superPlan =
+    process.env?.NODE_ENV === "production"
+      ? ""
+      : "price_1QACaODuxNnSWA1yy7ssX7uL";
+  let powerPlan =
+    process.env?.NODE_ENV === "production"
+      ? ""
+      : "price_1QCiRMDuxNnSWA1yIYmPtLGc";
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -44,12 +52,12 @@ const Index = () => {
     setIsLoading(true);
 
     try {
-      // let res =
-      //   price_id === monthlyPriceId || price_id === yearlyPriceId
-      //     ? await onCheckingOut(price_id)
-      //     : await onCheckOutOneTime(price_id);
+      let res =
+        price_id === monthlyPriceId || price_id === yearlyPriceId
+          ? await onCheckingOut(price_id)
+          : await onCheckOutOneTime(price_id);
 
-      let res = await onCheckingOut(price_id);
+      // let res = await onCheckingOut(price_id);
       console.log(res);
       if (res.status === 200) {
         window.location.href = res.data.url;
@@ -68,7 +76,7 @@ const Index = () => {
   const handleCloseNotice = () => {
     setDisplayNotice(false);
     if (selectedPriceId) {
-      // onCheckOut(selectedPriceId);
+      onCheckOut(selectedPriceId);
       setSelectedPriceId(null); // Reset the selected price ID
     }
   };
@@ -172,8 +180,23 @@ const Index = () => {
                 Sync folders across unlimited devices <span>coming soon</span>
               </p>
             </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
+              <p>
+                Manage your prompts <span>coming soon</span>
+              </p>
+            </li>
           </ul>
-          <button>Try It for free</button>
+          {/* <button>Try It for free</button> */}
+          <button
+            onClick={() => {
+              setDisplayNotice(true);
+              setSelectedPriceId(superPlan);
+            }}>
+            Try It for free
+          </button>
         </div>
         {whoIsThis === "Monthly" ? (
           // <div className='_pricing_divs'>
@@ -185,56 +208,59 @@ const Index = () => {
               $7.99 <span>/month</span>
             </h2>
             <BrandFeaturs />
-            {/* <button
+            <button
               onClick={() => {
                 setDisplayNotice(true);
                 setSelectedPriceId(monthlyPriceId);
               }}>
               Try It for free
-            </button> */}
-            <button>
+            </button>
+            {/* <button>
               <a
                 className='_free_link'
                 href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
                 target='#blank'>
                 Try It For Free
               </a>
-            </button>
+            </button> */}
           </div>
         ) : (
           // </div>
           // <div className='_pricing_divs'>
           <div className='pricing_item1'>
             <div className='_p_sub_title'>
-              <h4>Yearly Plan</h4>
+              <h4>Power Plan</h4>
             </div>
             <div className='_price_div'>
-              <p>
+              {/* <p>
                 <span id='original_price'>$95.88</span>{" "}
                 <span className='dis_price'> save 20%</span>
                 <br />
-              </p>
+              </p> */}
+              <h2 className='_price'>
+                $129.99 <span>/One time</span>
+              </h2>
               <h2 className='_price'>
                 $76.70 <span>/year</span>
               </h2>
-              <span className='_monthly_yearly_price'>6.39 /month</span>
+              {/* <span className='_monthly_yearly_price'>6.39 /month</span> */}
             </div>
             <BrandFeaturs />
-            {/* <button
+            <button
               onClick={() => {
                 setDisplayNotice(true);
                 setSelectedPriceId(yearlyPriceId);
               }}>
               Try It for free
-            </button> */}
-            <button>
+            </button>
+            {/* <button>
               <a
                 className='_free_link'
                 href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
                 target='#blank'>
                 Try It For Free
               </a>
-            </button>
+            </button> */}
           </div>
           // </div>
         )}
