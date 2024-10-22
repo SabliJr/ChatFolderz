@@ -54,6 +54,14 @@ const BrandFeaturs = () => {
             Sync folders across unlimited devices <span>coming soon</span>
           </p>
         </li>
+        <li>
+          <span>
+            <PiSealCheckLight />
+          </span>
+          <p>
+            Manage your prompts <span>coming soon</span>
+          </p>
+        </li>
       </ul>
     </div>
   );
