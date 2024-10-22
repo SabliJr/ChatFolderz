@@ -45,10 +45,12 @@ const onGetUserFolders = async (req: Request, res: Response) => {
     let folderz = (await user_folderz)?.rows;
     res.status(200).json({
       folders: folderz,
+      success: true,
       message: "successfully retrieved user folders",
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "There was a problem retrieving user folders",
     });
   }
@@ -64,12 +66,22 @@ const onDeleteFolder = async (req: Request, res: Response) => {
 
   let { folder_id } = req.query;
   try {
-    await query("DELETE FROM user_folders WHERE folder_id=$1", [folder_id]);
+    await query("DELETE FROM user_folders WHERE folder_id=$1 AND user_id=$2", [
+      folder_id,
+      userId,
+    ]);
 
     res.status(200).json({
       message: "The folder has removed successfully",
+      success: true,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error(`There was a problem deleting this user's folder: ${userId}`);
+    res.status(500).json({
+      success: false,
+      message: "There was a problem deleting a folder",
+    });
+  }
 };
 
 const onEditFolder = async (req: Request, res: Response) => {
@@ -80,6 +92,7 @@ const onEditFolder = async (req: Request, res: Response) => {
       message: "Unauthorized access. Invalid user ID or token.",
     });
 
+  let { folder_id, folder_color, folder_name } = req.query;
   try {
   } catch (error) {}
 };
@@ -92,8 +105,19 @@ const onAddChat = async (req: Request, res: Response) => {
       message: "Unauthorized access. Invalid user ID or token.",
     });
 
+  let { folder_id, chat_content, chat_id } = req.query;
+
   try {
-  } catch (error) {}
+    await query(
+      "UPDATE user_folders SET chats = array_append(chats, $1) WHERE folder_id = $2",
+      [{ chat_id, chat_content }, folder_id]
+    );
+    res
+      .status(200)
+      .json({ success: true, message: "Chat added successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error adding chat." });
+  }
 };
 
 const onRemoveChat = async (req: Request, res: Response) => {
@@ -104,8 +128,19 @@ const onRemoveChat = async (req: Request, res: Response) => {
       message: "Unauthorized access. Invalid user ID or token.",
     });
 
+  let { folder_id, chat_id } = req.query;
   try {
-  } catch (error) {}
+    await query(
+      "UPDATE user_folders SET chats = array_remove(chats, (SELECT chat FROM unnest(chats) AS chat WHERE chat->>'chat_id' = $1)) WHERE folder_id = $2",
+      [chat_id, folder_id]
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Chat removed successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error removing chat." });
+  }
 };
 
 export {

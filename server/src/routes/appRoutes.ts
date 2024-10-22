@@ -40,11 +40,11 @@ router.post(
 );
 
 // Managing folders
-router.get("/store_folder", onStoreUserFolders);
+router.post("/store_folder", onStoreUserFolders);
 router.get("/get_user_folders", onGetUserFolders);
 router.get("/delete_folder", onDeleteFolder);
 router.get("/edit_folder", onEditFolder);
-router.get("/add_chat", onAddChat);
+router.post("/add_chat", onAddChat);
 router.get("/remove_chat", onRemoveChat);
 
 export default router;
