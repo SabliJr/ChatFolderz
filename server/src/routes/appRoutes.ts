@@ -12,6 +12,14 @@ import {
 } from "../controllers/paymentController";
 
 import { onGetCredentials } from "../controllers/refreshTokenController";
+import {
+  onStoreUserFolders,
+  onGetUserFolders,
+  onDeleteFolder,
+  onEditFolder,
+  onAddChat,
+  onRemoveChat,
+} from "../controllers/folderzController";
 
 const router = Router();
 
@@ -30,5 +38,13 @@ router.post(
   bodyParser.raw({ type: "application/json" }),
   onStripeWebhooks
 );
+
+// Managing folders
+router.get("/store_folder", onStoreUserFolders);
+router.get("/get_user_folders", onGetUserFolders);
+router.get("/delete_folder", onDeleteFolder);
+router.get("/edit_folder", onEditFolder);
+router.get("/add_chat", onAddChat);
+router.get("/remove_chat", onRemoveChat);
 
 export default router;
