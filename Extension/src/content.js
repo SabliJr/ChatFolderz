@@ -1146,7 +1146,7 @@ let openEditPopup = (folderTitle, folderTitleSpan, folderContent, folderId) => {
       folderTitleSpan.style.backgroundColor = `${colorVal}`;
       folderContent.style.borderLeft = `1.3px solid ${colorVal}`;
 
-      updateFolderInStorage(folderName, colorVal, folderId);
+      onEditFolder(folderName, colorVal, folderId);
       onRemovePop(popup);
     } else {
       alert("Please enter a valid folder name.");
@@ -2064,12 +2064,15 @@ let onEditFolder = (folderName, colorVal, folderId) => {
     colorVal,
   };
 
+  console.log(folderData);
+
   chrome.runtime.sendMessage(
     { action: "onEditFolder", folderData },
     async (response) => {
       if (response?.success) {
         console.log("The folder edited successfully");
       } else {
+        console.log("The folder didn't get updated");
       }
     }
   );

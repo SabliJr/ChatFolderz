@@ -74,29 +74,12 @@ const Index = () => {
         </div>
         <div className='_questions_div'>
           <div className='_q_div'>
-            <h4>What’s included in the monthly and yearly plans?</h4>
+            <h4>Can I cancel my subscription anytime?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(3)} />
           </div>
           <p
             className={
               revealQuestion[3]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Both plans give you full access to the extension's features,
-            including creating folders, bookmarking chats, advanced search, and
-            more... The only difference, the yearly plan offers a discounted
-            rate at $6.39/month instead of $7.99 (billed annually $76.70).
-          </p>
-        </div>
-        <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>Can I cancel my subscription anytime?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(4)} />
-          </div>
-          <p
-            className={
-              revealQuestion[4]
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>

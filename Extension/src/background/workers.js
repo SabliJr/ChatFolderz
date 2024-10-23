@@ -286,8 +286,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onEditFolder") {
     let { folderData } = request;
 
-    console.log(folderData);
-
     fetch(`${fetchUrl}/edit_folder`, {
       method: "PUT",
       body: JSON.stringify(folderData),
