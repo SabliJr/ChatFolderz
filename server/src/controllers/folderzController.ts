@@ -167,26 +167,50 @@ const onEditFolder = async (req: Request, res: Response) => {
   }
 };
 
-
 const onAddChat = async (req: Request, res: Response) => {
   const userId = await verifyUser(req, res);
   if (!userId)
     return res.status(401).json({
       success: false,
-      message: "Unauthorized access. Invalid user ID or token.",
+      message: "Unauthorized access. Invalid user Id or token.",
     });
 
-  let { folder_id, chat_content, chat_id } = req.query;
+  let folderData = req.body;
+  let { folderId, chatData } = folderData;
+  let { content, chat_id } = chatData;
 
   try {
-    await query(
-      "UPDATE user_folders SET chats = array_append(chats, $1) WHERE folder_id = $2",
-      [{ chat_id, chat_content }, folder_id]
+    // Check if the chat already exists in the folder
+    const existingChats = await query(
+      "SELECT chats FROM user_folders WHERE folder_id=$1 AND user_id=$2",
+      [folderId, userId]
     );
+
+    const chatExists = existingChats.rows[0].chats.some(
+      (chat: { chat_id: string }) => chat.chat_id === chat_id
+    );
+
+    // If it exists don't add it to the folder
+    if (chatExists) {
+      return res.status(400).json({
+        success: false,
+        message: "Chat already exists.",
+      });
+    }
+
+    // Add the chat if it doesn't exist
+    await query(
+      "UPDATE user_folders SET chats = array_append(chats, $1) WHERE folder_id=$2 AND user_id=$3",
+      [{ chat_id, content }, folderId, userId]
+    );
+
     res
       .status(200)
       .json({ success: true, message: "Chat added successfully." });
   } catch (error) {
+    console.error(
+      `Something went wrong adding the chat to the db, user: ${userId}`
+    );
     res.status(500).json({ success: false, message: "Error adding chat." });
   }
 };
@@ -199,11 +223,13 @@ const onRemoveChat = async (req: Request, res: Response) => {
       message: "Unauthorized access. Invalid user ID or token.",
     });
 
-  let { folder_id, chat_id } = req.query;
+  let folderData = req.body;
+  let { folderId, chatId } = folderData;
+
   try {
     await query(
-      "UPDATE user_folders SET chats = array_remove(chats, (SELECT chat FROM unnest(chats) AS chat WHERE chat->>'chat_id' = $1)) WHERE folder_id = $2",
-      [chat_id, folder_id]
+      "UPDATE user_folders SET chats = array_remove(chats, (SELECT chat FROM unnest(chats) AS chat WHERE chat->>'chat_id'=$1)) WHERE folder_id=$2",
+      [chatId, folderId]
     );
 
     res
@@ -214,6 +240,75 @@ const onRemoveChat = async (req: Request, res: Response) => {
   }
 };
 
+let onUpdateFolderOrChat = async (req: Request, res: Response) => {
+  const userId = await verifyUser(req, res);
+  if (!userId)
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized access. Invalid user ID or token.",
+    });
+
+  let folderToUpdate = req.body;
+  let { id: folder_id } = folderToUpdate;
+
+  try {
+    let laFolder = await query(
+      "SELECT * FROM user_folders WHERE folder_id=$1 AND user_id=$2",
+      [folder_id, userId]
+    );
+
+    if (laFolder.rows.length > 0) {
+      let { id: folder_id, chatData } = folderToUpdate;
+      let { chat_id, content } = chatData;
+
+      // Check if the chat already exists in the folder
+      const existingChats = await query(
+        "SELECT chats FROM user_folders WHERE folder_id=$1 AND user_id=$2",
+        [folder_id, userId]
+      );
+
+      const chatExists = existingChats.rows[0].chats.some(
+        (chat: { chat_id: string }) => chat.chat_id === chat_id
+      );
+
+      // If it exists don't add it to the folder
+      if (chatExists) {
+        return res.status(400).json({
+          success: false,
+          message: "Chat already exists.",
+        });
+      }
+
+      await query(
+        "UPDATE user_folders SET chats = array_append(chats, $1) WHERE folder_id=$2 AND user_id=$3",
+        [{ chat_id, content }, folder_id, userId]
+      );
+    } else {
+      let { id: folder_id, name, color, chats } = folderToUpdate;
+
+      await query(
+        `INSERT INTO user_folders (folder_id, folder_name, folder_color, chats, user_id)
+      VALUES($1, $2, $3, $4, $5)
+      ON CONFLICT (folder_id)
+      DO UPDATE SET
+      folder_name = EXCLUDED.folder_name,
+      user_id = EXCLUDED.user_id,
+      folder_color = EXCLUDED.folder_color,
+      chats = EXCLUDED.chats`,
+        [folder_id, name, color, chats, userId]
+      );
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Chat or folder stored successfully." });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Error storing chat or folder." });
+  }
+};
+
 export {
   onRemoveChat,
   onAddChat,
@@ -221,4 +316,5 @@ export {
   onDeleteFolder,
   onGetUserFolders,
   onStoreUserFolders,
+  onUpdateFolderOrChat,
 };

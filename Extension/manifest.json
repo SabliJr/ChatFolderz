@@ -1,8 +1,12 @@
 {
   "manifest_version": 3,
   "name": "ChatFolderz: AI Chat Organizer Tool. Create Folders, Search, Bookmarks",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": " Organize ChatGPT with Folders, Search, Bookmark key discussions, Prompts Library and more...",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self'"
+  },
   "permissions": [
     "cookies",
     "identity",
@@ -14,8 +18,7 @@
     {
       "matches": ["https://chat.openai.com/*", "https://chatgpt.com/*"],
       "js": ["src/content.js", "src/content/more_content.js"],
-      "css": ["src/style.css", "src/content/more_content_style.css"],
-      "content_security_policy": "script-src 'self' https://apis.google.com https://www.gstatic.com https://www.googleapis.com https://securetoken.googleapis.com; object-src 'self'"
+      "css": ["src/style.css", "src/content/more_content_style.css"]
     }
   ],
   "icons": {

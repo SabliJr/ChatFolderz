@@ -13,7 +13,9 @@ CREATE TABLE user_profile (
     has_access BOOLEAN DEFAULT FALSE, -- Whether the user's subscription is still active or canceled.
     expires_at TIMESTAMP, -- The time the subscription expires
     subscription_state VARCHAR(256), -- This will the state of the subscription whether it's active or canceled!
-    is_canceled  BOOLEAN DEFAULT FALSE -- This to check wether the canceled or not to modify the ui in the front
+    is_canceled  BOOLEAN DEFAULT FALSE, -- This to check wether the canceled or not to modify the ui in the front
+    has_trial BOOLEAN DEFAULT FALSE, -- This is to grant a user a trail on one time purchase
+    trial_end_date TIMESTAMP -- This is to check whether the user's trail end or not!s
 );
 
 CREATE INDEX idx_customer_id ON user_profile(customer_id);
