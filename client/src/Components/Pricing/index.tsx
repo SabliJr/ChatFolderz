@@ -86,6 +86,12 @@ const Index = () => {
               <span>
                 <PiSealCheckLight />
               </span>
+              <p>Sync folders across unlimited devices</p>
+            </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
               <p>
                 General prompt library <span>coming soon</span>
               </p>
@@ -98,14 +104,7 @@ const Index = () => {
                 Link unlimited ChatGPT accounts <span>coming soon</span>
               </p>
             </li>
-            <li>
-              <span>
-                <PiSealCheckLight />
-              </span>
-              <p>
-                Sync folders across unlimited devices <span>coming soon</span>
-              </p>
-            </li>
+
             <li>
               <span>
                 <PiSealCheckLight />
@@ -180,10 +179,7 @@ const Index = () => {
                 <span>
                   <PiSealCheckLight />
                 </span>
-                <p>
-                  Sync the folder across unlimited devices{" "}
-                  <span>coming soon</span>
-                </p>
+                <p>Sync the folder across unlimited devices</p>
               </li>
             </ul>
           </div>

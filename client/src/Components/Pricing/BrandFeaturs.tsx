@@ -34,6 +34,12 @@ const BrandFeaturs = () => {
           <span>
             <PiSealCheckLight />
           </span>
+          <p>Sync folders across unlimited devices</p>
+        </li>
+        <li>
+          <span>
+            <PiSealCheckLight />
+          </span>
           <p>
             General prompt library <span>coming soon</span>
           </p>
@@ -44,14 +50,6 @@ const BrandFeaturs = () => {
           </span>
           <p>
             Link up to 3 ChatGPT accounts <span>coming soon</span>
-          </p>
-        </li>
-        <li>
-          <span>
-            <PiSealCheckLight />
-          </span>
-          <p>
-            Sync folders across unlimited devices <span>coming soon</span>
           </p>
         </li>
         <li>

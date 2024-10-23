@@ -97,7 +97,6 @@ const onDeleteFolder = async (req: Request, res: Response) => {
 };
 
 const onEditFolder = async (req: Request, res: Response) => {
-  console.log("Whe");
   const userId = await verifyUser(req, res);
   if (!userId)
     return res.status(401).json({
@@ -107,12 +106,11 @@ const onEditFolder = async (req: Request, res: Response) => {
 
   const folderData = req.body;
   let { folderId, folderName, colorVal } = folderData;
-  console.log(folderData);
 
   try {
     // Fetch current folder data from DB
     const result = await query(
-      "SELECT folder_name, folder_color FROM folders WHERE folder_id=$1 AND user_id=$2",
+      "SELECT folder_name, folder_color FROM user_folders WHERE folder_id=$1 AND user_id=$2",
       [folderId, userId]
     );
 
@@ -134,9 +132,7 @@ const onEditFolder = async (req: Request, res: Response) => {
       updates.push({ field: "folder_color", value: colorVal });
     }
 
-    console.log(updates);
-
-    // If no changes, return early
+    // If user has made no changes, return early
     if (updates.length === 0) {
       return res.status(200).json({
         success: true,
@@ -151,13 +147,12 @@ const onEditFolder = async (req: Request, res: Response) => {
     const values = updates.map((update) => update.value);
 
     const updateQuery = `
-      UPDATE folders 
+      UPDATE user_folders 
       SET ${setClause}
       WHERE folder_id=$1 AND user_id=$2
     `;
 
     await query(updateQuery, [folderId, userId, ...values]);
-
     return res.status(200).json({
       success: true,
       message: "Folder updated successfully.",
