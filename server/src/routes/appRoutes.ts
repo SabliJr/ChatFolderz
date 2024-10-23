@@ -8,7 +8,7 @@ import {
   onSubscriptionSuccess,
   onStripeWebhooks,
   onCancelSubscription,
-  onCheckOutOneTime,
+  onCheckOutOneTimeWithTrial,
 } from "../controllers/paymentController";
 
 import { onGetCredentials } from "../controllers/refreshTokenController";
@@ -30,7 +30,7 @@ router.get("/get_credentials", onGetCredentials);
 
 // PAYMENT ROUTES
 router.get("/check_out", onCheckOut);
-router.get("/check_out_lifetime", onCheckOutOneTime);
+router.get("/check_out_onetime", onCheckOutOneTimeWithTrial);
 router.get("/checkout_success", onSubscriptionSuccess);
 router.get("/cancel_subscription", onCancelSubscription);
 router.post(

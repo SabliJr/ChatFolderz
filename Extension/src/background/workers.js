@@ -1,23 +1,13 @@
 const config = {
   development: {
     fetchUrl: "http://localhost:8000",
-    MonthlyPriceId: "price_1Q7umiDuxNnSWA1yOR9XCzOz",
-    YearlyPriceId: "price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
     REDIRECT_URI: "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org",
   },
   production: {
     fetchUrl: "https://www.api.chatfolderz.com",
-    MonthlyPriceId: "price_1Q8i7yDuxNnSWA1yhv1Vn8UN",
-    YearlyPriceId: "price_1Q8i7tDuxNnSWA1yrIYPqFbl",
     REDIRECT_URI: "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org",
   },
 };
-
-/// Frontend: Update the scope to include the required fields
-const SCOPE = encodeURIComponent("profile email openid");
-let RESPONSE_TYPE = "token id_token";
-let CLIENT_ID =
-  "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
 
 const manifest = chrome.runtime.getManifest();
 const isDevelopment = !("update_url" in manifest);
@@ -30,13 +20,11 @@ let REDIRECT_URI = isDevelopment
   ? config.development.REDIRECT_URI
   : config.production.REDIRECT_URI;
 
-const yearly = isDevelopment
-  ? config.development.YearlyPriceId
-  : config.production.YearlyPriceId;
-
-const monthly = isDevelopment
-  ? config.development.MonthlyPriceId
-  : config.production.MonthlyPriceId;
+/// Frontend: Update the scope to include the required fields
+const SCOPE = encodeURIComponent("profile email openid");
+let RESPONSE_TYPE = "token id_token";
+let CLIENT_ID =
+  "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
 
 // Background script handling Google login and sending the response back to content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -125,8 +113,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "buyMonthlySub") {
-    fetch(`${fetchUrl}/check_out?price_id=${monthly}`, {
+  if (request.action === "buySubscription") {
+    const { price_id } = request; // Get the price_id from the message
+
+    fetch(`${fetchUrl}/check_out?price_id=${price_id}`, {
       method: "GET",
       credentials: "include", // This to include the cookies
     })
@@ -136,16 +126,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .catch((error) => sendResponse({ success: false, error: error.message }));
 
-    //We need to return true to keep the message channel open for async response
+    // We need to return true to keep the message channel open for async response
     return true;
   }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "buyYearlySub") {
-    fetch(`${fetchUrl}/check_out?price_id=${yearly}`, {
+  if (request.action === "payOneTime") {
+    const { price_id } = request; // Get the price_id from the message
+
+    fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
       method: "GET",
-      credentials: "include",
+      credentials: "include", // This to include the cookies
     })
       .then((response) => response.json())
       .then((data) => {
@@ -153,9 +145,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .catch((error) => sendResponse({ success: false, error: error.message }));
 
+    // We need to return true to keep the message channel open for async response
     return true;
   }
 });
+
+
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.action === "buyYearlySub") {
+//     fetch(`${fetchUrl}/check_out?price_id=${yearly}`, {
+//       method: "GET",
+//       credentials: "include",
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         sendResponse({ success: true, data });
+//       })
+//       .catch((error) => sendResponse({ success: false, error: error.message }));
+
+//     return true;
+//   }
+// });
 
 // Helper function to get cookies for API requests
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
