@@ -42,8 +42,8 @@ router.post(
 // Managing folders
 router.post("/store_folder", onStoreUserFolders);
 router.get("/get_user_folders", onGetUserFolders);
-router.get("/delete_folder", onDeleteFolder);
-router.get("/edit_folder", onEditFolder);
+router.delete("/delete_folder", onDeleteFolder);
+router.put("/edit_folder", onEditFolder);
 router.post("/add_chat", onAddChat);
 router.get("/remove_chat", onRemoveChat);
 

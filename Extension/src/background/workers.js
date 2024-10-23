@@ -266,8 +266,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onDeleteFolder") {
-    fetch(`${fetchUrl}/delete_folder`, {
-      method: "GET",
+    let { folderId } = request;
+
+    fetch(`${fetchUrl}/delete_folder?folder_id=${folderId}`, {
+      method: "DELETE",
       credentials: "include",
     })
       .then((response) => response.json())
@@ -282,8 +284,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onEditFolder") {
+    let { folderData } = request;
+
+    console.log(folderData);
+
     fetch(`${fetchUrl}/edit_folder`, {
-      method: "GET",
+      method: "PUT",
+      body: JSON.stringify(folderData),
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
     })
       .then((response) => response.json())
