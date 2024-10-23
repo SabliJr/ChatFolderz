@@ -961,7 +961,7 @@ let createNewFolder = (
   folderDelete.addEventListener("click", () => {
     let folderId = folderDiv.id;
 
-    ft_delete_folder(folderId);
+    onDeleteFolder(folderId);
     folderDiv.remove();
     openMenu = null; // Reset openMenu when folder is deleted
 
@@ -1077,6 +1077,7 @@ let createNewFolder = (
       chats: [], // Initialize an empty array for chats
     };
 
+    storeFolder(folderData);
     saveChatAndFoldersToStorage(folderData); // Save folder to storage
   }
 
@@ -1482,48 +1483,48 @@ function removeBookmarkFromStorage(chatToRemove) {
   });
 }
 
-function loadFoldersFromStorage() {
-  chrome.storage.local.get(["folders"], (result) => {
-    let folders = result.folders || [];
-    folders.forEach((folderData) => {
-      let folderContainer = document.querySelector("._folderz");
+// function loadFoldersFromStorage() {
+//   chrome.storage.local.get(["folders"], (result) => {
+//     let folders = result.folders || [];
+//     folders.forEach((folderData) => {
+//       let folderContainer = document.querySelector("._folderz");
 
-      // Create a folder element and ensure it has a data attribute for easy matching
-      let folderElement = createNewFolder(
-        folderData.name,
-        folderData.color,
-        folderContainer,
-        true,
-        true,
-        folderData.id
-      );
+//       // Create a folder element and ensure it has a data attribute for easy matching
+//       let folderElement = createNewFolder(
+//         folderData.name,
+//         folderData.color,
+//         folderContainer,
+//         true,
+//         true,
+//         folderData.id
+//       );
 
-      folderContainer.appendChild(folderElement);
+//       folderContainer.appendChild(folderElement);
 
-      // Load the chats for this folder
-      for (let chat_data of folderData.chats) {
-        let tempDiv = document.createElement("div");
-        tempDiv.innerHTML = chat_data.content;
-        let chatElement = tempDiv.querySelector("li");
+//       // Load the chats for this folder
+//       for (let chat_data of folderData.chats) {
+//         let tempDiv = document.createElement("div");
+//         tempDiv.innerHTML = chat_data.content;
+//         let chatElement = tempDiv.querySelector("li");
 
-        let folderChatsContainer =
-          folderElement.querySelector("._folder-content");
-        if (folderChatsContainer) {
-          folderChatsContainer.appendChild(chatElement);
-          let chatRemoveIcon = chatElement.querySelector("._folder_minus_icon");
-          // let chatText = chatElement.innerText;
+//         let folderChatsContainer =
+//           folderElement.querySelector("._folder-content");
+//         if (folderChatsContainer) {
+//           folderChatsContainer.appendChild(chatElement);
+//           let chatRemoveIcon = chatElement.querySelector("._folder_minus_icon");
+//           // let chatText = chatElement.innerText;
 
-          let handleRemoveClick = removeClickEvent(
-            chatElement,
-            chatRemoveIcon,
-            folderData.id
-          );
-          chatRemoveIcon.addEventListener("click", handleRemoveClick);
-        }
-      }
-    });
-  });
-}
+//           let handleRemoveClick = removeClickEvent(
+//             chatElement,
+//             chatRemoveIcon,
+//             folderData.id
+//           );
+//           chatRemoveIcon.addEventListener("click", handleRemoveClick);
+//         }
+//       }
+//     });
+//   });
+// }
 
 function updateFolderInStorage(folderName, colorVal, folderId) {
   chrome.storage.local.get(["folders"], (data) => {
@@ -1613,20 +1614,20 @@ function removeChatFromFolder(folderId, chatId) {
 }
 
 // To delete the folder from the storage
-function ft_delete_folder(folderId) {
-  chrome.storage.local.get(["folders"], (result) => {
-    let folders = result.folders || [];
+// function ft_delete_folder(folderId) {
+//   chrome.storage.local.get(["folders"], (result) => {
+//     let folders = result.folders || [];
 
-    // Find the index of the folder to delete
-    const folderIndex = folders.findIndex((f) => f.id === folderId);
-    if (folderIndex > -1) {
-      folders.splice(folderIndex, 1); // Remove the folder from the array
+//     // Find the index of the folder to delete
+//     const folderIndex = folders.findIndex((f) => f.id === folderId);
+//     if (folderIndex > -1) {
+//       folders.splice(folderIndex, 1); // Remove the folder from the array
 
-      // Save the updated folders array back to storage
-      chrome.storage.local.set({ folders });
-    }
-  });
-}
+//       // Save the updated folders array back to storage
+//       chrome.storage.local.set({ folders });
+//     }
+//   });
+// }
 
 function updateFoldersInStorage(foldersToUpdate) {
   return new Promise((resolve, reject) => {
@@ -2038,6 +2039,37 @@ let getUserFolders = () => {
         });
       } else {
         console.error("Didn't insert the folder");
+      }
+    }
+  );
+};
+
+function onDeleteFolder(folderId) {
+  chrome.runtime.sendMessage(
+    { action: "onDeleteFolder", folderId },
+    async (response) => {
+      if (response?.success) {
+        console.log("Successfully The folder has been deleted successfully");
+      } else {
+        console.error("Didn't insert the folder");
+      }
+    }
+  );
+}
+
+let onEditFolder = (folderName, colorVal, folderId) => {
+  let folderData = {
+    folderName,
+    folderId,
+    colorVal,
+  };
+
+  chrome.runtime.sendMessage(
+    { action: "onEditFolder", folderData },
+    async (response) => {
+      if (response?.success) {
+        console.log("The folder edited successfully");
+      } else {
       }
     }
   );

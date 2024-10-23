@@ -30,7 +30,6 @@ const onStoreUserFolders = async (req: Request, res: Response) => {
       [folder_id, folder_name, folder_color, chats, userId]
     );
 
-    console.log(`inserted successfully`);
     res.status(201).json({
       message: "The folder was inserted successfully",
     });
@@ -43,7 +42,6 @@ const onStoreUserFolders = async (req: Request, res: Response) => {
 };
 
 const onGetUserFolders = async (req: Request, res: Response) => {
-  console.log("We have hit this end point");
   const userId = await verifyUser(req, res);
   if (!userId)
     return res.status(401).json({
@@ -57,7 +55,6 @@ const onGetUserFolders = async (req: Request, res: Response) => {
     ]);
 
     let folderz = (await user_folderz)?.rows;
-    console.log(folderz);
     res.status(200).json({
       folders: folderz,
       success: true,
@@ -100,17 +97,81 @@ const onDeleteFolder = async (req: Request, res: Response) => {
 };
 
 const onEditFolder = async (req: Request, res: Response) => {
+  console.log("Whe");
   const userId = await verifyUser(req, res);
   if (!userId)
     return res.status(401).json({
       success: false,
-      message: "Unauthorized access. Invalid user ID or token.",
+      message: "Unauthorized access. Invalid user Id or token.",
     });
 
-  let { folder_id, folder_color, folder_name } = req.query;
+  const folderData = req.body;
+  let { folderId, folderName, colorVal } = folderData;
+  console.log(folderData);
+
   try {
-  } catch (error) {}
+    // Fetch current folder data from DB
+    const result = await query(
+      "SELECT folder_name, folder_color FROM folders WHERE folder_id=$1 AND user_id=$2",
+      [folderId, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Folder not found.",
+      });
+    }
+
+    const currentFolder = result.rows[0];
+    const updates = [];
+
+    // Compare incoming values with existing values
+    if (folderName && folderName !== currentFolder.folder_name) {
+      updates.push({ field: "folder_name", value: folderName });
+    }
+    if (colorVal && colorVal !== currentFolder.folder_color) {
+      updates.push({ field: "folder_color", value: colorVal });
+    }
+
+    console.log(updates);
+
+    // If no changes, return early
+    if (updates.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No changes made.",
+      });
+    }
+
+    // Build the update query dynamically
+    const setClause = updates
+      .map((update, index) => `${update.field}=$${index + 3}`)
+      .join(", ");
+    const values = updates.map((update) => update.value);
+
+    const updateQuery = `
+      UPDATE folders 
+      SET ${setClause}
+      WHERE folder_id=$1 AND user_id=$2
+    `;
+
+    await query(updateQuery, [folderId, userId, ...values]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Folder updated successfully.",
+    });
+  } catch (error: any) {
+    console.error(`Something went editing folder, user: ${userId}`);
+    return res.status(500).json({
+      success: false,
+      message: "Error updating folder.",
+      error: error.message,
+    });
+  }
 };
+
 
 const onAddChat = async (req: Request, res: Response) => {
   const userId = await verifyUser(req, res);
