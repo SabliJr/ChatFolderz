@@ -3,6 +3,7 @@ import stripe from "../config/payment";
 import Stripe from "stripe";
 import { WEBHOOK_SIGNING_SECRET } from "../constants/index";
 import { query } from "../config/dbConfig";
+import { verifyUser } from "../util/verificationFunctions";
 
 const CLIENT_URL =
   process.env?.NODE_ENV === "production"
@@ -38,10 +39,40 @@ const onCheckOut = async (req: Request, res: Response) => {
   }
 };
 
-const onCheckOutOneTime = async (req: Request, res: Response) => {
-  const { price_id } = req.query;
+const onCheckOutOneTimeWithTrial = async (req: Request, res: Response) => {
+  const userId = await verifyUser(req, res);
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized access. Invalid user ID or token.",
+    });
+  }
 
+  const { price_id } = req.query;
   try {
+    // Check if the user is eligible for a trial
+    const user = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+      userId,
+    ]);
+    const hasTrial = user.rows[0]?.has_trial;
+
+    if (!hasTrial) {
+      // Grant trial access
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 1); // 1-day trial
+
+      await query(
+        "UPDATE user_profile SET trial_end_date=$1, has_trial=$2 WHERE user_id=$3",
+        [trialEndDate, true, userId]
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Trial started. You have 1 day of free access.",
+      });
+    }
+
+    // If the trial has expired, proceed with the one-time purchase
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -50,7 +81,7 @@ const onCheckOutOneTime = async (req: Request, res: Response) => {
           quantity: 1,
         },
       ],
-      mode: "payment", // Change mode to 'payment' for one-time purchase
+      mode: "payment",
       success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${CLIENT_URL}`,
     });
@@ -64,7 +95,39 @@ const onCheckOutOneTime = async (req: Request, res: Response) => {
   }
 };
 
+// const onCheckOutOneTime = async (req: Request, res: Response) => {
+//   const { price_id } = req.query;
+
+//   try {
+//     const session = await stripe.checkout.sessions.create({
+//       payment_method_types: ["card"],
+//       line_items: [
+//         {
+//           price: price_id as string, // Price ID for the one-time purchase
+//           quantity: 1,
+//         },
+//       ],
+//       mode: "payment",
+//       // payment_method_data: {
+//       //   trial_period_days: 1, // This will give the user a 1-day free trial
+//       // },
+//       success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+//       cancel_url: `${CLIENT_URL}`,
+//     });
+
+//     res.status(200).json({ id: session.id, url: session.url });
+//   } catch (error: any) {
+//     res.status(500).send({
+//       error: error.message,
+//       message: "There was an error creating the one-time purchase",
+//     });
+//   }
+// };
+
 const onSubscriptionSuccess = async (req: Request, res: Response) => {
+  if (!req?.query.session_id)
+    return res.status(401).json({ message: "Payment did not go through" });
+
   const session = await stripe.checkout.sessions.retrieve(
     req.query.session_id as string
   );
@@ -78,7 +141,7 @@ const onSubscriptionSuccess = async (req: Request, res: Response) => {
     });
   } else {
     console.error("There was a problem inserting user's infos");
-    res.status(400).json({ message: "Payment not successful" });
+    res.status(400).json({ message: "Payment did not go through" });
   }
 };
 
@@ -323,5 +386,5 @@ export {
   onSubscriptionSuccess,
   onStripeWebhooks,
   onCancelSubscription,
-  onCheckOutOneTime,
+  onCheckOutOneTimeWithTrial,
 };

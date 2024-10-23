@@ -26,7 +26,7 @@ const onCheckingOut = async (price_id: string) => {
 };
 
 const onCheckOutOneTime = async (price_id: string) => {
-  return await axios.get(`${SERVER_URL}/check_out_lifetime`, {
+  return await axios.get(`${SERVER_URL}/check_out_onetime`, {
     headers: {
       "Content-Type": "application/json",
     },

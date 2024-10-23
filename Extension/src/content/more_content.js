@@ -1,5 +1,36 @@
-// Example of making an authenticated API request
-// import { makeAuthenticatedRequest } from "./apiUtils.js";
+const config = {
+  development: {
+    Monthly: "price_1Q7umiDuxNnSWA1yOR9XCzOz",
+    Yearly: "price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
+    SuperPlan: "price_1QACaODuxNnSWA1yy7ssX7uL",
+    PowerPlan: "price_1QCiRMDuxNnSWA1yIYmPtLGc",
+  },
+  production: {
+    Monthly: "price_1Q8i7yDuxNnSWA1yhv1Vn8UN",
+    Yearly: "price_1Q8i7tDuxNnSWA1yrIYPqFbl",
+    SuperPlan: "price_1QCqJYDuxNnSWA1yEcV2HgKO",
+    PowerPlan: "price_1QCqJNDuxNnSWA1yQ13PTAhI",
+  },
+};
+
+const manifest = chrome.runtime.getManifest();
+const isDevelopment = !("update_url" in manifest);
+
+const yearlyPriceId = isDevelopment
+  ? config.development.Yearly
+  : config.production.Yearly;
+
+const monthlyPriceId = isDevelopment
+  ? config.development.Monthly
+  : config.production.Monthly;
+
+const powerPlanPriceId = isDevelopment
+  ? config.development.PowerPlan
+  : config.production.PowerPlan;
+
+const superPlanPriceId = isDevelopment
+  ? config.development.SuperPlan
+  : config.production.SuperPlan;
 
 let signUpBtn = document.createElement("button");
 signUpBtn.innerText = "Account Access";
@@ -54,28 +85,56 @@ const handleLogin = () => {
   );
 };
 
-const onSubForYear = () => {
-  chrome.runtime.sendMessage({ action: "buyYearlySub" }, async (response) => {
-    if (response?.success) {
-      let { id, url } = response.data;
+// const onSubForYear = () => {
+//   chrome.runtime.sendMessage({ action: "buyYearlySub" }, async (response) => {
+//     if (response?.success) {
+//       let { id, url } = response.data;
 
-      window.open(url, "_blank");
-    } else {
-      console.error("Getting a payment link has failed");
+//       window.open(url, "_blank");
+//     } else {
+//       console.error("Getting a payment link has failed");
+//     }
+//   });
+// };
+
+// const onSubForMonth = () => {
+//   chrome.runtime.sendMessage({ action: "buyMonthlySub" }, async (response) => {
+//     if (response?.success) {
+//       let { id, url } = response.data;
+
+//       window.open(url, "_blank");
+//     } else {
+//       console.error("Getting a payment link has failed");
+//     }
+//   });
+// };
+
+const onBuySub = (price_id) => {
+  chrome.runtime.sendMessage(
+    { action: "buySubscription", price_id },
+    async (response) => {
+      if (response?.success) {
+        let { id, url } = response.data;
+        window.open(url, "_blank");
+      } else {
+        console.error("Getting a payment link has failed");
+      }
     }
-  });
+  );
 };
 
-const onSubForMonth = () => {
-  chrome.runtime.sendMessage({ action: "buyMonthlySub" }, async (response) => {
-    if (response?.success) {
-      let { id, url } = response.data;
-
-      window.open(url, "_blank");
-    } else {
-      console.error("Getting a payment link has failed");
+const onBuyOneTime = (price_id) => {
+  chrome.runtime.sendMessage(
+    { action: "payOneTime", price_id },
+    async (response) => {
+      if (response?.success) {
+        let { id, url } = response.data;
+        window.open(url, "_blank");
+      } else {
+        console.error("Getting a payment link has failed");
+      }
     }
-  });
+  );
 };
 
 let onCollectPayment = () => {
@@ -88,8 +147,10 @@ let onCollectPayment = () => {
     <div class="_prices_container">
       <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
       <ul class="_ul_prices">
-        <li>$7.99/month</li>
-        <li>$6.39/month (billed annually at $76.70)</li>
+        <li>$7.99 /month</li>
+        <li>$76.70 /Yearly</li>
+        <li>$129.99 /One time</li>
+        <li>$349.99 /One time—unlimited</li>
       </ul>
     </div>
     <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
@@ -101,22 +162,40 @@ let onCollectPayment = () => {
 
   let yearlySub = document.createElement("button");
   yearlySub.innerText = "Yearly";
-  yearlySub.classList.add("_yearly_btn");
+  yearlySub.classList.add("_monthly_sub_btn");
+
+  let powerPlanBtn = document.createElement("button");
+  powerPlanBtn.innerText = "Power Plan";
+  powerPlanBtn.classList.add("_monthly_sub_btn");
+
+  let superPlanBtn = document.createElement("button");
+  superPlanBtn.innerText = "Super Plan—unlimited";
+  superPlanBtn.classList.add("_yearly_btn");
 
   let btnsSpan = document.createElement("span");
   btnsSpan.classList.add("_payment_btns_span");
 
   btnsSpan.appendChild(monthlySub);
   btnsSpan.appendChild(yearlySub);
+  btnsSpan.appendChild(powerPlanBtn);
+  btnsSpan.appendChild(superPlanBtn);
   collectMoneyContainer.innerHTML = trialInfoHTML;
   collectMoneyContainer.appendChild(btnsSpan);
 
   yearlySub.addEventListener("click", () => {
-    onSubForYear();
+    onBuySub(yearlyPriceId);
   });
 
   monthlySub.addEventListener("click", () => {
-    onSubForMonth();
+    onBuySub(monthlyPriceId);
+  });
+
+  powerPlanBtn.addEventListener("click", () => {
+    onBuyOneTime(powerPlanPriceId);
+  });
+
+  superPlanBtn.addEventListener("click", () => {
+    onBuyOneTime(superPlanPriceId);
   });
 
   return collectMoneyContainer;
