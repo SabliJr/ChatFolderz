@@ -101,7 +101,7 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
       // If they do, log them in
       const { user_id } = userExists?.rows[0];
 
-        const refreshToken = await createRefreshToken(user_id);
+      const refreshToken = await createRefreshToken(user_id);
       res.status(202).json({
         success: true,
         message: "The login was successful!",

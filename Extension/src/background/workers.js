@@ -2,10 +2,14 @@ const config = {
   development: {
     fetchUrl: "http://localhost:8000",
     REDIRECT_URI: "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org",
+    STRIPE_PUBLIC_KEY:
+      "pk_test_51Q67fsDuxNnSWA1yoq49Eygpw6Y52ZQNYhjfQn1ikvvx8rQhC1qdBBf2TrLZl4kauv3mwIGosjAiOmqk3yVhvQ8700ST4P4e51",
   },
   production: {
     fetchUrl: "https://www.api.chatfolderz.com",
     REDIRECT_URI: "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org",
+    STRIPE_PUBLIC_KEY:
+      "pk_live_51Q67fsDuxNnSWA1yqMvjXaBHK0wsdmqSZakRHtijoNtyMoDusOldga5E06mzGHtOFyWYnh204SjZkBFEIyuwIrVx00KEjjd0lF",
   },
 };
 
@@ -19,6 +23,10 @@ const fetchUrl = isDevelopment
 let REDIRECT_URI = isDevelopment
   ? config.development.REDIRECT_URI
   : config.production.REDIRECT_URI;
+
+let stripeKey = isDevelopment
+  ? config.development.STRIPE_PUBLIC_KEY
+  : config.production.STRIPE_PUBLIC_KEY;
 
 /// Frontend: Update the scope to include the required fields
 const SCOPE = encodeURIComponent("profile email openid");
@@ -131,22 +139,58 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.action === "payOneTime") {
+//     const { price_id } = request; // Get the price_id from the message
+
+//     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
+//       method: "GET",
+//       credentials: "include", // This to include the cookies
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         sendResponse({ success: true, data });
+//       })
+//       .catch((error) => sendResponse({ success: false, error: error.message }));
+
+//     // We need to return true to keep the message channel open for async response
+//     return true;
+//   }
+// });
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "payOneTime") {
-    const { price_id } = request; // Get the price_id from the message
+    const { price_id } = request;
 
     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
       method: "GET",
-      credentials: "include", // This to include the cookies
+      credentials: "include",
     })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
 
-    // We need to return true to keep the message channel open for async response
-    return true;
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          const { clientSecret } = data;
+
+          // Redirect the user to Stripe's hosted payment page
+          const stripeInstance = Stripe(stripeKey, {
+            apiVersion: "2024-09-30.acacia",
+          });
+
+          // Use the instance to redirect
+          return stripeInstance.redirectToCheckout({
+            sessionId: clientSecret,
+          });
+        } else {
+          console.error("Error creating payment intent:", data.message);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
   }
 });
 
@@ -306,9 +350,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onAddChat") {
+    let { folderData } = request;
+
     fetch(`${fetchUrl}/add_chat`, {
       method: "POST",
-      body: JSON.stringify(tokens),
+      body: JSON.stringify(folderData),
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
     })
       .then((response) => response.json())
@@ -323,9 +372,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onRemoveChat") {
+    let { folderData } = request;
+
     fetch(`${fetchUrl}/remove_chat`, {
+      method: "DELETE",
+      body: JSON.stringify(folderData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendResponse({ success: true, data });
+      })
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    return true;
+  }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "onUpdateFolderChat") {
+    let { folderToUpdate } = request;
+
+    fetch(`${fetchUrl}/update_folder_or_chat`, {
       method: "POST",
-      body: JSON.stringify(tokens),
+      body: JSON.stringify(folderToUpdate),
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
     })
       .then((response) => response.json())

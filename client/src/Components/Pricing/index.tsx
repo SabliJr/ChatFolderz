@@ -93,7 +93,7 @@ const Index = () => {
                 <PiSealCheckLight />
               </span>
               <p>
-                General prompt library <span>coming soon</span>
+                Link unlimited ChatGPT accounts <span>coming soon</span>
               </p>
             </li>
             <li>
@@ -101,7 +101,7 @@ const Index = () => {
                 <PiSealCheckLight />
               </span>
               <p>
-                Link unlimited ChatGPT accounts <span>coming soon</span>
+                General prompt library <span>coming soon</span>
               </p>
             </li>
 

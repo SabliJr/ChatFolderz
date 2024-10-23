@@ -8,7 +8,7 @@ import {
   onSubscriptionSuccess,
   onStripeWebhooks,
   onCancelSubscription,
-  onCheckOutOneTime,
+  onCheckOutOneTimeWithTrial,
 } from "../controllers/paymentController";
 
 import { onGetCredentials } from "../controllers/refreshTokenController";
@@ -19,6 +19,7 @@ import {
   onEditFolder,
   onAddChat,
   onRemoveChat,
+  onUpdateFolderOrChat,
 } from "../controllers/folderzController";
 
 const router = Router();
@@ -30,7 +31,7 @@ router.get("/get_credentials", onGetCredentials);
 
 // PAYMENT ROUTES
 router.get("/check_out", onCheckOut);
-router.get("/check_out_onetime", onCheckOutOneTime);
+router.get("/check_out_onetime", onCheckOutOneTimeWithTrial);
 router.get("/checkout_success", onSubscriptionSuccess);
 router.get("/cancel_subscription", onCancelSubscription);
 router.post(
@@ -45,6 +46,7 @@ router.get("/get_user_folders", onGetUserFolders);
 router.delete("/delete_folder", onDeleteFolder);
 router.put("/edit_folder", onEditFolder);
 router.post("/add_chat", onAddChat);
-router.get("/remove_chat", onRemoveChat);
+router.delete("/remove_chat", onRemoveChat);
+router.post("/update_folder_or_chat", onUpdateFolderOrChat);
 
 export default router;

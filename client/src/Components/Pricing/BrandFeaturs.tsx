@@ -41,7 +41,7 @@ const BrandFeaturs = () => {
             <PiSealCheckLight />
           </span>
           <p>
-            General prompt library <span>coming soon</span>
+            Link up to 3 ChatGPT accounts <span>coming soon</span>
           </p>
         </li>
         <li>
@@ -49,9 +49,10 @@ const BrandFeaturs = () => {
             <PiSealCheckLight />
           </span>
           <p>
-            Link up to 3 ChatGPT accounts <span>coming soon</span>
+            General prompt library <span>coming soon</span>
           </p>
         </li>
+
         <li>
           <span>
             <PiSealCheckLight />

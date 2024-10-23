@@ -104,8 +104,10 @@ const onBuyOneTime = (price_id) => {
     { action: "payOneTime", price_id },
     async (response) => {
       if (response?.success) {
-        let { id, url } = response.data;
-        window.open(url, "_blank");
+        // let { id, url } = response.data;
+        console.log("The payment capture was successful");
+
+        // window.open(url, "_blank");
       } else {
         console.error("Getting a payment link has failed");
       }
