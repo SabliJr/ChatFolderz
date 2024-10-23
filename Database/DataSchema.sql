@@ -37,6 +37,6 @@ CREATE TABLE user_folders (
     folder_name VARCHAR(256),
     folder_color VARCHAR(256),
     chats JSONB[], -- Store chats as JSONB array
-    user_id TEXT REFERENCES user_profile(user_id) ON DELETE CASCADE
+    user_id TEXT NOT NULL REFERENCES user_profile(user_id) ON DELETE CASCADE
 );
 

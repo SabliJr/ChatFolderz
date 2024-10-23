@@ -150,23 +150,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === "buyYearlySub") {
-//     fetch(`${fetchUrl}/check_out?price_id=${yearly}`, {
-//       method: "GET",
-//       credentials: "include",
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         sendResponse({ success: true, data });
-//       })
-//       .catch((error) => sendResponse({ success: false, error: error.message }));
-
-//     return true;
-//   }
-// });
-
 // Helper function to get cookies for API requests
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getCookies") {
@@ -244,9 +227,15 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onStoreFolder") {
+    let { folderData } = request;
+    console.log(folderData);
+
     fetch(`${fetchUrl}/store_folder`, {
       method: "POST",
-      body: JSON.stringify(tokens),
+      body: JSON.stringify(folderData),
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
     })
       .then((response) => response.json())

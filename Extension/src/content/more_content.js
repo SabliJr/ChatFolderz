@@ -85,30 +85,6 @@ const handleLogin = () => {
   );
 };
 
-// const onSubForYear = () => {
-//   chrome.runtime.sendMessage({ action: "buyYearlySub" }, async (response) => {
-//     if (response?.success) {
-//       let { id, url } = response.data;
-
-//       window.open(url, "_blank");
-//     } else {
-//       console.error("Getting a payment link has failed");
-//     }
-//   });
-// };
-
-// const onSubForMonth = () => {
-//   chrome.runtime.sendMessage({ action: "buyMonthlySub" }, async (response) => {
-//     if (response?.success) {
-//       let { id, url } = response.data;
-
-//       window.open(url, "_blank");
-//     } else {
-//       console.error("Getting a payment link has failed");
-//     }
-//   });
-// };
-
 const onBuySub = (price_id) => {
   chrome.runtime.sendMessage(
     { action: "buySubscription", price_id },
@@ -451,14 +427,3 @@ window.addEventListener("load", () => {
     }
   });
 });
-
-// const fetchData = async () => {
-//   try {
-//     const data = await makeAuthenticatedRequest('/api/some-endpoint');
-//     console.log('Data received:', data);
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// };
-
-// ---------------------------------------------------------------------------------------------
