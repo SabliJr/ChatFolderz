@@ -544,6 +544,7 @@ const addingToStorageWhileCreatingFirstFolder = (
     content: cloneChat.outerHTML,
   });
 
+  storeFolder(folderData);
   saveChatAndFoldersToStorage(folderData);
   if (folderContent) folderContent.appendChild(cloneChat);
 };
@@ -1973,6 +1974,75 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
+// --------------------------------------------------------------------------------------------------------------------
+// Storage
+
+const storeFolder = (folderData) => {
+  chrome.runtime.sendMessage(
+    { action: "onStoreFolder", folderData },
+    async (response) => {
+      if (response?.success) {
+        console.log("Successfully inserted the folder");
+      } else {
+        console.error("Didn't insert the folder");
+      }
+    }
+  );
+};
+
+let getUserFolders = () => {
+  chrome.runtime.sendMessage(
+    { action: "onGetUserFolderz" },
+    async (response) => {
+      if (response?.success) {
+        let { folders } = response.data;
+
+        folders.forEach((f) => {
+          let folderContainer = document.querySelector("._folderz");
+
+          // Create a folder element and ensure it has a data attribute for easy matching
+          let folderElement = createNewFolder(
+            f.folder_name,
+            f.folder_color,
+            folderContainer,
+            true,
+            true,
+            f.folder_id
+          );
+
+          folderContainer.appendChild(folderElement);
+
+          // Load the chats for this folder
+          for (let chat_data of f.chats) {
+            let tempDiv = document.createElement("div");
+            tempDiv.innerHTML = chat_data.content;
+            let chatElement = tempDiv.querySelector("li");
+
+            let folderChatsContainer =
+              folderElement.querySelector("._folder-content");
+
+            if (folderChatsContainer) {
+              folderChatsContainer.appendChild(chatElement);
+              let chatRemoveIcon = chatElement.querySelector(
+                "._folder_minus_icon"
+              );
+
+              let handleRemoveClick = removeClickEvent(
+                chatElement,
+                chatRemoveIcon,
+                f.folder_id
+              );
+              chatRemoveIcon.addEventListener("click", handleRemoveClick);
+            }
+          }
+        });
+      } else {
+        console.error("Didn't insert the folder");
+      }
+    }
+  );
+};
+
 // Call these functions when the extension and the dom loads
 window.addEventListener("load", () => {
   // Appending element to the main container
@@ -1990,7 +2060,8 @@ window.addEventListener("load", () => {
       setInterval(getCredentials, 2000);
 
       loadBookmarksFromStorage();
-      loadFoldersFromStorage();
+      // loadFoldersFromStorage();
+      getUserFolders();
     }
   });
 

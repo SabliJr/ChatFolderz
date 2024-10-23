@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { query } from "../config/dbConfig";
 import { verifyUser } from "../util/verificationFunctions";
 
-// Use the verifyUser function in each handler
 const onStoreUserFolders = async (req: Request, res: Response) => {
   const userId = await verifyUser(req, res);
   if (!userId)
@@ -11,13 +10,27 @@ const onStoreUserFolders = async (req: Request, res: Response) => {
       message: "Unauthorized access. Invalid user ID or token.",
     });
 
-  let { folder_id, folder_name, folder_color, chats } = req.body;
+  let folderData = req.body;
+  let {
+    id: folder_id,
+    name: folder_name,
+    color: folder_color,
+    chats,
+  } = folderData;
   try {
     await query(
-      "INSERT INTO user_folders (folder_id, folder_name, folder_color, chats) VALUES($1, $2, $3, $4)",
-      [folder_id, folder_name, folder_color, chats]
+      `INSERT INTO user_folders (folder_id, folder_name, folder_color, chats, user_id)
+      VALUES($1, $2, $3, $4, $5)
+      ON CONFLICT (folder_id)
+      DO UPDATE SET
+      folder_name = EXCLUDED.folder_name,
+      user_id = EXCLUDED.user_id,
+      folder_color = EXCLUDED.folder_color,
+      chats = EXCLUDED.chats`,
+      [folder_id, folder_name, folder_color, chats, userId]
     );
 
+    console.log(`inserted successfully`);
     res.status(201).json({
       message: "The folder was inserted successfully",
     });
@@ -30,6 +43,7 @@ const onStoreUserFolders = async (req: Request, res: Response) => {
 };
 
 const onGetUserFolders = async (req: Request, res: Response) => {
+  console.log("We have hit this end point");
   const userId = await verifyUser(req, res);
   if (!userId)
     return res.status(401).json({
@@ -43,6 +57,7 @@ const onGetUserFolders = async (req: Request, res: Response) => {
     ]);
 
     let folderz = (await user_folderz)?.rows;
+    console.log(folderz);
     res.status(200).json({
       folders: folderz,
       success: true,
