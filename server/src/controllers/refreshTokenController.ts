@@ -23,7 +23,6 @@ const onGetCredentials = async (req: Request, res: Response) => {
 
     let user = await query("SELECT * FROM user_profile WHERE user_id=$1", [id]);
     if (user.rows.length === 0) {
-      // console.log("We did not find the user");
       return res.status(403).json({
         success: false,
         message: "User not found",
@@ -31,7 +30,8 @@ const onGetCredentials = async (req: Request, res: Response) => {
     }
 
     let user_has_payed = await checkUserAccess(userId);
-    let { user_id, customer_id, has_access, is_canceled } = user.rows[0];
+    let { user_id, customer_id, has_access, is_canceled, plan_type } =
+      user.rows[0];
 
     res.status(200).json({
       message: "Everything is fine, the user has payed!",
@@ -41,6 +41,7 @@ const onGetCredentials = async (req: Request, res: Response) => {
         user_id: user_id,
         has_access: has_access,
         is_canceled: is_canceled,
+        plan_type: plan_type,
       },
     });
   } catch (error) {

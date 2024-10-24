@@ -126,13 +126,14 @@ let onCollectPayment = () => {
       <p class="_collect_pricing_title">Simple pricing for everyone.</p>
       <ul class="_ul_prices">
         <li>$7.99 /month</li>
-        <li>$76.70 /Yearly</li>
+        <li>$76.70 /Year</li>
         <li>$129.99 /One time</li>
         <li>$349.99 /One time—unlimited</li>
       </ul>
     </div>
-    <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
-  `;
+    `;
+
+  // <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
 
   let monthlySub = document.createElement("button");
   monthlySub.innerText = "Monthly";
@@ -143,21 +144,31 @@ let onCollectPayment = () => {
   yearlySub.classList.add("_monthly_sub_btn");
 
   let powerPlanBtn = document.createElement("button");
-  powerPlanBtn.innerText = "Power Plan";
+  powerPlanBtn.innerText = "Power Plan—Onetime";
   powerPlanBtn.classList.add("_yearly_btn");
 
   let superPlanBtn = document.createElement("button");
   superPlanBtn.innerText = "Super Plan—unlimited";
   superPlanBtn.classList.add("_yearly_btn");
 
+  let subBtnsSpan = document.createElement("span");
+  subBtnsSpan.classList.add("_payment_btns_span");
+
+  let buyBtnsSpan = document.createElement("span");
+  buyBtnsSpan.classList.add("_payment_btns_span");
+
   let btnsSpan = document.createElement("span");
   btnsSpan.classList.add("_payment_btns_span");
 
-  btnsSpan.appendChild(monthlySub);
-  btnsSpan.appendChild(yearlySub);
-  btnsSpan.appendChild(powerPlanBtn);
-  btnsSpan.appendChild(superPlanBtn);
+  subBtnsSpan.appendChild(monthlySub);
+  subBtnsSpan.appendChild(yearlySub);
+  buyBtnsSpan.appendChild(powerPlanBtn);
+  buyBtnsSpan.appendChild(superPlanBtn);
   collectMoneyContainer.innerHTML = trialInfoHTML;
+
+  btnsSpan.appendChild(subBtnsSpan);
+  btnsSpan.appendChild(buyBtnsSpan);
+
   collectMoneyContainer.appendChild(btnsSpan);
 
   yearlySub.addEventListener("click", () => {
@@ -218,7 +229,7 @@ let onWelcomeShowAuth = () => {
   return welcomeContainer;
 };
 
-let onManageAccount = () => {
+let onManageAccount = (planType, isCanceled) => {
   let manageAccountContainer = document.createElement("div");
   manageAccountContainer.classList.add("_manage_account_container");
 
@@ -232,47 +243,55 @@ let onManageAccount = () => {
           conversations effortlessly.
         </p>
       </div>
-      <div class="_manage_list">
-        <p>- Organize Chats into Folders</p>
-        <p>- Bookmark Key Conversations</p>
-        <p>- Search Your Conversations Easily</p>
-      </div>
+
       <div class="_manage_user_ask">
         <p class="_manage_ask_text">
           Got ideas? We’d love to hear your thoughts! Suggest new features and
-          help shape the future of this extension.
+          help shape the future of this extension. Your Feedback Is Valuable!
         </p>
         <p class="_manage_suggest_btn">
-          <span class="_manage_suggest_span">Submit</span> a Feature Suggestion, Your Feedback Is Valuable!
+          <span class="_manage_suggest_span">Submit</span>
         </p>
-        <span class="_cancel_sub_btn_span">
-          <button class="_cancel_sub_btn">Cancel Subscription</button>
-          <p class="_cancel_sub_btn_span_text">– No commitment, cancel anytime.</p>
-        </span>
+        ${
+          planType === "subscription" && !isCanceled
+            ? `<span class='_cancel_sub_btn_span'>
+              <button class='_cancel_sub_btn'>Cancel Subscription</button>
+              <p class='_cancel_sub_btn_span_text'>
+                – No commitment, cancel anytime.
+              </p>
+            </span>`
+            : ""
+        }
       </div>
       <p class="_manage_thank_text">Thanks for joining us—exciting updates are on the way!</p>
     </div>
   `;
 
+  //  <div class='_manage_list'>
+  //    <p>- Organize Chats into Folders</p>
+  //    <p>- Bookmark Key Conversations</p>
+  //    <p>- Search Your Conversations Easily</p>
+  //  </div>;
+
   manageAccountContainer.innerHTML = manageUi;
 
-  chrome.storage.local.get(["isCanceled"], (result) => {
-    const { isCanceled } = result;
+  // chrome.storage.local.get(["isCanceled"], (result) => {
+  //   const { isCanceled } = result;
 
-    if (isCanceled) {
-      let removeCancelBtn = manageAccountContainer.querySelector(
-        "._cancel_sub_btn_span"
-      );
+  //   if (isCanceled) {
+  //     let removeCancelBtn = manageAccountContainer.querySelector(
+  //       "._cancel_sub_btn_span"
+  //     );
 
-      removeCancelBtn.remove();
-    } else {
-      let cancelSubBtn =
-        manageAccountContainer.querySelector("._cancel_sub_btn");
-      cancelSubBtn.addEventListener("click", () => {
-        onCancelSubscription();
-      });
-    }
-  });
+  //     removeCancelBtn.remove();
+  //   } else {
+  //     let cancelSubBtn =
+  //       manageAccountContainer.querySelector("._cancel_sub_btn");
+  //     cancelSubBtn.addEventListener("click", () => {
+  //       onCancelSubscription();
+  //     });
+  //   }
+  // });
 
   return manageAccountContainer;
 };
@@ -302,10 +321,23 @@ const onCancelSubscription = () => {
 const displayUI = () => {
   // Retrieve and log data asynchronously
   chrome.storage.local.get(
-    ["isLoggedIn", "userId", "customerId", "hasAccess", "userHasPayed"],
+    [
+      "isLoggedIn",
+      "userId",
+      "customerId",
+      "hasAccess",
+      "userHasPayed",
+      "planType",
+    ],
     (result) => {
-      const { isLoggedIn, userId, customerId, hasAccess, userHasPayed } =
-        result;
+      const {
+        isLoggedIn,
+        userId,
+        customerId,
+        hasAccess,
+        userHasPayed,
+        planType,
+      } = result;
 
       // Clear the sidebar content before updating UI
       sidebar.innerHTML = "";
@@ -324,7 +356,7 @@ const displayUI = () => {
         userHasPayed
       ) {
         // User is logged in and has made payment
-        sidebar.appendChild(onManageAccount());
+        sidebar.appendChild(onManageAccount(planType));
       } else if (
         isLoggedIn &&
         userId &&
@@ -348,7 +380,8 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       changes.customerId ||
       changes.hasAccess ||
       changes.userHasPayed ||
-      changes.isCanceled
+      changes.isCanceled ||
+      changes.planType
     ) {
       // Update the UI based on the new values
       displayUI();
@@ -360,8 +393,14 @@ function onGetCredentials() {
   chrome.runtime.sendMessage({ action: "getCredentials" }, async (response) => {
     try {
       if (response?.success) {
-        let { user_has_payed, has_access, customer_id, user_id, is_canceled } =
-          response.data.user;
+        let {
+          user_has_payed,
+          has_access,
+          customer_id,
+          user_id,
+          is_canceled,
+          plan_type,
+        } = response.data.user;
 
         // Update the storage with the new user_data object
         await chrome.storage.local.set({
@@ -371,6 +410,7 @@ function onGetCredentials() {
           isLoggedIn: true,
           userId: user_id,
           isCanceled: is_canceled,
+          planType: plan_type,
         });
       } else {
         await chrome.storage.local.remove([
@@ -380,6 +420,7 @@ function onGetCredentials() {
           "isLoggedIn",
           "userId",
           "isCanceled",
+          "planType",
         ]);
       }
     } catch (error) {
@@ -390,6 +431,7 @@ function onGetCredentials() {
         "isLoggedIn",
         "userId",
         "isCanceled",
+        "planType",
       ]);
     }
   });

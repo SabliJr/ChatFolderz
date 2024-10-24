@@ -33,16 +33,24 @@ const isValidAuthToken = (authToken: string) => {
 };
 
 const checkUserAccess = async (userId: string) => {
-  const result = await query(
-    "SELECT has_access, expires_at FROM user_profile WHERE user_id=$1",
-    [userId]
-  );
+  const result = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+    userId,
+  ]);
 
   if (result.rows.length > 0) {
-    const { has_access, expires_at } = result.rows[0];
+    const { has_access, expires_at, plan_type, subscription_state } =
+      result.rows[0];
     const now = new Date();
 
-    if (has_access && expires_at > now) {
+    if (
+      has_access &&
+      plan_type === "onetime" &&
+      subscription_state === "active"
+    ) {
+      return true;
+    }
+
+    if (has_access && expires_at > now && plan_type === "subscription") {
       return true; // User has access
     }
   }

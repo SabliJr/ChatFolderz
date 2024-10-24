@@ -21,6 +21,15 @@ const onCheckOut = async (req: Request, res: Response) => {
 
   const { price_id } = req.query;
   try {
+    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+      userId,
+    ]);
+
+    let { email } = userInfo?.rows[0];
+    let customer = await stripe.customers.create({
+      email: email,
+    });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -30,6 +39,7 @@ const onCheckOut = async (req: Request, res: Response) => {
         },
       ],
       mode: "subscription",
+      customer: customer.id,
       subscription_data: {
         trial_period_days: 1, // This will give the user a 1-day free trial
       },
@@ -57,6 +67,16 @@ const onCheckOutOneTime = async (req: Request, res: Response) => {
 
   const { price_id } = req.query;
   try {
+    // Ensure the user has a Stripe customer ID
+    let userInfo = await query("SELECT * FROM user_profile WHERE user_id=$1", [
+      userId,
+    ]);
+
+    let { email } = userInfo?.rows[0];
+    let customer = await stripe.customers.create({
+      email: email,
+    });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -66,6 +86,7 @@ const onCheckOutOneTime = async (req: Request, res: Response) => {
         },
       ],
       mode: "payment",
+      customer: customer.id,
       success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${CLIENT_URL}`,
     });
@@ -116,17 +137,69 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
 
     // Handle the event
     switch (event.type) {
-      case "payment_intent.succeeded":
-        const paymentIntent = event.data.object;
-        // Handle successful payment intent
-
-        console.log("PI", paymentIntent);
-        break;
       case "checkout.session.completed":
-        const checkoutSessionCompleted = event.data.object;
-        // Handle successful payment intent
+        {
+          const checkoutSessionCompleted = event.data.object;
+          // Handle successful payment intent
 
-        console.log("CSC: ", checkoutSessionCompleted);
+          let customer_id = checkoutSessionCompleted.customer;
+          let customer_email = checkoutSessionCompleted.customer_details?.email;
+          let customer_country =
+            checkoutSessionCompleted.customer_details?.address?.country;
+          let customer_name = checkoutSessionCompleted.customer_details?.name;
+          let created_at = new Date(checkoutSessionCompleted.created * 1000);
+          let subscription_duration = "forever";
+          let start_date = new Date(checkoutSessionCompleted.created * 1000);
+          let subscription_status = "active";
+
+          let isCustomerHasAccount = await query(
+            "SELECT * FROM user_profile WHERE email=$1",
+            [customer_email]
+          );
+          let { user_id } = isCustomerHasAccount?.rows[0];
+
+          // Use INSERT ... ON CONFLICT to handle duplicate customer_id
+          await query(
+            `INSERT INTO user_subscription (
+            customer_id, 
+            customer_email, 
+            user_id, 
+            customer_country, 
+            customer_name, 
+            created_at, 
+            subscription_duration, 
+            updated_at, 
+            last_subscription_start_date
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, $8)
+            ON CONFLICT (user_id, customer_id)
+            DO UPDATE SET
+            customer_email = EXCLUDED.customer_email,
+            user_id = EXCLUDED.user_id,
+            customer_country = EXCLUDED.customer_country,
+            customer_name = EXCLUDED.customer_name,
+            updated_at = CURRENT_TIMESTAMP,
+            created_at = EXCLUDED.created_at,
+            subscription_duration = EXCLUDED.subscription_duration,
+            last_subscription_start_date = EXCLUDED.last_subscription_start_date
+            `,
+            [
+              customer_id,
+              customer_email,
+              user_id,
+              customer_country,
+              customer_name,
+              created_at,
+              subscription_duration,
+              start_date,
+            ]
+          );
+
+          await query(
+            "UPDATE user_profile SET subscription_state=$1, plan_type=$2, has_access=$3, customer_id=$4 WHERE user_id=$5",
+            [subscription_status, "onetime", true, customer_id, user_id]
+          );
+        }
         break;
       case "invoice.payment_succeeded":
         {

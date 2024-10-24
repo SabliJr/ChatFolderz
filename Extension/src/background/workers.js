@@ -160,44 +160,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// "content_security_policy": "script-src 'self' https://apis.google.com https://www.gstatic.com https://www.googleapis.com https://securetoken.googleapis.com; object-src 'self'"
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === "payOneTime") {
-//     const { price_id } = request;
-
-//     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
-//       method: "GET",
-//       credentials: "include",
-//     })
-//       .then((response) => {
-//         if (!response.ok) {
-//           throw new Error("Network response was not ok");
-//         }
-
-//         return response.json();
-//       })
-//       .then((data) => {
-//         if (data.success) {
-//           const { clientSecret } = data;
-
-//           // Redirect the user to Stripe's hosted payment page
-//           const stripeInstance = Stripe(stripeKey, {
-//             apiVersion: "2024-09-30.acacia",
-//           });
-
-//           // Use the instance to redirect
-//           return stripeInstance.redirectToCheckout({
-//             sessionId: clientSecret,
-//           });
-//         } else {
-//           console.error("Error creating payment intent:", data.message);
-//         }
-//       })
-//       .catch((error) => console.error("Error:", error));
-//   }
-// });
-
 // Helper function to get cookies for API requests
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getCookies") {
