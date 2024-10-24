@@ -27,9 +27,8 @@ const Index = () => {
       <div className='_pricing_title'>
         <h1>Pricing</h1>
         <p>
-          Upgrade your AI chat experience. Organize, and optimize your workflow
-          seamlessly. Try it free for 24 hours—if it’s not for you, cancel
-          anytime. No commitment, just smarter AI chat management.
+          Your AI chats will be more than just conversations—they’ll become an
+          organized, easy-to-access knowledge base.
         </p>
         <label htmlFor='' className='_switcher'>
           <input
@@ -118,7 +117,7 @@ const Index = () => {
             className='_free_link'
             href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
             target='#blank'>
-            <button>Try It for free</button>
+            <button>Add To Browser</button>
           </a>
         </div>
         {whoIsThis === "Monthly" ? (
@@ -134,7 +133,7 @@ const Index = () => {
               className='_free_link'
               href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
               target='#blank'>
-              <button>Try It for free</button>
+              <button>Add To Browser</button>
             </a>
           </div>
         ) : (
@@ -155,7 +154,7 @@ const Index = () => {
               className='_free_link'
               href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
               target='#blank'>
-              <button>Try It for free</button>
+              <button>Add To Browser</button>
             </a>
           </div>
         )}

@@ -409,8 +409,6 @@ async function nCleanChatAndAppend(folder_div, chat) {
       chat_id: cloneChat.id,
     };
 
-    console.log(`chat id: ${chatData.chat_id}`);
-
     // Add the chat to the folder's chats array
     // folder.chats.push(chatData);
     await onAddChat(folderId, chatData);

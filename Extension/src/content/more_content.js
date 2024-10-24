@@ -104,10 +104,9 @@ const onBuyOneTime = (price_id) => {
     { action: "payOneTime", price_id },
     async (response) => {
       if (response?.success) {
-        // let { id, url } = response.data;
-        console.log("The payment capture was successful");
+        let { url } = response.data;
 
-        // window.open(url, "_blank");
+        window.open(url, "_blank");
       } else {
         console.error("Getting a payment link has failed");
       }
@@ -121,9 +120,10 @@ let onCollectPayment = () => {
 
   let trialInfoHTML = `
     <h3 class="_collect_money_title">Unlock The Full Access!</h3>
-    <p class="_prices_last_title">Try it free for 24 hours—if it’s not for you, cancel anytime. No commitment, just smarter AI chat management.</p>
+    <p class="_prices_last_title">Upgrade your AI chat experience. Organize, and optimize your workflow
+          seamlessly.</p>
     <div class="_prices_container">
-      <p class="_collect_pricing_title">After your trial, enjoy full access for:</p>
+      <p class="_collect_pricing_title">Simple pricing for everyone.</p>
       <ul class="_ul_prices">
         <li>$7.99 /month</li>
         <li>$76.70 /Yearly</li>
@@ -144,7 +144,7 @@ let onCollectPayment = () => {
 
   let powerPlanBtn = document.createElement("button");
   powerPlanBtn.innerText = "Power Plan";
-  powerPlanBtn.classList.add("_monthly_sub_btn");
+  powerPlanBtn.classList.add("_yearly_btn");
 
   let superPlanBtn = document.createElement("button");
   superPlanBtn.innerText = "Super Plan—unlimited";
