@@ -120,7 +120,13 @@ const onStripeWebhooks = async (req: Request, res: Response) => {
         const paymentIntent = event.data.object;
         // Handle successful payment intent
 
-        console.log(paymentIntent);
+        console.log("PI", paymentIntent);
+        break;
+      case "checkout.session.completed":
+        const checkoutSessionCompleted = event.data.object;
+        // Handle successful payment intent
+
+        console.log("CSC: ", checkoutSessionCompleted);
         break;
       case "invoice.payment_succeeded":
         {
