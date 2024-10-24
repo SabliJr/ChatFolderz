@@ -33,16 +33,18 @@ const Index = () => {
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
-            Yes, your data is secure. We only collect basic info like your name
-            and email for authentication, and all chats and folders are stored
-            locally on your device. Payments are handled securely through
-            Stripe, and we prioritize your privacy and data protection at all
-            times.
+            Yes, your data is secure. All chats and folders are stored locally
+            on your device. However, if you're a paid user we collect simple
+            info like chats ids and folders ids to make them sync across your
+            device.
+            <br />
+            <br />
+            We prioritize your privacy and data protection at all times.
           </p>
         </div>
         <div className='_questions_div'>
           <div className='_q_div'>
-            <h4>Which AI platforms does this extension support?</h4>
+            <h4>Can I cancel my subscription anytime?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(1)} />
           </div>
           <p
@@ -51,12 +53,28 @@ const Index = () => {
                 ? "_questions_div_reveal"
                 : "_questions_div_none"
             }>
+            Yes! You can cancel your subscription anytime from your account
+            settings. Once canceled, you'll continue to have access until the
+            end of your billing period.
+          </p>
+        </div>
+        <div className='_questions_div'>
+          <div className='_q_div'>
+            <h4>Which AI platforms does this extension support?</h4>
+            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(2)} />
+          </div>
+          <p
+            className={
+              revealQuestion[2]
+                ? "_questions_div_reveal"
+                : "_questions_div_none"
+            }>
             Our extension supports GPT as teh moment allowing you to organize
             and manage all your AI chats seamlessly. However, a Claude version
             is coming soon!
           </p>
         </div>
-        <div className='_questions_div'>
+        {/* <div className='_questions_div'>
           <div className='_q_div'>
             <h4>How does the free 24-hour trial work?</h4>
             <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(2)} />
@@ -71,23 +89,7 @@ const Index = () => {
             If you’re not satisfied, you can cancel anytime before the trial
             ends with no charge.
           </p>
-        </div>
-        <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>Can I cancel my subscription anytime?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(3)} />
-          </div>
-          <p
-            className={
-              revealQuestion[3]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Yes! You can cancel your subscription anytime from your account
-            settings. Once canceled, you'll continue to have access until the
-            end of your billing period.
-          </p>
-        </div>
+        </div> */}
       </div>
       <div className='_q_chat_div'>
         <h3 className='_q_chat_title'>

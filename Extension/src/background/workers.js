@@ -1,15 +1,13 @@
 const config = {
   development: {
     fetchUrl: "http://localhost:8000",
+    CLIENT_URL: "http://localhost:3000",
     REDIRECT_URI: "https://bmnpndlhkakekmejcnnmingbehdgjboc.chromiumapp.org",
-    STRIPE_PUBLIC_KEY:
-      "pk_test_51Q67fsDuxNnSWA1yoq49Eygpw6Y52ZQNYhjfQn1ikvvx8rQhC1qdBBf2TrLZl4kauv3mwIGosjAiOmqk3yVhvQ8700ST4P4e51",
   },
   production: {
     fetchUrl: "https://www.api.chatfolderz.com",
     REDIRECT_URI: "https://ibelppoiheipgceppgklepmjcafbdcdm.chromiumapp.org",
-    STRIPE_PUBLIC_KEY:
-      "pk_live_51Q67fsDuxNnSWA1yqMvjXaBHK0wsdmqSZakRHtijoNtyMoDusOldga5E06mzGHtOFyWYnh204SjZkBFEIyuwIrVx00KEjjd0lF",
+    CLIENT_URL: "https://chatfolderz.com",
   },
 };
 
@@ -27,6 +25,10 @@ let REDIRECT_URI = isDevelopment
 let stripeKey = isDevelopment
   ? config.development.STRIPE_PUBLIC_KEY
   : config.production.STRIPE_PUBLIC_KEY;
+
+let client_url = isDevelopment
+  ? config.development.CLIENT_URL
+  : config.production.CLIENT_URL;
 
 /// Frontend: Update the scope to include the required fields
 const SCOPE = encodeURIComponent("profile email openid");
@@ -139,60 +141,62 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === "payOneTime") {
-//     const { price_id } = request; // Get the price_id from the message
-
-//     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
-//       method: "GET",
-//       credentials: "include", // This to include the cookies
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         sendResponse({ success: true, data });
-//       })
-//       .catch((error) => sendResponse({ success: false, error: error.message }));
-
-//     // We need to return true to keep the message channel open for async response
-//     return true;
-//   }
-// });
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "payOneTime") {
-    const { price_id } = request;
+    const { price_id } = request; // Get the price_id from the message
 
     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
       method: "GET",
-      credentials: "include",
+      credentials: "include", // This to include the cookies
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          const { clientSecret } = data;
-
-          // Redirect the user to Stripe's hosted payment page
-          const stripeInstance = Stripe(stripeKey, {
-            apiVersion: "2024-09-30.acacia",
-          });
-
-          // Use the instance to redirect
-          return stripeInstance.redirectToCheckout({
-            sessionId: clientSecret,
-          });
-        } else {
-          console.error("Error creating payment intent:", data.message);
-        }
+        sendResponse({ success: true, data });
       })
-      .catch((error) => console.error("Error:", error));
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+
+    // We need to return true to keep the message channel open for async response
+    return true;
   }
 });
+
+// "content_security_policy": "script-src 'self' https://apis.google.com https://www.gstatic.com https://www.googleapis.com https://securetoken.googleapis.com; object-src 'self'"
+
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.action === "payOneTime") {
+//     const { price_id } = request;
+
+//     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
+//       method: "GET",
+//       credentials: "include",
+//     })
+//       .then((response) => {
+//         if (!response.ok) {
+//           throw new Error("Network response was not ok");
+//         }
+
+//         return response.json();
+//       })
+//       .then((data) => {
+//         if (data.success) {
+//           const { clientSecret } = data;
+
+//           // Redirect the user to Stripe's hosted payment page
+//           const stripeInstance = Stripe(stripeKey, {
+//             apiVersion: "2024-09-30.acacia",
+//           });
+
+//           // Use the instance to redirect
+//           return stripeInstance.redirectToCheckout({
+//             sessionId: clientSecret,
+//           });
+//         } else {
+//           console.error("Error creating payment intent:", data.message);
+//         }
+//       })
+//       .catch((error) => console.error("Error:", error));
+//   }
+// });
 
 // Helper function to get cookies for API requests
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -272,7 +276,6 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "onStoreFolder") {
     let { folderData } = request;
-    console.log(folderData);
 
     fetch(`${fetchUrl}/store_folder`, {
       method: "POST",

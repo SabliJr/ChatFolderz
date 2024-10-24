@@ -10,6 +10,19 @@ const Index = () => {
   return (
     <section className='hero'>
       <h2>
+        Boost your{" "}
+        <span className='_first_span'>
+          <img src={Line2} alt='' className='_hero_line2' />
+          productivity
+        </span>{" "}
+        & stay{" "}
+        <span className='_second_span'>
+          <img src={Line1} alt='' className='_hero_line' />
+          organized
+        </span>{" "}
+        in ChatGPT.
+      </h2>
+      {/* <h2>
         Unleash the Full Power of AI,{" "}
         <span className='_first_span'>
           <img src={Line2} alt='' className='_hero_line2' />
@@ -21,12 +34,17 @@ const Index = () => {
           Optimized
         </span>
         .
-      </h2>
+      </h2> */}
       <p>
+        Everything you need to organize your AI chats into folders, bookmark
+        important chats, quick history search, and manage your prompts in one
+        browser extension.
+      </p>
+      {/* <p>
         Easily organize and manage all your AI conversations in one place.
         Create folders, bookmark important chats, and search through your
         history effortlessly.
-      </p>
+      </p> */}
       <div className='emailDiv'>
         <button>
           <a

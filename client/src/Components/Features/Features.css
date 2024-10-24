@@ -41,6 +41,15 @@
   width: 100%;
 }
 
+._features_text {
+  width: 99%;
+  margin: 1rem auto 3rem;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  letter-spacing: .2px;
+  color: #606060;
+}
+
 ._features_points li {
   font-size: 1.2rem;
   color: #21212f;
