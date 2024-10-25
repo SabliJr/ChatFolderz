@@ -32,11 +32,12 @@ body {
 }
 
 .search-bar {
-  border: transparent;
+  border: none;
   border-radius: .6rem;
   width: 80%;
   height: 1.6rem;
   color: #000;
+  outline: none;
 }
 
 #search-bar_focus {

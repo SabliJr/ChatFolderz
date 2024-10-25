@@ -36,7 +36,7 @@ const Index = () => {
             Yes, your data is secure. All chats and folders are stored locally
             on your device. However, if you're a paid user we collect simple
             info like chats ids and folders ids to make them sync across your
-            device.
+            devices.
             <br />
             <br />
             We prioritize your privacy and data protection at all times.
