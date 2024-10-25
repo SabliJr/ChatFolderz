@@ -10,7 +10,19 @@ const Index = () => {
   return (
     <section className='hero'>
       <h2>
-        Boost your{" "}
+        <span className='_first_span'>
+          <img src={Line2} alt='' className='_hero_line2' />
+          Organize
+        </span>{" "}
+        ChatGPT & stay{" "}
+        <span className='_second_span'>
+          <img src={Line1} alt='' className='_hero_line' />
+          productive
+        </span>{" "}
+        .
+      </h2>
+      {/* <h2>
+        Boost{" "}
         <span className='_first_span'>
           <img src={Line2} alt='' className='_hero_line2' />
           productivity
@@ -21,7 +33,7 @@ const Index = () => {
           organized
         </span>{" "}
         in ChatGPT.
-      </h2>
+      </h2> */}
       {/* <h2>
         Unleash the Full Power of AI,{" "}
         <span className='_first_span'>
