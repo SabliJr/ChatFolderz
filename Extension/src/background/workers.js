@@ -30,354 +30,408 @@ let client_url = isDevelopment
   ? config.development.CLIENT_URL
   : config.production.CLIENT_URL;
 
-/// Frontend: Update the scope to include the required fields
-const SCOPE = encodeURIComponent("profile email openid");
-let RESPONSE_TYPE = "token id_token";
-let CLIENT_ID =
-  "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
+ const Logger = {
+   log: (message) => {
+     if (isDevelopment) {
+       console.log(message);
+     }
+   },
+   error: (message) => {
+     if (isDevelopment) {
+       console.error(message);
+     }
+   },
+ };
 
-// Background script handling Google login and sending the response back to content script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "startGoogleAuth") {
-    chrome.identity.launchWebAuthFlow(
-      {
-        url: `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=${encodeURIComponent(
-          RESPONSE_TYPE
-        )}&redirect_uri=${encodeURIComponent(
-          REDIRECT_URI
-        )}&prompt=consent&scope=openid+email+profile`,
-        interactive: true,
-      },
-      function (responseUrl) {
-        if (chrome.runtime.lastError) {
-          sendResponse({
-            success: false,
-            error: chrome.runtime.lastError.message,
-          });
-        } else {
-          const tokens = extractTokensFromUrl(responseUrl);
+ /// Frontend: Update the scope to include the required fields
+ const SCOPE = encodeURIComponent("profile email openid");
+ let RESPONSE_TYPE = "token id_token";
+ let CLIENT_ID =
+   "556107610850-u13jqk0qes93aee3l9vmovfcmvrlhl4m.apps.googleusercontent.com";
 
-          // Send the tokens to your backend for verification
-          fetch(`${fetchUrl}/auth/google`, {
-            method: "POST",
-            body: JSON.stringify(tokens),
-            headers: { "Content-Type": "application/json" },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              sendResponse({ success: true, data }); // Send tokens in response
-            })
-            .catch((error) =>
-              sendResponse({ success: false, error: error.message })
-            );
-        }
-      }
-    );
+ // Background script handling Google login and sending the response back to content script
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "startGoogleAuth") {
+     chrome.identity.launchWebAuthFlow(
+       {
+         url: `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=${encodeURIComponent(
+           RESPONSE_TYPE
+         )}&redirect_uri=${encodeURIComponent(
+           REDIRECT_URI
+         )}&prompt=consent&scope=openid+email+profile`,
+         interactive: true,
+       },
+       function (responseUrl) {
+         if (chrome.runtime.lastError) {
+           sendResponse({
+             success: false,
+             error: chrome.runtime.lastError.message,
+           });
+         } else {
+           const tokens = extractTokensFromUrl(responseUrl);
 
-    return true;
-  }
-});
+           // Send the tokens to your backend for verification
+           fetch(`${fetchUrl}/auth/google`, {
+             method: "POST",
+             body: JSON.stringify(tokens),
+             headers: { "Content-Type": "application/json" },
+           })
+             .then((response) => response.json())
+             .then((data) => {
+               sendResponse({ success: true, data }); // Send tokens in response
+             })
+             .catch((error) =>
+               sendResponse({ success: false, error: error.message })
+             );
+         }
+       }
+     );
 
-// Helper function to extract the ID token and access token from the URL
-function extractTokensFromUrl(url) {
-  const params = new URLSearchParams(new URL(url).hash.substring(1));
-  const idToken = params.get("id_token");
-  const accessToken = params.get("access_token");
+     return true;
+   }
+ });
 
-  // Return both tokens as an object to send it to the backend to request uer info from google
-  return { idToken, accessToken };
-}
+ // Helper function to extract the ID token and access token from the URL
+ function extractTokensFromUrl(url) {
+   const params = new URLSearchParams(new URL(url).hash.substring(1));
+   const idToken = params.get("id_token");
+   const accessToken = params.get("access_token");
 
-// Setting cookies to the browser
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "setCookie") {
-    const { accessToken, userId } = request.data;
+   // Return both tokens as an object to send it to the backend to request uer info from google
+   return { idToken, accessToken };
+ }
 
-    // Set access token cookie
-    chrome.cookies.set({
-      url: `${fetchUrl}`, // Your backend URL
-      name: "accessToken",
-      value: accessToken,
-      path: "/",
-      secure: true,
-      sameSite: "lax",
-      expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
-    });
+ // Setting cookies to the browser
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "setCookie") {
+     const { accessToken, userId } = request.data;
 
-    // You might want to set additional cookies for user info
-    chrome.cookies.set({
-      url: `${fetchUrl}`,
-      name: "userId",
-      value: userId,
-      path: "/",
-      secure: true,
-      sameSite: "lax",
-      expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
-    });
+     // Set access token cookie
+     chrome.cookies.set({
+       url: `${fetchUrl}`, // Your backend URL
+       name: "accessToken",
+       value: accessToken,
+       path: "/",
+       secure: true,
+       sameSite: "lax",
+       expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
+     });
 
-    sendResponse({ success: true });
-  }
+     // You might want to set additional cookies for user info
+     chrome.cookies.set({
+       url: `${fetchUrl}`,
+       name: "userId",
+       value: userId,
+       path: "/",
+       secure: true,
+       sameSite: "lax",
+       expirationDate: Math.floor(Date.now() / 1000) + 20 * 60 * 60,
+     });
 
-  //We need to return true to keep the message channel open for async response
-  return true;
-});
+     sendResponse({ success: true });
+   }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "buySubscription") {
-    const { price_id } = request; // Get the price_id from the message
+   //We need to return true to keep the message channel open for async response
+   return true;
+ });
 
-    fetch(`${fetchUrl}/check_out?price_id=${price_id}`, {
-      method: "GET",
-      credentials: "include", // This to include the cookies
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "buySubscription") {
+     const { price_id } = request; // Get the price_id from the message
 
-    // We need to return true to keep the message channel open for async response
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/check_out?price_id=${price_id}`, {
+       method: "GET",
+       credentials: "include", // This to include the cookies
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "payOneTime") {
-    const { price_id } = request; // Get the price_id from the message
+     // We need to return true to keep the message channel open for async response
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
-      method: "GET",
-      credentials: "include", // This to include the cookies
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "payOneTime") {
+     const { price_id } = request; // Get the price_id from the message
 
-    // We need to return true to keep the message channel open for async response
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/check_out_onetime?price_id=${price_id}`, {
+       method: "GET",
+       credentials: "include", // This to include the cookies
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-// Helper function to get cookies for API requests
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "getCookies") {
-    chrome.cookies.getAll({ url: `${fetchUrl}` }, (cookies) => {
-      sendResponse({ cookies });
-    });
-    return true;
-  }
-});
+     // We need to return true to keep the message channel open for async response
+     return true;
+   }
+ });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "getCredentials") {
-    fetch(`${fetchUrl}/get_credentials`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ // Helper function to get cookies for API requests
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "getCookies") {
+     chrome.cookies.getAll({ url: `${fetchUrl}` }, (cookies) => {
+       sendResponse({ cookies });
+     });
+     return true;
+   }
+ });
 
-    return true;
-  }
-});
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "getCredentials") {
+     fetch(`${fetchUrl}/get_credentials`, {
+       method: "GET",
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "cancelSubscription") {
-    chrome.storage.local.get(["customerId"], (result) => {
-      const { customerId } = result;
+     return true;
+   }
+ });
 
-      fetch(`${fetchUrl}/cancel_subscription?customer_id=${customerId}`, {
-        method: "GET",
-        credentials: "include",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          sendResponse({ success: true, data });
-        })
-        .catch((error) =>
-          sendResponse({ success: false, error: error.message })
-        );
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "cancelSubscription") {
+     chrome.storage.local.get(["customerId"], (result) => {
+       const { customerId } = result;
 
-      return true;
-    });
-  }
-});
+       fetch(`${fetchUrl}/cancel_subscription?customer_id=${customerId}`, {
+         method: "GET",
+         credentials: "include",
+       })
+         .then((response) => response.json())
+         .then((data) => {
+           sendResponse({ success: true, data });
+         })
+         .catch((error) =>
+           sendResponse({ success: false, error: error.message })
+         );
 
-chrome.runtime.onInstalled.addListener(() => {
-  fetch(`${fetchUrl}/get_credentials`, {
-    method: "GET",
-    credentials: "include",
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      let { customer_id, user_has_payed, user_id, has_access } = data.user;
-      chrome.storage.local.set(
-        {
-          isLoggedIn: true,
-          userId: user_id,
-          customerId: customer_id,
-          hasAccess: has_access,
-          userHasPayed: user_has_payed,
-        },
-        () => {
-          // Send a message to the content script indicating that the data is set
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            chrome.tabs.sendMessage(tabs[0].id, { action: "dataSet" });
-          });
-        }
-      );
-    })
-    .catch((error) => console.error("Err getting credentials"));
-});
+       return true;
+     });
+   }
+ });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onStoreFolder") {
-    let { folderData } = request;
+ chrome.runtime.onInstalled.addListener(() => {
+   fetch(`${fetchUrl}/get_credentials`, {
+     method: "GET",
+     credentials: "include",
+   })
+     .then((response) => response.json())
+     .then((data) => {
+       let { customer_id, user_has_payed, user_id, has_access } = data.user;
+       chrome.storage.local.set(
+         {
+           isLoggedIn: true,
+           userId: user_id,
+           customerId: customer_id,
+           hasAccess: has_access,
+           userHasPayed: user_has_payed,
+         },
+         () => {
+           // Send a message to the content script indicating that the data is set
+           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+             chrome.tabs.sendMessage(tabs[0].id, { action: "dataSet" });
+           });
+         }
+       );
+     })
+     .catch((error) => Logger.error("Err getting credentials"));
+ });
 
-    fetch(`${fetchUrl}/store_folder`, {
-      method: "POST",
-      body: JSON.stringify(folderData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onStoreFolder") {
+     let { folderData } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/store_folder`, {
+       method: "POST",
+       body: JSON.stringify(folderData),
+       headers: {
+         "Content-Type": "application/json",
+       },
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onGetUserFolderz") {
-    fetch(`${fetchUrl}/get_user_folders`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+     return true;
+   }
+ });
 
-    return true;
-  }
-});
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onGetUserFolderz") {
+     fetch(`${fetchUrl}/get_user_folders`, {
+       method: "GET",
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onDeleteFolder") {
-    let { folderId } = request;
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/delete_folder?folder_id=${folderId}`, {
-      method: "DELETE",
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onDeleteFolder") {
+     let { folderId } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/delete_folder?folder_id=${folderId}`, {
+       method: "DELETE",
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onEditFolder") {
-    let { folderData } = request;
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/edit_folder`, {
-      method: "PUT",
-      body: JSON.stringify(folderData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onEditFolder") {
+     let { folderData } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/edit_folder`, {
+       method: "PUT",
+       body: JSON.stringify(folderData),
+       headers: {
+         "Content-Type": "application/json",
+       },
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onAddChat") {
-    let { folderData } = request;
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/add_chat`, {
-      method: "POST",
-      body: JSON.stringify(folderData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onAddChat") {
+     let { folderData } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/add_chat`, {
+       method: "POST",
+       body: JSON.stringify(folderData),
+       headers: {
+         "Content-Type": "application/json",
+       },
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onRemoveChat") {
-    let { folderData } = request;
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/remove_chat`, {
-      method: "DELETE",
-      body: JSON.stringify(folderData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onRemoveChat") {
+     let { folderData } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/remove_chat`, {
+       method: "DELETE",
+       body: JSON.stringify(folderData),
+       headers: {
+         "Content-Type": "application/json",
+       },
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "onUpdateFolderChat") {
-    let { folderToUpdate } = request;
+     return true;
+   }
+ });
 
-    fetch(`${fetchUrl}/update_folder_or_chat`, {
-      method: "POST",
-      body: JSON.stringify(folderToUpdate),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        sendResponse({ success: true, data });
-      })
-      .catch((error) => sendResponse({ success: false, error: error.message }));
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+   if (request.action === "onUpdateFolderChat") {
+     let { folderToUpdate } = request;
 
-    return true;
-  }
-});
+     fetch(`${fetchUrl}/update_folder_or_chat`, {
+       method: "POST",
+       body: JSON.stringify(folderToUpdate),
+       headers: {
+         "Content-Type": "application/json",
+       },
+       credentials: "include",
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         sendResponse({ success: true, data });
+       })
+       .catch((error) =>
+         sendResponse({ success: false, error: error.message })
+       );
+
+     return true;
+   }
+ });
+
+ chrome.runtime.onSuspend.addListener(() => {
+   // Clear the storage
+   chrome.storage.local.clear(() => {});
+
+   // Also, clear cookies and other data stored!
+   chrome.cookies.getAll({ domain: `${fetchUrl}` }, (cookies) => {
+     for (let cookie of cookies) {
+       chrome.cookies.remove({
+         url: `${fetchUrl}`,
+         name: cookie.accessToken,
+       });
+
+       chrome.cookies.remove({
+         url: `${fetchUrl}`,
+         name: cookie.userId,
+       });
+     }
+   });
+ });
+
 
 // apiUtils.js
 // export const makeAuthenticatedRequest = async (endpoint, options = {}) => {

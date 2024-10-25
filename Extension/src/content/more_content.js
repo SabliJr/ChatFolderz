@@ -16,6 +16,19 @@ const config = {
 const manifest = chrome.runtime.getManifest();
 const isDevelopment = !("update_url" in manifest);
 
+const Logger = {
+  log: (message) => {
+    if (isDevelopment) {
+      console.log(message);
+    }
+  },
+  error: (message) => {
+    if (isDevelopment) {
+      console.error(message);
+    }
+  },
+};
+
 const yearlyPriceId = isDevelopment
   ? config.development.Yearly
   : config.production.Yearly;
@@ -76,10 +89,10 @@ const handleLogin = () => {
 
           displayUI();
         } catch (error) {
-          console.error("Error setting cookies");
+          Logger.error("Error setting cookies");
         }
       } else {
-        console.error("Google login failed");
+        Logger.error("Google login failed");
       }
     }
   );
@@ -93,7 +106,7 @@ const onBuySub = (price_id) => {
         let { id, url } = response.data;
         window.open(url, "_blank");
       } else {
-        console.error("Getting a payment link has failed");
+        Logger.error("Getting a payment link has failed");
       }
     }
   );
@@ -108,7 +121,7 @@ const onBuyOneTime = (price_id) => {
 
         window.open(url, "_blank");
       } else {
-        console.error("Getting a payment link has failed");
+        Logger.error("Getting a payment link has failed");
       }
     }
   );
