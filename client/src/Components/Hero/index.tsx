@@ -14,11 +14,11 @@ const Index = () => {
           <img src={Line2} alt='' className='_hero_line2' />
           Organize
         </span>{" "}
-        ChatGPT & stay{" "}
+        Your Chats, Boost Your{" "}
         <span className='_second_span'>
           <img src={Line1} alt='' className='_hero_line' />
-          productive
-        </span>{" "}
+          Productivity
+        </span>
         .
       </h2>
       {/* <h2>
@@ -48,9 +48,9 @@ const Index = () => {
         .
       </h2> */}
       <p>
-        Everything you need to organize your AI chats into folders, bookmark
-        important chats, quick history search, and manage your prompts in one
-        browser extension.
+        Everything you need to organize your ChatGPT conversations into folders,
+        bookmark important chats, quick history search, and manage your prompts
+        in one browser extension.
       </p>
       {/* <p>
         Easily organize and manage all your AI conversations in one place.
