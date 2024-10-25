@@ -40,6 +40,12 @@ const BrandFeaturs = () => {
           <span>
             <PiSealCheckLight />
           </span>
+          <p>Add unlimited chats across unlimited folders.</p>
+        </li>
+        <li>
+          <span>
+            <PiSealCheckLight />
+          </span>
           <p>
             Link up to 3 ChatGPT accounts <span>coming soon</span>
           </p>

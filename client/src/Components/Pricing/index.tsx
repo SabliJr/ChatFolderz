@@ -91,6 +91,12 @@ const Index = () => {
               <span>
                 <PiSealCheckLight />
               </span>
+              <p>Add unlimited chats across unlimited folders.</p>
+            </li>
+            <li>
+              <span>
+                <PiSealCheckLight />
+              </span>
               <p>
                 Link unlimited ChatGPT accounts <span>coming soon</span>
               </p>
@@ -167,6 +173,12 @@ const Index = () => {
                   <PiSealCheckLight />
                 </span>
                 <p>Create up to 2 folders</p>
+              </li>
+              <li>
+                <span>
+                  <PiSealCheckLight />
+                </span>
+                <p>Add up to 5 chats across 2 folders.</p>
               </li>
               <li>
                 <span>
