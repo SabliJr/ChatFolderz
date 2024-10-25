@@ -26,9 +26,9 @@ const onCheckOut = async (req: Request, res: Response) => {
     ]);
 
     let { email } = userInfo?.rows[0];
-    let customer = await stripe.customers.create({
-      email: email,
-    });
+    // let customer = await stripe.customers.create({
+    //   email: email,
+    // });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -39,7 +39,7 @@ const onCheckOut = async (req: Request, res: Response) => {
         },
       ],
       mode: "subscription",
-      customer: customer.id,
+      customer_email: email,
       subscription_data: {
         trial_period_days: 1, // This will give the user a 1-day free trial
       },

@@ -190,7 +190,7 @@ const Index = () => {
                 <span>
                   <PiSealCheckLight />
                 </span>
-                <p>Sync the folder across all your devices</p>
+                <p>Sync folder across all your devices</p>
               </li>
             </ul>
           </div>
