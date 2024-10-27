@@ -119,10 +119,10 @@
  .videoWrapper {
     position: relative;
     width: 90%; 
-    padding-top: 38.85%; /* Aspect ratio of 16:9 (100% / 2.35 for a rectangular ratio) */
-    margin: 0 auto; /* Center the video wrapper */
+    padding-top: 38.85%; 
+    margin: 0 auto;
     overflow: hidden;
-    border-radius: 1.42rem; /* Add border-radius to the wrapper */
+    border-radius: 1.42rem;
   }
 
  .videoEl {
