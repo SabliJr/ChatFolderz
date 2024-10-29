@@ -48,7 +48,7 @@ const Index = () => {
             </h4>
           </div>
           <h2 className='_price'>
-            $349.99 <span>/One time</span>
+            $299.99 <span>/One time</span>
           </h2>
           <ul className='_pricing_list'>
             <li>
@@ -149,10 +149,10 @@ const Index = () => {
             </div>
             <div className='_price_div'>
               <h2 className='_price'>
-                $129.99 <span>/One time</span>
+                $99.99 <span>/One time</span>
               </h2>
               <h2 className='_price'>
-                $76.70 <span>/year</span>
+                $69.99 <span>/year</span>
               </h2>
             </div>
             <BrandFeaturs />
@@ -184,7 +184,7 @@ const Index = () => {
                 <span>
                   <PiSealCheckLight />
                 </span>
-                <p>Bookmark up to 3 key chats</p>
+                <p>Bookmark 1 key chat</p>
               </li>
               <li>
                 <span>
