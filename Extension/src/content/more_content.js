@@ -480,7 +480,7 @@ window.addEventListener("load", () => {
     let { userId, isLoggedIn } = result;
 
     if (userId && isLoggedIn) {
-      setInterval(onGetCredentials, 2000);
+      // setInterval(onGetCredentials, 2000);
     }
   });
 });

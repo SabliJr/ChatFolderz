@@ -109,6 +109,8 @@ let createBookmarks = () => {
   bookmarkedFolder.appendChild(bookmarkChatsContainer);
 
   bookmarkTitleContainer.addEventListener("click", () => {
+    getCredentials();
+
     if (bookmarkChatsContainer.style.display === "none") {
       bookmarkChatsContainer.style.display = "block";
     } else {
@@ -172,6 +174,8 @@ let addToggleListener = (
   isInBookmarkFolder
 ) => {
   const toggleBookmark = () => {
+    getCredentials();
+
     if (bookmarkAdd.contains(bookmarkedIcon)) {
       // Switch to unbookmarked icon
       bookmarkAdd.replaceChild(unbookmarkedIcon, bookmarkedIcon);
@@ -262,6 +266,7 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
       "div.no-draggable span[data-state='closed'] img._add_to_folder_icon"
     );
     addToFolder.addEventListener("click", () => {
+      getCredentials();
       let folderDivs = document.querySelectorAll("._la_folder");
 
       if (folderDivs.length > 0) {
@@ -273,6 +278,8 @@ function addToBookmarkedFolder(chat, isFromStorage = false) {
         popup
           .querySelector("._make_folder_btn")
           .addEventListener("click", () => {
+            getCredentials();
+
             let folderName = popup
               .querySelector("._folder_name_input")
               .value.trim();
@@ -458,6 +465,7 @@ let addIconsToChat = () => {
 
         // Adding the chat to the folderz
         addToFolderIcon.addEventListener("click", () => {
+          getCredentials();
           let folderDivs = document.querySelectorAll("._la_folder");
           if (folderDivs.length > 0) {
             addToFolderGlobally(chat);
@@ -468,6 +476,8 @@ let addIconsToChat = () => {
             popup
               .querySelector("._make_folder_btn")
               .addEventListener("click", () => {
+                getCredentials();
+
                 let folderName = popup
                   .querySelector("._folder_name_input")
                   .value.trim();
@@ -563,6 +573,8 @@ function doFolderCreation() {
 
     // Add event listener to update the folder upon popup confirmation
     popup.querySelector("._make_folder_btn").addEventListener("click", () => {
+      getCredentials();
+
       let folderName = popup.querySelector("._folder_name_input").value.trim();
       let colorVal = popup.querySelector("._folder_color_input").value;
       let container = document.querySelector("._folderz");
@@ -645,6 +657,7 @@ let addToFolderGlobally = (chat) => {
 
   // Close button functionality
   fermerBtn.addEventListener("click", () => {
+    getCredentials();
     if (folderzClone) folderzClone.remove();
   });
 
@@ -652,6 +665,7 @@ let addToFolderGlobally = (chat) => {
   let laCreateBtn = folderzClone.querySelector("._create_folder_container");
   let fValues = {};
   laCreateBtn.addEventListener("click", () => {
+    getCredentials();
     goLookUp = false;
 
     doFolderCreation().then(({ folder_div, folderName, colorVal }) => {
@@ -665,6 +679,8 @@ let addToFolderGlobally = (chat) => {
   });
 
   saveBtn.addEventListener("click", () => {
+    getCredentials();
+
     saveChatsToFolders(
       chat,
       folderzClone,
@@ -709,6 +725,8 @@ let addDragAndDropFunctionality = () => {
 };
 
 function handleDragStart(e) {
+  getCredentials();
+
   let id = e.target;
   let realId = id.parentElement.parentElement.id;
   e.dataTransfer.setData("text/plain", realId); // Use a real unique ID :)
@@ -718,6 +736,8 @@ function handleDragStart(e) {
 function handleDragOver(e) {
   e.preventDefault(); // Necessary to allow dropping
   e.dataTransfer.dropEffect = "copy";
+
+  getCredentials();
 }
 
 // Define the event listener function
@@ -732,11 +752,15 @@ const removeClickEvent = (elementToRemove, folderMinusIcon, folderId) => {
 
       folderMinusIcon.removeEventListener("click", removeClickEvent); // Remove the click event listener
     }
+
+    getCredentials();
   };
 };
 
 function handleDrop(e) {
   e.preventDefault();
+  getCredentials();
+
   let chatId = e.dataTransfer.getData("text/plain");
   let draggedElement = document.getElementById(chatId); // Retrieve the dragged element by ID
 
@@ -940,6 +964,8 @@ let createNewFolder = (
 
   // Add click event to toggle the visibility of the folder contents
   folderTitle.addEventListener("click", () => {
+    getCredentials();
+
     toggleFolderContents(
       folderContent,
       folderIcon,
@@ -949,6 +975,8 @@ let createNewFolder = (
   });
 
   folderMenu.addEventListener("click", () => {
+    getCredentials();
+
     // Close the currently open menu (if there is one)
     if (openMenu && openMenu !== folderMenuHolder) {
       openMenu.style.display = "none";
@@ -965,6 +993,8 @@ let createNewFolder = (
   });
 
   folderEdit.addEventListener("click", () => {
+    getCredentials();
+
     folderMenuHolder.style.display = "none";
     let folderId = folderDiv.id;
     openEditPopup(folderTitle, folderTitleSpan, folderContent, folderId);
@@ -973,6 +1003,7 @@ let createNewFolder = (
   // Deleting the folder
   folderDelete.addEventListener("click", () => {
     let folderId = folderDiv.id;
+    getCredentials();
 
     chrome.storage.local.get(
       [
@@ -1060,6 +1091,8 @@ let createNewFolder = (
           // Event listener for the checkbox
           if (chatInput) {
             chatInput.addEventListener("change", (event) => {
+              getCredentials();
+
               let folderChats = folderDiv.querySelectorAll("li.relative");
               let isExist = 0;
               if (event.target.checked) {
@@ -1099,6 +1132,8 @@ let createNewFolder = (
       });
 
       doneBtn.addEventListener("click", () => {
+        getCredentials();
+
         chatDiv.remove();
       });
 
@@ -1201,6 +1236,8 @@ let openEditPopup = (folderTitle, folderTitleSpan, folderContent, folderId) => {
 
   // Add event listener to update the folder upon popup confirmation
   popup.querySelector("._make_folder_btn").addEventListener("click", () => {
+    getCredentials();
+
     folderName = folderInput.value.trim();
     colorVal = folderColor.value;
 
@@ -1268,6 +1305,8 @@ let createPopup = () => {
 
   // Close the popup
   closeIcon.addEventListener("click", () => {
+    getCredentials();
+
     if (popup) {
       onRemovePop();
     }
@@ -1295,11 +1334,15 @@ let startCreatingFolderz = () => {
   let createFolderzDiv = document.querySelector("._create_folder_container");
 
   createFolderzDiv.addEventListener("click", () => {
+    getCredentials();
+
     let popup = createPopup();
     let container = document.querySelector("._folderz");
 
     // Add folder button inside the popup
     popup.querySelector("._make_folder_btn").addEventListener("click", () => {
+      getCredentials();
+
       let folderName = popup.querySelector("._folder_name_input").value.trim();
       let colorVal = popup.querySelector("._folder_color_input").value;
 
@@ -1356,6 +1399,7 @@ function handleSearchBar() {
 function setupSearchInput(inputEle) {
   inputEle.addEventListener("focus", () => {
     inputEle.id = "search-bar_focus";
+    getCredentials();
   });
 
   inputEle.addEventListener("blur", () => {
@@ -1363,6 +1407,8 @@ function setupSearchInput(inputEle) {
   });
 
   inputEle.addEventListener("input", () => {
+    getCredentials();
+
     let searchTerm = searchInput.value.toLowerCase();
     const chatGroups = document.querySelectorAll("nav ol");
 
@@ -1986,6 +2032,9 @@ function getCredentials() {
           userId: user_id,
           isCanceled: is_canceled,
         });
+
+        disableFunctionalities();
+        disableAllFunctionalities();
       } else {
         await chrome.storage.local.remove([
           "customerId",
@@ -2063,7 +2112,7 @@ function disableAllFunctionalities() {
           "._cF_K752tsMs7nXG7r-B"
         );
 
-        if (user_bookmarks.length >= 3) {
+        if (user_bookmarks.length >= 1) {
           //Disable add to bookmarks
           disableBookmarking.forEach((element) => {
             disableStuff(element);
@@ -2357,7 +2406,7 @@ window.addEventListener("load", () => {
 
     // let { userId, isLoggedIn } = userInfoOnLoad;
     if (userId && isLoggedIn) {
-      setInterval(getCredentials, 2000);
+      // setInterval(getCredentials, 2000);
 
       loadBookmarksFromStorage();
       // loadFoldersFromStorage();
