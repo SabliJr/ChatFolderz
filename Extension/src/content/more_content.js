@@ -260,11 +260,12 @@ let onManageAccount = (planType, isCanceled) => {
       <div class="_manage_user_ask">
         <p class="_manage_ask_text">
           Got ideas? We’d love to hear your thoughts! Suggest new features and
-          help shape the future of this extension. Your Feedback Is Valuable!
+          help shape the future of this extension. Your Feedback Is Valuable! Or tell us if saw a bug :)
         </p>
-        <p class="_manage_suggest_btn">
-          <span class="_manage_suggest_span">Submit</span>
-        </p>
+        <span class="_suggest_and_report_btn">
+          <button class="_manage_suggest_btn">Submit</button>
+          <button class="_report_bug_btn">Report Bug</button>
+        </span>
         ${
           planType === "subscription" && !isCanceled
             ? `<span class='_cancel_sub_btn_span'>
@@ -287,6 +288,18 @@ let onManageAccount = (planType, isCanceled) => {
   //  </div>;
 
   manageAccountContainer.innerHTML = manageUi;
+  let form_url =
+    "https://docs.google.com/forms/d/e/1FAIpQLSe8ROX6EbLXU1ldON_CGn35gEnaUKtouaZ6-xaqOo4thrrsfg/viewform";
+
+  let suggestBtn = manageAccountContainer.querySelector("._manage_suggest_btn");
+  suggestBtn.addEventListener("click", () => {
+    window.open(form_url, "_blank");
+  });
+
+  let reportBugBtn = manageAccountContainer.querySelector("._report_bug_btn");
+  reportBugBtn.addEventListener("click", () => {
+    window.open(form_url, "_blank");
+  });
 
   // chrome.storage.local.get(["isCanceled"], (result) => {
   //   const { isCanceled } = result;
