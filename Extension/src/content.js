@@ -2410,9 +2410,9 @@ window.addEventListener("load", () => {
 
       loadBookmarksFromStorage();
       // loadFoldersFromStorage();
+      doCheckAndLoadUserStuff();
     }
   });
-  doCheckAndLoadUserStuff();
 
   disableFunctionalities();
   disableAllFunctionalities();
