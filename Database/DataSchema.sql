@@ -41,6 +41,17 @@ CREATE TABLE user_folders (
     user_id TEXT NOT NULL REFERENCES user_profile(user_id) ON DELETE CASCADE
 );
 
+-- Linked accounts table
+CREATE TABLE user_linked_accounts (
+    account_id TEXT PRIMARY KEY,
+    user_id TEXT REFERENCES user_profile(user_id) ON DELETE CASCADE, -- Foreign key to user profile
+    account_type VARCHAR(50) CHECK (account_type IN ('google')), -- Type of account linked
+    account_email VARCHAR(256) NOT NULL, -- Email of the linked account
+    linked_at TIMESTAMP DEFAULT NOW(), -- When the account was linked
+    profile_image TEXT,
+    user_name VARCHAR(256)
+);
+
 -- A query to check wether the user still has access or not
 SELECT *
 FROM user_profile
