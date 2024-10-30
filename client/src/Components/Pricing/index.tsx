@@ -152,7 +152,7 @@ const Index = () => {
                 $99.99 <span>/One time</span>
               </h2>
               <h2 className='_price'>
-                $69.99 <span>/year</span>
+                $59.99 <span>/year</span>
               </h2>
             </div>
             <BrandFeaturs />
