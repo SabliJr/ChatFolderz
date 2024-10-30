@@ -37,9 +37,9 @@ const onCheckOut = async (req: Request, res: Response) => {
       ],
       mode: "subscription",
       customer_email: email,
-      subscription_data: {
-        trial_period_days: 1, // This will give the user a 1-day free trial
-      },
+      // subscription_data: {
+      //   trial_period_days: 1, // This will give the user a 1-day free trial
+      // },
       success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${CLIENT_URL}`,
     });

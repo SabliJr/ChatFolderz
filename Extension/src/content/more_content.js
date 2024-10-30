@@ -1,15 +1,15 @@
 const config = {
   development: {
     Monthly: "price_1Q7umiDuxNnSWA1yOR9XCzOz",
-    Yearly: "price_1Q7unWDuxNnSWA1yxvQ2N4Rv",
-    SuperPlan: "price_1QACaODuxNnSWA1yy7ssX7uL",
-    PowerPlan: "price_1QCiRMDuxNnSWA1yIYmPtLGc",
+    Yearly: "price_1QFhXhDuxNnSWA1yfLsd1Z3P",
+    SuperPlan: "price_1QFhVwDuxNnSWA1yxMxFHzdM",
+    PowerPlan: "price_1QFhV0DuxNnSWA1yP5w80xRE",
   },
   production: {
     Monthly: "price_1Q8i7yDuxNnSWA1yhv1Vn8UN",
-    Yearly: "price_1Q8i7tDuxNnSWA1yrIYPqFbl",
-    SuperPlan: "price_1QCqJYDuxNnSWA1yEcV2HgKO",
-    PowerPlan: "price_1QCqJNDuxNnSWA1yQ13PTAhI",
+    Yearly: "price_1QFhuDDuxNnSWA1y02gKKVqS",
+    SuperPlan: "price_1QFhuIDuxNnSWA1ygETLe8d2",
+    PowerPlan: "price_1QFhuNDuxNnSWA1yulYJ7Pzt",
   },
 };
 
@@ -139,9 +139,9 @@ let onCollectPayment = () => {
       <p class="_collect_pricing_title">Simple pricing for everyone.</p>
       <ul class="_ul_prices">
         <li>$7.99 /month</li>
-        <li>$76.70 /Year</li>
-        <li>$129.99 /One time</li>
-        <li>$349.99 /One time—unlimited</li>
+        <li>$59.99 /Year</li>
+        <li>$99.99 /One time</li>
+        <li>$299.99 /One time—unlimited</li>
       </ul>
     </div>
     `;
