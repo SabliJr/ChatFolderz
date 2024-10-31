@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPT Folders, Search, Bookmarks - ChatFolderz: AI Chat Organizer Tool",
+  "name": "ChatGPT Folders, Search, Bookmarks - ChatFolderz: AI Chat Organizer Tool.",
   "version": "2.0.1",
-  "description": " Organize ChatGPT with Folders, Search, Bookmark key discussions, Prompts Library and more...",
+  "description": " Organize your AI conversations into Folders, Bookmark key discussions, Search, Prompts Library and more...",
   "permissions": [
     "cookies",
     "identity",
