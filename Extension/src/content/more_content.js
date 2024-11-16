@@ -141,10 +141,10 @@ let onCollectPayment = () => {
         <li>$7.99 /month</li>
         <li>$59.99 /Year</li>
         <li>$99.99 /One time</li>
-        <li>$299.99 /One time—unlimited</li>
-      </ul>
-    </div>
-    `;
+        </ul>
+        </div>
+        `;
+  // <li>$299.99 /One time—unlimited</li>
 
   // <p class="_payment_notice">Please use the same email you used to create your account when making your payment on Stripe to ensure uninterrupted access to our services.</p>
 
@@ -160,9 +160,9 @@ let onCollectPayment = () => {
   powerPlanBtn.innerText = "Power Plan—Onetime";
   powerPlanBtn.classList.add("_yearly_btn");
 
-  let superPlanBtn = document.createElement("button");
-  superPlanBtn.innerText = "Super Plan—unlimited";
-  superPlanBtn.classList.add("_yearly_btn");
+  // let superPlanBtn = document.createElement("button");
+  // superPlanBtn.innerText = "Super Plan—unlimited";
+  // superPlanBtn.classList.add("_yearly_btn");
 
   let subBtnsSpan = document.createElement("span");
   subBtnsSpan.classList.add("_payment_btns_span");
@@ -176,7 +176,7 @@ let onCollectPayment = () => {
   subBtnsSpan.appendChild(monthlySub);
   subBtnsSpan.appendChild(yearlySub);
   buyBtnsSpan.appendChild(powerPlanBtn);
-  buyBtnsSpan.appendChild(superPlanBtn);
+  // buyBtnsSpan.appendChild(superPlanBtn);
   collectMoneyContainer.innerHTML = trialInfoHTML;
 
   btnsSpan.appendChild(subBtnsSpan);

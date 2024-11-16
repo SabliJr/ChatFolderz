@@ -1,26 +1,26 @@
-import React, { useState, useRef } from "react";
+// import React, { useState, useRef } from "react";
 import "./pricing.css";
 
 import { PiSealCheckLight } from "react-icons/pi";
 import BrandFeaturs from "./BrandFeaturs";
 
 const Index = () => {
-  const [whoIsThis, setWhoIsThis] = useState("Yearly");
-  let checkRef = useRef<HTMLInputElement | null>(null);
+  // const [whoIsThis, setWhoIsThis] = useState("Yearly");
+  // let checkRef = useRef<HTMLInputElement | null>(null);
 
-  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setWhoIsThis("Yearly");
-    } else {
-      setWhoIsThis("Monthly");
-    }
-  };
+  // const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.checked) {
+  //     setWhoIsThis("Yearly");
+  //   } else {
+  //     setWhoIsThis("Monthly");
+  //   }
+  // };
 
-  const handleSpanClick = () => {
-    if (checkRef?.current) {
-      checkRef?.current?.click();
-    }
-  };
+  // const handleSpanClick = () => {
+  //   if (checkRef?.current) {
+  //     checkRef?.current?.click();
+  //   }
+  // };
 
   return (
     <main className='pricing' id='pricing_scroll'>
@@ -30,7 +30,7 @@ const Index = () => {
           Your AI chats will be more than just conversations—they’ll become an
           organized, easy-to-access knowledge base.
         </p>
-        <label htmlFor='' className='_switcher'>
+        {/* <label htmlFor='' className='_switcher'>
           <input
             type='checkbox'
             onChange={(e) => handleToggle(e)}
@@ -38,10 +38,10 @@ const Index = () => {
             ref={checkRef}
           />
           <span className='_slider' onClick={handleSpanClick}></span>
-        </label>
+        </label> */}
       </div>
       <div className='_prices_container'>
-        <div className='pricing_item0'>
+        {/* <div className='pricing_item0'>
           <div className='_p_sub_title'>
             <h4>
               Super Plan <span>— unlimited</span>
@@ -125,45 +125,45 @@ const Index = () => {
             target='#blank'>
             <button>Add To Browser</button>
           </a>
-        </div>
-        {whoIsThis === "Monthly" ? (
-          <div className='pricing_item1'>
-            <div className='_p_sub_title'>
-              <h4>Monthly Plan</h4>
-            </div>
+        </div> */}
+        {/* {whoIsThis === "Monthly" ? ( */}
+        {/* ) : ( */}
+        <div className='pricing_item1'>
+          <div className='_p_sub_title'>
+            <h4>Power Plan</h4>
+          </div>
+          <div className='_price_div'>
             <h2 className='_price'>
-              $7.99 <span>/month</span>
+              $99.99 <span>/One time</span>
             </h2>
-            <BrandFeaturs />
-            <a
-              className='_free_link'
-              href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-              target='#blank'>
-              <button>Add To Browser</button>
-            </a>
+            <h2 className='_price'>
+              $59.99 <span>/year</span>
+            </h2>
           </div>
-        ) : (
-          <div className='pricing_item1'>
-            <div className='_p_sub_title'>
-              <h4>Power Plan</h4>
-            </div>
-            <div className='_price_div'>
-              <h2 className='_price'>
-                $99.99 <span>/One time</span>
-              </h2>
-              <h2 className='_price'>
-                $59.99 <span>/year</span>
-              </h2>
-            </div>
-            <BrandFeaturs />
-            <a
-              className='_free_link'
-              href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
-              target='#blank'>
-              <button>Add To Browser</button>
-            </a>
+          <BrandFeaturs />
+          <a
+            className='_free_link'
+            href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+            target='#blank'>
+            <button>Add To Browser</button>
+          </a>
+        </div>
+        <div className='pricing_item1'>
+          <div className='_p_sub_title'>
+            <h4>Monthly Plan</h4>
           </div>
-        )}
+          <h2 className='_price'>
+            $7.99 <span>/month</span>
+          </h2>
+          <BrandFeaturs />
+          <a
+            className='_free_link'
+            href='https://chromewebstore.google.com/detail/chatfolderz-ai-chat-organ/ibelppoiheipgceppgklepmjcafbdcdm?hl'
+            target='#blank'>
+            <button>Add To Browser</button>
+          </a>
+        </div>
+        {/* )} */}
         <div className='pricing_item2'>
           <div className='_p_sub_title'>
             <h4>Free</h4>
