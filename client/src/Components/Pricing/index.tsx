@@ -153,7 +153,7 @@ const Index = () => {
             <h4>Monthly Plan</h4>
           </div>
           <h2 className='_price'>
-            $7.99 <span>/month</span>
+            $5.99 <span>/month</span>
           </h2>
           <BrandFeaturs />
           <a
