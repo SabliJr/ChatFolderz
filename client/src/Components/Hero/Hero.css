@@ -4,7 +4,7 @@
 }
 
 .hero h2 {
-  font-size: 4rem;
+  font-size: 3.6rem;
   width: 70%;
   margin: auto;
   font-weight: 700;
@@ -40,7 +40,7 @@
 
 .hero p {
   width: 70%;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   margin: 2rem auto;
   font-family: 'Archivo', sans-serif;
   line-height: 1.3;
