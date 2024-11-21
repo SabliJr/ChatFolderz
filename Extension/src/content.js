@@ -2424,6 +2424,4 @@ window.addEventListener("load", () => {
 
   // Periodically check for new code blocks (as a fallback)
   setInterval(addElements, 2000);
-  // setInterval(disableFunctionalities, 2000);
-  // setInterval(disableAllFunctionalities, 2000);
 });
