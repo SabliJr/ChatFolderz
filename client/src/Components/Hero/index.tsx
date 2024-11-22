@@ -25,11 +25,6 @@ const Index = () => {
         bookmark important chats, quick history search, and manage your prompts
         in one browser extension.
       </p>
-      {/* <p>
-        Easily organize and manage all your AI conversations in one place.
-        Create folders, bookmark important chats, and search through your
-        history effortlessly.
-      </p> */}
       <div className='emailDiv'>
         <button>
           <a
@@ -42,10 +37,6 @@ const Index = () => {
       <div className='_i_img_container'>
         <span className='_best_i'>Best Integrated With:</span>
         <img src={GPT} alt='' className='_i_img' />
-        {/* <span className='_claude_container'>
-          <img src={Claude} alt='' className='_i_img' />
-          <p id='_claude_coming_soon'>Coming Soon</p>
-        </span> */}
       </div>
       <img src={PromoImg} alt='promImg' className='promImg' />
     </section>

@@ -16,7 +16,7 @@ const Index = () => {
       <main className='footerMain'>
         <img src={FooterLogo} alt='' className='footerLogo' />
         <div className='footerLinks'>
-          {/* <p onClick={() => navigate("/terms-of-service")}>Terms of Service</p> */}
+          <p onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
           <p onClick={() => navigate("/privacy-policy")}> Privacy Policy</p>
           <p onClick={() => navigate("/contact")}>Contact</p>
         </div>
