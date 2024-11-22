@@ -30,15 +30,6 @@ const Index = () => {
           Your AI chats will be more than just conversations—they’ll become an
           organized, easy-to-access knowledge base.
         </p>
-        {/* <label htmlFor='' className='_switcher'>
-          <input
-            type='checkbox'
-            onChange={(e) => handleToggle(e)}
-            checked={whoIsThis === "Yearly"}
-            ref={checkRef}
-          />
-          <span className='_slider' onClick={handleSpanClick}></span>
-        </label> */}
       </div>
       <div className='_prices_container'>
         {/* <div className='pricing_item0'>
@@ -163,7 +154,6 @@ const Index = () => {
             <button>Add To Browser</button>
           </a>
         </div>
-        {/* )} */}
         <div className='pricing_item2'>
           <div className='_p_sub_title'>
             <h4>Free</h4>
