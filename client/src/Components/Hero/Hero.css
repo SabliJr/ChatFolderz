@@ -101,10 +101,6 @@
   width: 10rem;
 }
 
-._claude_container {
-  position: relative;
-}
-
 #_claude_coming_soon {
   position: absolute;
   right: -1rem;
