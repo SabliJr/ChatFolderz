@@ -74,22 +74,6 @@ const Index = () => {
             is coming soon!
           </p>
         </div>
-        {/* <div className='_questions_div'>
-          <div className='_q_div'>
-            <h4>How does the free 24-hour trial work?</h4>
-            <PiPlusBold className='_q_icon' onClick={() => toggleQuestion(2)} />
-          </div>
-          <p
-            className={
-              revealQuestion[2]
-                ? "_questions_div_reveal"
-                : "_questions_div_none"
-            }>
-            Once you sign up, you get full access to all features for 24 hours.
-            If you’re not satisfied, you can cancel anytime before the trial
-            ends with no charge.
-          </p>
-        </div> */}
       </div>
       <div className='_q_chat_div'>
         <h3 className='_q_chat_title'>
