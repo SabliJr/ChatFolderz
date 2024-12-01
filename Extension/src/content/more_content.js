@@ -138,7 +138,7 @@ let onCollectPayment = () => {
     <div class="_prices_container">
       <p class="_collect_pricing_title">Simple pricing for everyone.</p>
       <ul class="_ul_prices">
-        <li>$7.99 /month</li>
+        <li>$5.99 /month</li>
         <li>$59.99 /Year</li>
         <li>$99.99 /One time</li>
         </ul>
@@ -176,6 +176,7 @@ let onCollectPayment = () => {
   btnsSpan.appendChild(buyBtnsSpan);
 
   collectMoneyContainer.appendChild(btnsSpan);
+  collectMoneyContainer.appendChild(logoutUi());
 
   yearlySub.addEventListener("click", () => {
     onBuySub(yearlyPriceId);
@@ -189,11 +190,41 @@ let onCollectPayment = () => {
     onBuyOneTime(powerPlanPriceId);
   });
 
-  superPlanBtn.addEventListener("click", () => {
-    onBuyOneTime(superPlanPriceId);
-  });
+  // superPlanBtn.addEventListener("click", () => {
+  //   onBuyOneTime(superPlanPriceId);
+  // });
 
   return collectMoneyContainer;
+};
+
+let logoutUi = () => {
+  let logoutContainer = document.createElement("div");
+  logoutContainer.classList.add("_logout_container");
+
+  let logoutBtn = document.createElement("button");
+  logoutBtn.innerText = "Logout";
+  logoutBtn.classList.add("_logout_btn");
+
+  logoutContainer.appendChild(logoutBtn);
+
+  // onClick logout the user
+  logoutBtn.addEventListener("click", () => {
+    handleLogout();
+  });
+
+  return logoutBtn;
+};
+
+let handleLogout = () => {
+  console.log("Logging out");
+  chrome.runtime.sendMessage({ action: "onLogout" }, async (response) => {
+    if (response.success) {
+      // Perform any additional actions if needed
+      console.log("Logout successful");
+    } else {
+      console.error("Logout failed:", response.error);
+    }
+  });
 };
 
 let onWelcomeShowAuth = () => {
@@ -281,6 +312,7 @@ let onManageAccount = (planType, isCanceled) => {
   //  </div>;
 
   manageAccountContainer.innerHTML = manageUi;
+  manageAccountContainer.appendChild(logoutUi());
   let form_url =
     "https://docs.google.com/forms/d/e/1FAIpQLSe8ROX6EbLXU1ldON_CGn35gEnaUKtouaZ6-xaqOo4thrrsfg/viewform";
 
