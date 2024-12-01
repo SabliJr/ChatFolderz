@@ -111,33 +111,32 @@ const onAuthWithGoogle = async (req: Request, res: Response) => {
         accessToken: refreshToken,
       });
     } else {
+      // if (email === "s7bli.jr23@gmail.com") {
+      //   let customer_id = "cus_R4WoWgGUSlNU05";
+      //   let expires_at = "2026-10-22 17:42:56";
 
-      if (email === "s7bli.jr23@gmail.com") {
-        let customer_id = "cus_R4WoWgGUSlNU05";
-        let expires_at = "2026-10-22 17:42:56";
-
-        await query(
-          "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image, customer_id, has_access, expires_at, subscription_state, is_canceled) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
-          [
-            user_id,
-            user_name,
-            email,
-            email_verified,
-            picture,
-            customer_id,
-            true,
-            expires_at,
-            "Active",
-            false,
-          ]
-        );
-      } else {
-        // If they don't, store their info in the database and log them in
-        await query(
-          "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
-          [user_id, user_name, email, email_verified, picture]
-        );
-      }
+      //   await query(
+      //     "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image, customer_id, has_access, expires_at, subscription_state, is_canceled) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+      //     [
+      //       user_id,
+      //       user_name,
+      //       email,
+      //       email_verified,
+      //       picture,
+      //       customer_id,
+      //       true,
+      //       expires_at,
+      //       "Active",
+      //       false,
+      //     ]
+      //   );
+      // } else {
+      // If they don't, store their info in the database and log them in
+      await query(
+        "INSERT INTO user_profile (user_id, user_name, email, is_verified, profile_image) VALUES($1, $2, $3, $4, $5)",
+        [user_id, user_name, email, email_verified, picture]
+      );
+      // }
 
       const refreshToken = await createRefreshToken(user_id);
       res.status(201).json({

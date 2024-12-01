@@ -256,3 +256,19 @@
 ._manage_user_ask {
   margin: 1.6rem 0;
 }
+
+/* ------------------------ Logout ------------------------------------------------- */
+
+._logout_container {
+  margin: 3rem 0;
+  border-top: 1.5px solid #606060;
+}
+
+._logout_btn {
+  font-size: 1.3rem;
+  color: #ff724f;
+  background-color: #212121;
+  padding: .3rem .8rem;
+  border-radius: .6rem;
+  border: transparent;
+}
